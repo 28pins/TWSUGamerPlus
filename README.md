@@ -1,6 +1,6 @@
 # GamerTetris
 
-Arduino code and a lightweight hardware driver for the Technology Will Save Us DIY Gamer Kit. The repository bundles the `Gamer` library (LED matrix driver, button/IR/buzzer helpers) and a menu-driven sketch that lets you play several demo games on the 8x8 display.
+Arduino code and a lightweight hardware driver for the Technology Will Save Us DIY Gamer Kit. The repository bundles the `Gamer` library (LED matrix driver, button/IR/buzzer helpers) and a menu-driven sketch that runs fully featured games (not just demos), including added Tetris, richer light/sound effects, and memory optimizations on top of the base example.
 
 ## What’s inside
 - `Gamer.h` / `Gamer.cpp`: the `Gamer` class that owns the 8x8 display buffer, scans buttons, drives the buzzer and IR LED, and exposes helpers like `printImage`, `printString`, `showScore`, and `playTone`.
