@@ -64,13 +64,13 @@ void loop() { //selector
         flappyLoop();
       }
       break;
-    }
     case 4:
       resetTetris();
       while(!gamer.isPressed(START)) {
         tetrisLoop();
       }
       break;
+    }
   } 
   else {
     //play animations!
@@ -1618,30 +1618,44 @@ void collided() {
 
 //TETRIS CODE
 //Tetris Game for Arduino
-
-volatile int score = 0;
+unsigned long moveInterval = 2000; // Initial move interval in milliseconds
 volatile int level = 1;
 volatile int linesCleared = 0;
-volatile bool gameOver = false;
+volatile bool gameOverT = false;
 const int gridWidth = 8;
 const int gridHeight = 8;
 int grid[gridHeight][gridWidth] = {0}; // 0 for empty, 1 for filled
-int currentX = 3; // Starting X position of the piece
-int currentY = -3; // Starting Y position of the piece
 int currentPiece[3][3] = { //empty piece
   {0, 0, 0},
   {0, 0, 0},
   {0, 0, 0}
 };
 
+bool canMove(int x, int y, int piece[3][3] = currentPiece) {
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (piece[i][j] == 1) { // Check only filled blocks
+                int newX = x + j;
+                int newY = y + i;
+                // Check boundaries
+                if (newX < 0 || newX >= gridWidth || newY < 0 || newY >= gridHeight || grid[newY][newX] == 1) {
+                    return false; // Can't move
+                }
+
+            }
+        }
+    }
+    return true; // Can move
+}
+
 void resetTetris() {
     // Initialize the game state
     score = 0;
     level = 1;
     linesCleared = 0;
-    gameOver = false;
+    gameOverT = false;
     currentX = 3;
-    currentY = 0;
+    currentY = -3;
     
     // Clear the grid
     for (int i = 0; i < gridHeight; i++) {
@@ -1662,7 +1676,7 @@ int digitFrom(int number, int position) {
 }
 
 void tetrisLoop() {
-    if (gameOver) {
+    if (gameOverT) {
         showScore(digitFrom(score, 1), digitFrom(score, 2)); // Display the final score
         delay(5000); // Wait for 5 seconds before resetting the game
         return; // Exit the loop if the game is over
@@ -1698,7 +1712,7 @@ void tetrisLoop() {
             currentY = -3;
             // Check if the new piece can be placed, if not, game over
             if (!canMove(currentX, currentY)) {
-                gameOver = true;
+                gameOverT = true;
             }
             delay(100); // Short delay to prevent immediate input after placing a piece
             digitalWrite(13, LOW);
@@ -1749,7 +1763,7 @@ void checkLines() {
 }
 
 //define moveInterval as a global variable to control the speed of the pieces
-unsigned long moveInterval = 2000; // Initial move interval in milliseconds
+
 
 void rotatePiece() {
     int temp[3][3] = {0};
@@ -1767,23 +1781,6 @@ void rotatePiece() {
             }
         }
     }
-}
-
-bool canMove(int x, int y, int piece[3][3] = currentPiece) {
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
-            if (piece[i][j] == 1) { // Check only filled blocks
-                int newX = x + j;
-                int newY = y + i;
-                // Check boundaries
-                if (newX < 0 || newX >= gridWidth || newY < 0 || newY >= gridHeight || grid[newY][newX] == 1) {
-                    return false; // Can't move
-                }
-
-            }
-        }
-    }
-    return true; // Can move
 }
 
 // render grid[][] and currentPiece[][] at currentX, currentY to gamer.display[][]
