@@ -1,35 +1,44 @@
-# DIY Gamer Kit Arduino Library
+# GamerTetris
 
-This software is for the [DIY Gamer Kit](http://www.techwillsaveus.com/shop/diy-kits/diy-gamer-kit-arduino/).
+Arduino code and a lightweight hardware driver for the Technology Will Save Us DIY Gamer Kit. The repository bundles the `Gamer` library (LED matrix driver, button/IR/buzzer helpers) and a menu-driven sketch that runs fully featured games (not just demos), including added Tetris, richer light/sound effects, and memory optimizations on top of the base example.
 
-The library is essential for using your DIY Gamer Kit to:
+## What’s inside
+- `Gamer.h` / `Gamer.cpp`: the `Gamer` class that owns the 8x8 display buffer, scans buttons, drives the buzzer and IR LED, and exposes helpers like `printImage`, `printString`, `showScore`, and `playTone`.
+- `GamerTetris-main.ino`: a single sketch with a launcher and five games: Snake, Breakout, Simon, Flappy, and Tetris.
+- `library.properties`: Arduino metadata so the folder can live in `~/Arduino/libraries/Gamer`.
 
-- Draw graphics on the screen
-- Make animations
-- Code apps and games
-- Play sounds on the buzzer
-- Scroll text across the screen
+## Requirements
+- DIY Gamer Kit (ATmega328P/Arduino Uno compatible, 8x8 LED matrix, buzzer, buttons).
+- Arduino IDE (or arduino-cli) with the board set to Arduino Uno.
 
-## Installation
+## Getting started
+1. Clone or download this repo. Place the folder in `~/Arduino/libraries/Gamer` (so the library files and the sketch sit together), or open the folder directly if you prefer to build from it.
+2. Open `GamerTetris-main.ino` in the Arduino IDE.
+3. Select **Board: Arduino Uno** and the correct serial port for your Gamer Kit.
+4. Click **Upload**. No other libraries are required because the `Gamer` driver is included here.
 
-1. Install the latest version of **Arduino**. You can get this software [here](https://www.arduino.cc/en/Main/Software).
+## Using the launcher
+- On boot you’ll see looping icons. Press `LEFT`/`RIGHT` to pick a game and `START` to launch it. Press `START` again inside a game to return to the selector.
+- Button constants available in code: `UP`, `DOWN`, `LEFT`, `RIGHT`, `START`, and `LDR` (or `capTouch` on newer hardware).
 
-2. Open the Arduino software on your computer and navigate to **Sketch** → **Include Library** → **Manage Libraries...**
+### Game controls
+- **Snake**: `UP`/`RIGHT`/`DOWN`/`LEFT` steer the snake. Collect food to grow. Score shows when you collide with yourself.
+- **Breakout**: `LEFT`/`RIGHT` move the paddle. Miss the ball to lose a life; the score shows on game over.
+- **Simon**: Watch the sequence, then repeat with `UP`, `DOWN`, `LEFT`, `RIGHT`. Speed ramps up every round.
+- **Flappy**: Press `UP` to flap through pipe gaps. Score shows after a crash.
+- **Tetris**: `LEFT`/`RIGHT` move, `DOWN` soft-drops, `UP` rotates. Speed increases every 10 cleared lines; score displays when the board fills.
 
-3. Type `Gamer` into the search bar. Two libraries should appear: **Gamer** and **GamerIR**.
+## Gamer library overview
+- **Setup**: call `gamer.begin()` in `setup()` to configure pins, timers, and defaults.
+- **Display**: write pixels into `gamer.display[8][8]` and call `gamer.updateDisplay()` to push them. Helpers: `printImage(byte* img)`, `printImage(img, x, y)`, `allOn()`, `clear()`, `appendColumn()`, `printString(String)`, `showScore(int)`, `setRefreshRate(uint16_t)`.
+- **Inputs**: edge-triggered `isPressed(btn)` for single presses, `isHeld(btn)` for current state, `ldrValue()`/`setldrThreshold()` for light sensing on older boards, `capTouch()` for capacitive input on v1.9 hardware.
+- **Buzzer**: `playTone(int note)` starts a tone, `stopTone()` stops it. The LED on pin 13 can be toggled with `setLED()`/`toggleLED()`.
+- **Infrared**: `irBegin()` / `irEnd()` manage the 38 kHz carrier and share timer interrupts with the display refresh logic.
 
-4. Click on each library to highlight it and click the **Install** button. Do this for both libraries!
+## Development tips
+- The display is driven from a timer ISR; keep `loop()` work light to avoid jitter.
+- `showScore` and in-sketch scoring helpers are two-digit only; values are capped for display.
+- The library runs on AVR/Uno only (`architectures=avr`). Other boards will need pin and timer changes.
 
-### Testing Your Installation
-
-The easiest way to test that the library has been successfully installed, is to follow these steps:
-
-1. Go to **File &#8594; Examples &#8594; Gamer** and choose one of the example programs (e.g., **SnakeGame**)
-
-2. Click on the **Verify** button to compile the example, and if it compiles correctly (it should say "Done compiling"), you're good to go!
-
-## Contributions and Bug Fixes
-
-For contributing to the library or games, first fork the master branch, modify, and open a pull request. We will evaluate end test your contributions and merge into this repo.
-
-For anything else, write to us at `support@techwillsaveus.com`.
+## License
+MIT. See `LICENSE` for details.
