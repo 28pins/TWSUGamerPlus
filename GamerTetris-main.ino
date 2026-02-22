@@ -1,4 +1,4 @@
-#include <Gamer.h>
+#include "Gamer.h"
 
 // Create a copy of the Gamer library.
 Gamer gamer;
@@ -30,6 +30,8 @@ void setup() {
     gamer.printImage(startup[i]);
     delay(100);
   }
+  Serial.begin(9600);
+  Serial.println("Setup complete!");
 }
 
 void loop() { //selector
@@ -89,6 +91,10 @@ void loop() { //selector
     case 3:
       //flappy
       gamer.printImage(flappy[animationFrame]);
+      break;
+    case 4:
+      //tetris
+      gamer.printImage(tetris[animationFrame]);
       break;
     }
     animationFrame++;
@@ -1010,7 +1016,7 @@ void physics() {
 }
 
 
-//ADVANCED code
+//MARK: ADVANCED DISPLAY CODE
 volatile byte numbers[10][2][8];
 
 void showScore(byte dig1,byte dig2) {
@@ -1203,7 +1209,7 @@ void setupScore() {
   numbers[0][1][7] = B00000111;
 }
 
-//FLAPPY code
+//MARK:FLAPPY code
 boolean menu = true;
 boolean gameOver = false;
 boolean displayflappyScore = false;
@@ -1366,7 +1372,7 @@ void flappyLoop()
   delay(12);
 }
 
-//SIMON CODE
+//MARK:SIMON CODE
 byte x=0;
 int delayMils = 300; //larger = easier
 byte framesSimon[4][8];
@@ -1497,7 +1503,7 @@ void setupSimonImages() {
 }
 
 
-//SNAKE CODE
+//MARK:SNAKE CODE
 int currentX = 0;
 int currentY = 0;
 int dir = 1;
@@ -1616,7 +1622,7 @@ void collided() {
   }
 }
 
-//TETRIS CODE
+//MARK:TETRIS CODE
 //Tetris Game for Arduino
 unsigned long moveInterval = 2000; // Initial move interval in milliseconds
 volatile int level = 1;
@@ -1685,6 +1691,7 @@ void tetrisLoop() {
     // Move the current piece down every second
     static unsigned long lastMoveTime = 0;
     if (millis() - lastMoveTime > moveInterval) {
+      lastMoveTime = millis();
         //flash led on pin 13
         digitalWrite(13, HIGH);
         if (canMove(currentX, currentY + 1)) {
