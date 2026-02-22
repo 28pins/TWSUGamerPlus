@@ -1,19 +1,3 @@
-/*
-This example demonstrates how to load multiple games into the Gamer.
-It's not a super straightforward process, so we thought we'd show
-you an example of running four games at the same time. 
-
-In order to have more than one game, we need to separate out all the
-game logic, variables, and functions of each game into separate tabs
-in the Arduino environment. 
-
-After we do that, we can select a game from a menu screen.
-
-This example was written by the wonderful Finnbar Keating (github: finnbar).
-If you have more specific questions, give him a ping on Twitter (@_finnbar)!
-*/
-
-// Include Gamer library.
 #include <Gamer.h>
 
 // Create a copy of the Gamer library.
@@ -28,7 +12,7 @@ volatile byte animationLength[] = { //how long is each animation???
   16,13,20,8};
 volatile byte animationFrame = 0; //what frame is it???
 volatile byte gameNumber = 0; //what game is it???
-volatile byte gameMax = 4; //how many games are there???
+volatile byte gameMax = 5; //how many games are there???
 
 void setup() {
   gamer.begin();
@@ -38,6 +22,7 @@ void setup() {
   setupSimon(); //simon says anim
   setupFlappy(); //flappy anim
   setupScore(); //printString / showScore
+  setupTetris(); //tetris anim
 
     setupImages(); //breakout win/lose images
   setupSimonImages(); //simon arrow and result images
@@ -716,3 +701,29 @@ void setupFlappy() { //run this at the start
   flappy[7][7] = B00000000;
 }
 
+void setupTetris() { //run this at the start
+  tetris[0][0] = B00000000;
+  tetris[0][1] = B00000000;
+  tetris[0][2] = B00000000;
+  tetris[0][3] = B00000000;
+  tetris[0][4] = B00000000;
+  tetris[0][5] = B00000000;
+  tetris[0][6] = B00000000;
+  tetris[0][7] = B00000000;
+  tetris[1][0] = B00000000;
+  tetris[1][1] = B00111100;
+  tetris[1][2] = B00111100;
+  tetris[1][3] = B00001100;
+  tetris[1][4] = B00000000;
+  tetris[1][5] = B00110000;
+  tetris[1][6] = B00111100;
+  tetris[1][7] = B00111100;
+  tetris[2][0] = B00000000;
+  tetris[2][1] = B00000000;
+  tetris[2][2] = B00111100;
+  tetris[2][3] = B00111100;
+  tetris[2][4] = B00111100;
+  tetris[2][5] = B00111100;
+  tetris[2][6] = B00111100;
+  tetris[2][7] = B00111100;
+}

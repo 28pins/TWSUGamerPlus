@@ -1,10 +1,3 @@
-/**
-*   Flappy Bit Version 1.0
-*   Original Arduino code By Daniel Ratcliffe http://www.twitter.com/DanTwoHundred
-*   Text rendering code by Finnbar Keating
-*   Adapted for the DIYGamer by George Profenza for TWSU
-*/
-
 boolean menu = true;
 boolean gameOver = false;
 boolean displayflappyScore = false;
