@@ -8,8 +8,9 @@ byte snake[16][8];  //snake animation
 byte breakout[13][8]; //breakout anim
 byte simon[20][8]; //simon anim
 byte flappy[8][8]; //flappy anim
+byte tetris[3][8]; //tetris anim
 volatile byte animationLength[] = { //how long is each animation???
-  16,13,20,8};
+  16,13,20,8,3};
 volatile byte animationFrame = 0; //what frame is it???
 volatile byte gameNumber = 0; //what game is it???
 volatile byte gameMax = 5; //how many games are there???
@@ -23,8 +24,7 @@ void setup() {
   setupFlappy(); //flappy anim
   setupScore(); //printString / showScore
   setupTetris(); //tetris anim
-
-    setupImages(); //breakout win/lose images
+  setupImages(); //breakout win/lose images
   setupSimonImages(); //simon arrow and result images
   for(int i=0;i<16;i++) { //the animation
     gamer.printImage(startup[i]);
@@ -65,6 +65,12 @@ void loop() { //selector
       }
       break;
     }
+    case 4:
+      resetTetris();
+      while(!gamer.isPressed(START)) {
+        tetrisLoop();
+      }
+      break;
   } 
   else {
     //play animations!

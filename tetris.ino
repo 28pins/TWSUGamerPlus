@@ -15,7 +15,7 @@ int currentPiece[3][3] = { //empty piece
   {0, 0, 0}
 }
 
-void initialize() {
+void resetTetris() {
     // Initialize the game state
     score = 0;
     level = 1;
@@ -32,6 +32,23 @@ void initialize() {
     }
 
     createPiece();
+}
+
+void tetrisLoop() {
+    if (gameOver) {
+        showScore(); // Display the final score
+        return; // Exit the loop if the game is over
+    }
+
+    // Move the current piece down every second
+    static unsigned long lastMoveTime = 0;
+    if (millis() - lastMoveTime > 1000) {
+        movePieceDown();
+        lastMoveTime = millis();
+    }
+
+    // Handle user input for moving left, right, or rotating the piece
+    // (This part can be implemented based on your specific input method)
 }
 
 enum PieceType { I, O, T, S, Z, J, L };
