@@ -3,14 +3,14 @@
 // Create a copy of the Gamer library.
 Gamer gamer;
 
-byte startup[16][8]; //declare at top of code
-byte snake[16][8];  //snake animation
-byte breakout[13][8]; //breakout anim
-byte simon[20][8]; //simon anim
-byte flappy[8][8]; //flappy anim
+byte startup[1][8]; //declare at top of code
+byte snake[3][8];  //snake animation
+byte breakout[3][8]; //breakout anim
+byte simon[2][8]; //simon anim
+byte flappy[4][8]; //flappy anim
 byte tetris[3][8]; //tetris anim
 volatile byte animationLength[] = { //how long is each animation???
-  16,13,20,8,3};
+  3,3,2,4,3};
 volatile byte animationFrame = 0; //what frame is it???
 volatile byte gameNumber = 0; //what game is it???
 volatile byte gameMax = 5; //how many games are there???
@@ -30,8 +30,8 @@ void setup() {
     gamer.printImage(startup[i]);
     delay(100);
   }
-  Serial.begin(9600);
-  Serial.println("Setup complete!");
+  // Serial.begin(9600);
+  // Serial.println("Setup complete!");
 }
 
 void loop() { //selector
@@ -115,134 +115,14 @@ void loop() { //selector
 }
 
 void setupLogo() { //run this at the start
-  startup[0][0] = B00000000;
-  startup[0][1] = B00000000;
-  startup[0][2] = B00000000;
-  startup[0][3] = B00010000;
-  startup[0][4] = B00001000;
-  startup[0][5] = B00000000;
-  startup[0][6] = B00000000;
-  startup[0][7] = B00000000;
-  startup[1][0] = B00000000;
-  startup[1][1] = B00000000;
-  startup[1][2] = B00000000;
-  startup[1][3] = B00011000;
-  startup[1][4] = B00011000;
-  startup[1][5] = B00000000;
-  startup[1][6] = B00000000;
-  startup[1][7] = B00000000;
-  startup[2][0] = B00000000;
-  startup[2][1] = B00000000;
-  startup[2][2] = B00110000;
-  startup[2][3] = B00111000;
-  startup[2][4] = B00011100;
-  startup[2][5] = B00001100;
-  startup[2][6] = B00000000;
-  startup[2][7] = B00000000;
-  startup[3][0] = B00000000;
-  startup[3][1] = B00000000;
-  startup[3][2] = B00111100;
-  startup[3][3] = B00111100;
-  startup[3][4] = B00111100;
-  startup[3][5] = B00111100;
-  startup[3][6] = B00000000;
-  startup[3][7] = B00000000;
-  startup[4][0] = B00000000;
-  startup[4][1] = B01110000;
-  startup[4][2] = B01111100;
-  startup[4][3] = B01111100;
-  startup[4][4] = B00111110;
-  startup[4][5] = B00111110;
-  startup[4][6] = B00001110;
-  startup[4][7] = B00000000;
-  startup[5][0] = B00000000;
-  startup[5][1] = B01111110;
-  startup[5][2] = B01111110;
-  startup[5][3] = B01111110;
-  startup[5][4] = B01111110;
-  startup[5][5] = B01111110;
-  startup[5][6] = B01111110;
-  startup[5][7] = B00000000;
-  startup[6][0] = B11110000;
-  startup[6][1] = B11111110;
-  startup[6][2] = B11111110;
-  startup[6][3] = B11111110;
-  startup[6][4] = B01111111;
-  startup[6][5] = B01111111;
-  startup[6][6] = B01111111;
-  startup[6][7] = B00001111;
-  startup[7][0] = B11111111;
-  startup[7][1] = B11111111;
-  startup[7][2] = B11111111;
-  startup[7][3] = B11111111;
-  startup[7][4] = B11111111;
-  startup[7][5] = B11111111;
-  startup[7][6] = B11111111;
-  startup[7][7] = B11111111;
-  startup[8][0] = B11111111;
-  startup[8][1] = B11111111;
-  startup[8][2] = B11111111;
-  startup[8][3] = B11101111;
-  startup[8][4] = B11110111;
-  startup[8][5] = B11111111;
-  startup[8][6] = B11111111;
-  startup[8][7] = B11111111;
-  startup[9][0] = B11111111;
-  startup[9][1] = B11111111;
-  startup[9][2] = B11111111;
-  startup[9][3] = B11100111;
-  startup[9][4] = B11100111;
-  startup[9][5] = B11111111;
-  startup[9][6] = B11111111;
-  startup[9][7] = B11111111;
-  startup[10][0] = B11111111;
-  startup[10][1] = B11111111;
-  startup[10][2] = B11001111;
-  startup[10][3] = B11000111;
-  startup[10][4] = B11100011;
-  startup[10][5] = B11110011;
-  startup[10][6] = B11111111;
-  startup[10][7] = B11111111;
-  startup[11][0] = B11111111;
-  startup[11][1] = B11111111;
-  startup[11][2] = B11000011;
-  startup[11][3] = B11000011;
-  startup[11][4] = B11000011;
-  startup[11][5] = B11000011;
-  startup[11][6] = B11111111;
-  startup[11][7] = B11111111;
-  startup[12][0] = B11111111;
-  startup[12][1] = B10001111;
-  startup[12][2] = B10000011;
-  startup[12][3] = B10000011;
-  startup[12][4] = B11000001;
-  startup[12][5] = B11000001;
-  startup[12][6] = B11110001;
-  startup[12][7] = B11111111;
-  startup[13][0] = B11111111;
-  startup[13][1] = B10000001;
-  startup[13][2] = B10000001;
-  startup[13][3] = B10000001;
-  startup[13][4] = B10000001;
-  startup[13][5] = B10000001;
-  startup[13][6] = B10000001;
-  startup[13][7] = B11111111;
-  startup[14][0] = B00000111;
-  startup[14][1] = B00000001;
-  startup[14][2] = B00000001;
-  startup[14][3] = B00000000;
-  startup[14][4] = B00000000;
-  startup[14][5] = B10000000;
-  startup[14][6] = B10000000;
-  startup[14][7] = B11100000;
-  startup[15][0] = B00000000;
-  startup[15][1] = B00000000;
-  startup[15][2] = B00000000;
-  startup[15][3] = B00000000;
-  startup[15][4] = B00000000;
-  startup[15][5] = B00000000;
-  startup[15][6] = B00000000;
-  startup[15][7] = B00000000;
+  startup[0][0] = B11111111;
+  startup[0][1] = B11111111;
+  startup[0][2] = B11111111;
+  startup[0][3] = B11111111;
+  startup[0][4] = B11111111;
+  startup[0][5] = B11111111;
+  startup[0][6] = B11111111;
+  startup[0][7] = B11111111;
 }
 
 void setupSnake() { //run this at the start
@@ -270,110 +150,6 @@ void setupSnake() { //run this at the start
   snake[2][5] = B00000000;
   snake[2][6] = B00000000;
   snake[2][7] = B00000000;
-  snake[3][0] = B00000000;
-  snake[3][1] = B00000000;
-  snake[3][2] = B00000100;
-  snake[3][3] = B00000100;
-  snake[3][4] = B00010000;
-  snake[3][5] = B00000000;
-  snake[3][6] = B00000000;
-  snake[3][7] = B00000000;
-  snake[4][0] = B00000000;
-  snake[4][1] = B00000000;
-  snake[4][2] = B00000000;
-  snake[4][3] = B00000100;
-  snake[4][4] = B00010100;
-  snake[4][5] = B00000000;
-  snake[4][6] = B00000000;
-  snake[4][7] = B00000000;
-  snake[5][0] = B00000000;
-  snake[5][1] = B00000000;
-  snake[5][2] = B00000000;
-  snake[5][3] = B00000000;
-  snake[5][4] = B00011100;
-  snake[5][5] = B00000000;
-  snake[5][6] = B00000000;
-  snake[5][7] = B00000000;
-  snake[6][0] = B00000000;
-  snake[6][1] = B00000000;
-  snake[6][2] = B00000000;
-  snake[6][3] = B00000000;
-  snake[6][4] = B00011000;
-  snake[6][5] = B00000000;
-  snake[6][6] = B00000000;
-  snake[6][7] = B00000000;
-  snake[7][0] = B00000000;
-  snake[7][1] = B00000000;
-  snake[7][2] = B00000000;
-  snake[7][3] = B00000000;
-  snake[7][4] = B00010000;
-  snake[7][5] = B00010100;
-  snake[7][6] = B00000000;
-  snake[7][7] = B00000000;
-  snake[8][0] = B00000000;
-  snake[8][1] = B00000000;
-  snake[8][2] = B00000000;
-  snake[8][3] = B00000000;
-  snake[8][4] = B00000000;
-  snake[8][5] = B00011100;
-  snake[8][6] = B00000000;
-  snake[8][7] = B00000000;
-  snake[9][0] = B00000000;
-  snake[9][1] = B00000000;
-  snake[9][2] = B00000000;
-  snake[9][3] = B00000000;
-  snake[9][4] = B00000000;
-  snake[9][5] = B00001100;
-  snake[9][6] = B00000000;
-  snake[9][7] = B00000000;
-  snake[10][0] = B00000000;
-  snake[10][1] = B00000000;
-  snake[10][2] = B00100000;
-  snake[10][3] = B00000000;
-  snake[10][4] = B00000100;
-  snake[10][5] = B00000100;
-  snake[10][6] = B00000000;
-  snake[10][7] = B00000000;
-  snake[11][0] = B00000000;
-  snake[11][1] = B00000000;
-  snake[11][2] = B00100000;
-  snake[11][3] = B00000000;
-  snake[11][4] = B00001100;
-  snake[11][5] = B00000000;
-  snake[11][6] = B00000000;
-  snake[11][7] = B00000000;
-  snake[12][0] = B00000000;
-  snake[12][1] = B00000000;
-  snake[12][2] = B00100000;
-  snake[12][3] = B00000000;
-  snake[12][4] = B00011000;
-  snake[12][5] = B00000000;
-  snake[12][6] = B00000000;
-  snake[12][7] = B00000000;
-  snake[13][0] = B00000000;
-  snake[13][1] = B00000000;
-  snake[13][2] = B00100000;
-  snake[13][3] = B00000000;
-  snake[13][4] = B00110000;
-  snake[13][5] = B00000000;
-  snake[13][6] = B00000000;
-  snake[13][7] = B00000000;
-  snake[14][0] = B00000000;
-  snake[14][1] = B00000000;
-  snake[14][2] = B00100000;
-  snake[14][3] = B00100000;
-  snake[14][4] = B00100000;
-  snake[14][5] = B00000000;
-  snake[14][6] = B00000000;
-  snake[14][7] = B00000000;
-  snake[15][0] = B00000000;
-  snake[15][1] = B00000000;
-  snake[15][2] = B00100000;
-  snake[15][3] = B00100000;
-  snake[15][4] = B00000000;
-  snake[15][5] = B00000000;
-  snake[15][6] = B00000000;
-  snake[15][7] = B00000000;
 }
 
 void setupBreakout() { //run this at the start
@@ -401,86 +177,6 @@ void setupBreakout() { //run this at the start
   breakout[2][5] = B00001100;
   breakout[2][6] = B00000000;
   breakout[2][7] = B00000000;
-  breakout[3][0] = B00000000;
-  breakout[3][1] = B00000000;
-  breakout[3][2] = B00101100;
-  breakout[3][3] = B00000100;
-  breakout[3][4] = B00000000;
-  breakout[3][5] = B00011000;
-  breakout[3][6] = B00000000;
-  breakout[3][7] = B00000000;
-  breakout[4][0] = B00000000;
-  breakout[4][1] = B00000000;
-  breakout[4][2] = B00101000;
-  breakout[4][3] = B00000000;
-  breakout[4][4] = B00001000;
-  breakout[4][5] = B00001100;
-  breakout[4][6] = B00000000;
-  breakout[4][7] = B00000000;
-  breakout[5][0] = B00000000;
-  breakout[5][1] = B00000000;
-  breakout[5][2] = B00101000;
-  breakout[5][3] = B00010000;
-  breakout[5][4] = B00000000;
-  breakout[5][5] = B00011000;
-  breakout[5][6] = B00000000;
-  breakout[5][7] = B00000000;
-  breakout[6][0] = B00000000;
-  breakout[6][1] = B00000000;
-  breakout[6][2] = B00001000;
-  breakout[6][3] = B00000000;
-  breakout[6][4] = B00001000;
-  breakout[6][5] = B00001100;
-  breakout[6][6] = B00000000;
-  breakout[6][7] = B00000000;
-  breakout[7][0] = B00000000;
-  breakout[7][1] = B00000000;
-  breakout[7][2] = B00001000;
-  breakout[7][3] = B00000100;
-  breakout[7][4] = B00000000;
-  breakout[7][5] = B00011000;
-  breakout[7][6] = B00000000;
-  breakout[7][7] = B00000000;
-  breakout[8][0] = B00000000;
-  breakout[8][1] = B00000000;
-  breakout[8][2] = B00000000;
-  breakout[8][3] = B00000000;
-  breakout[8][4] = B00001000;
-  breakout[8][5] = B00011000;
-  breakout[8][6] = B00000000;
-  breakout[8][7] = B00000000;
-  breakout[9][0] = B00000000;
-  breakout[9][1] = B00000000;
-  breakout[9][2] = B00000000;
-  breakout[9][3] = B00010000;
-  breakout[9][4] = B00000000;
-  breakout[9][5] = B00110000;
-  breakout[9][6] = B00000000;
-  breakout[9][7] = B00000000;
-  breakout[10][0] = B00000000;
-  breakout[10][1] = B00000000;
-  breakout[10][2] = B00100000;
-  breakout[10][3] = B00000000;
-  breakout[10][4] = B00000000;
-  breakout[10][5] = B01100000;
-  breakout[10][6] = B00000000;
-  breakout[10][7] = B00000000;
-  breakout[11][0] = B00000000;
-  breakout[11][1] = B00000000;
-  breakout[11][2] = B00000000;
-  breakout[11][3] = B01000000;
-  breakout[11][4] = B00000000;
-  breakout[11][5] = B00110000;
-  breakout[11][6] = B00000000;
-  breakout[11][7] = B00000000;
-  breakout[12][0] = B00000000;
-  breakout[12][1] = B00000000;
-  breakout[12][2] = B00000000;
-  breakout[12][3] = B00000000;
-  breakout[12][4] = B00100000;
-  breakout[12][5] = B01100000;
-  breakout[12][6] = B00000000;
-  breakout[12][7] = B00000000;
 }
 
 void setupSimon() {
@@ -500,150 +196,6 @@ void setupSimon() {
   simon[1][5] = B00000000;
   simon[1][6] = B00000000;
   simon[1][7] = B00000000;
-  simon[2][0] = B00000000; //blank
-  simon[2][1] = B00000000;
-  simon[2][2] = B00000000;
-  simon[2][3] = B00000000;
-  simon[2][4] = B00000000;
-  simon[2][5] = B00000000;
-  simon[2][6] = B00000000;
-  simon[2][7] = B00000000;
-  simon[3][7] = B00000000; //down (aka up, but flipped)
-  simon[3][6] = B00011000;
-  simon[3][5] = B00111100;
-  simon[3][4] = B01111110;
-  simon[3][3] = B00011000;
-  simon[3][2] = B00011000;
-  simon[3][1] = B00011000;
-  simon[3][0] = B00000000;
-  simon[4][0] = B00000000; //blank
-  simon[4][1] = B00000000;
-  simon[4][2] = B00000000;
-  simon[4][3] = B00000000;
-  simon[4][4] = B00000000;
-  simon[4][5] = B00000000;
-  simon[4][6] = B00000000;
-  simon[4][7] = B00000000;
-  simon[5][0] = B00000000; //blank
-  simon[5][1] = B00000000;
-  simon[5][2] = B00000000;
-  simon[5][3] = B00000000;
-  simon[5][4] = B00000000;
-  simon[5][5] = B00000000;
-  simon[5][6] = B00000000;
-  simon[5][7] = B00000000;
-  simon[6][0] = B00000000; //blank
-  simon[6][1] = B00000000;
-  simon[6][2] = B00000000;
-  simon[6][3] = B00000000;
-  simon[6][4] = B00000000;
-  simon[6][5] = B00000000;
-  simon[6][6] = B00000000;
-  simon[6][7] = B00000000;
-  simon[7][0] = B00000000; //left
-  simon[7][1] = B00010000;
-  simon[7][2] = B00110000;
-  simon[7][3] = B01111110;
-  simon[7][4] = B01111110;
-  simon[7][5] = B00110000;
-  simon[7][6] = B00010000;
-  simon[7][7] = B00000000;
-  simon[8][0] = B00000000; //blank
-  simon[8][1] = B00000000;
-  simon[8][2] = B00000000;
-  simon[8][3] = B00000000;
-  simon[8][4] = B00000000;
-  simon[8][5] = B00000000;
-  simon[8][6] = B00000000;
-  simon[8][7] = B00000000;
-  simon[9][0] = B00000000; //blank
-  simon[9][1] = B00000000;
-  simon[9][2] = B00000000;
-  simon[9][3] = B00000000;
-  simon[9][4] = B00000000;
-  simon[9][5] = B00000000;
-  simon[9][6] = B00000000;
-  simon[9][7] = B00000000;
-  simon[10][0] = B00000000; //right (left but flipped)
-  simon[10][1] = B00001000;
-  simon[10][2] = B00001100;
-  simon[10][3] = B01111110;
-  simon[10][4] = B01111110;
-  simon[10][5] = B00001100;
-  simon[10][6] = B00001000;
-  simon[10][7] = B00000000;
-  simon[11][0] = B00000000; //blank
-  simon[11][1] = B00000000;
-  simon[11][2] = B00000000;
-  simon[11][3] = B00000000;
-  simon[11][4] = B00000000;
-  simon[11][5] = B00000000;
-  simon[11][6] = B00000000;
-  simon[11][7] = B00000000;
-  simon[12][0] = B00000000; //blank
-  simon[12][1] = B00000000;
-  simon[12][2] = B00000000;
-  simon[12][3] = B00000000;
-  simon[12][4] = B00000000;
-  simon[12][5] = B00000000;
-  simon[12][6] = B00000000;
-  simon[12][7] = B00000000;
-  simon[13][0] = B00000000; //up
-  simon[13][1] = B00011000;
-  simon[13][2] = B00111100;
-  simon[13][3] = B01111110;
-  simon[13][4] = B00011000;
-  simon[13][5] = B00011000;
-  simon[13][6] = B00011000;
-  simon[13][7] = B00000000;
-  simon[14][7] = B00000000; //down (aka up, but flipped)
-  simon[14][6] = B00011000;
-  simon[14][5] = B00111100;
-  simon[14][4] = B01111110;
-  simon[14][3] = B00011000;
-  simon[14][2] = B00011000;
-  simon[14][1] = B00011000;
-  simon[14][0] = B00000000;
-  simon[15][0] = B00000000; //right (left but flipped)
-  simon[15][1] = B00001000;
-  simon[15][2] = B00001100;
-  simon[15][3] = B01111110;
-  simon[15][4] = B01111110;
-  simon[15][5] = B00001100;
-  simon[15][6] = B00001000;
-  simon[15][7] = B00000000;
-  simon[16][0] = B00000000;
-  simon[16][1] = B01100110;
-  simon[16][2] = B00111100;
-  simon[16][3] = B00011000;
-  simon[16][4] = B00011000;
-  simon[16][5] = B00111100;
-  simon[16][6] = B01100110;
-  simon[16][7] = B00000000;
-  simon[17][0] = B00000000;
-  simon[17][1] = B01100110;
-  simon[17][2] = B00111100;
-  simon[17][3] = B00011000;
-  simon[17][4] = B00011000;
-  simon[17][5] = B00111100;
-  simon[17][6] = B01100110;
-  simon[17][7] = B00000000;
-  simon[18][0] = B00000000;
-  simon[18][1] = B01100110;
-  simon[18][2] = B00111100;
-  simon[18][3] = B00011000;
-  simon[18][4] = B00011000;
-  simon[18][5] = B00111100;
-  simon[18][6] = B01100110;
-  simon[18][7] = B00000000;
-  simon[19][0] = B00000000;
-  simon[19][1] = B01100110;
-  simon[19][2] = B00111100;
-  simon[19][3] = B00011000;
-  simon[19][4] = B00011000;
-  simon[19][5] = B00111100;
-  simon[19][6] = B01100110;
-  simon[19][7] = B00000000;
 }
 
 void setupFlappy() { //run this at the start
@@ -679,65 +231,24 @@ void setupFlappy() { //run this at the start
   flappy[3][5] = B00011000;
   flappy[3][6] = B00011000;
   flappy[3][7] = B00000000;
-  flappy[4][0] = B00000000;
-  flappy[4][1] = B00000000;
-  flappy[4][2] = B00100000;
-  flappy[4][3] = B00000000;
-  flappy[4][4] = B00110000;
-  flappy[4][5] = B00110000;
-  flappy[4][6] = B00110000;
-  flappy[4][7] = B00000000;
-  flappy[5][0] = B00000000;
-  flappy[5][1] = B00100000;
-  flappy[5][2] = B00000000;
-  flappy[5][3] = B00000000;
-  flappy[5][4] = B01100000;
-  flappy[5][5] = B01100000;
-  flappy[5][6] = B01100000;
-  flappy[5][7] = B00000000;
-  flappy[6][0] = B00000000;
-  flappy[6][1] = B00000000;
-  flappy[6][2] = B00100000;
-  flappy[6][3] = B00000000;
-  flappy[6][4] = B01000000;
-  flappy[6][5] = B01000000;
-  flappy[6][6] = B01000000;
-  flappy[6][7] = B00000000;
-  flappy[7][0] = B00000000;
-  flappy[7][1] = B00000000;
-  flappy[7][2] = B00000000;
-  flappy[7][3] = B00100000;
-  flappy[7][4] = B00000000;
-  flappy[7][5] = B00000000;
-  flappy[7][6] = B00000000;
-  flappy[7][7] = B00000000;
 }
 
-void setupTetris() { //run this at the start
-  tetris[0][0] = B00000000;
-  tetris[0][1] = B00000000;
-  tetris[0][2] = B00000000;
-  tetris[0][3] = B00000000;
+void setupTetris() {tetris[1][0] = B00000000;
+  tetris[0][1] = B00111100;
+  tetris[0][2] = B00111100;
+  tetris[0][3] = B00001100;
   tetris[0][4] = B00000000;
-  tetris[0][5] = B00000000;
-  tetris[0][6] = B00000000;
-  tetris[0][7] = B00000000;
+  tetris[0][5] = B00110000;
+  tetris[0][6] = B00111100;
+  tetris[0][7] = B00111100;
   tetris[1][0] = B00000000;
-  tetris[1][1] = B00111100;
+  tetris[1][1] = B00000000;
   tetris[1][2] = B00111100;
-  tetris[1][3] = B00001100;
-  tetris[1][4] = B00000000;
-  tetris[1][5] = B00110000;
+  tetris[1][3] = B00111100;
+  tetris[1][4] = B00111100;
+  tetris[1][5] = B00111100;
   tetris[1][6] = B00111100;
   tetris[1][7] = B00111100;
-  tetris[2][0] = B00000000;
-  tetris[2][1] = B00000000;
-  tetris[2][2] = B00111100;
-  tetris[2][3] = B00111100;
-  tetris[2][4] = B00111100;
-  tetris[2][5] = B00111100;
-  tetris[2][6] = B00111100;
-  tetris[2][7] = B00111100;
 }
 
 //BREAKOUT CODE
@@ -1624,13 +1135,13 @@ void collided() {
 
 //MARK:TETRIS CODE
 //Tetris Game for Arduino
-unsigned long moveInterval = 2000; // Initial move interval in milliseconds
+unsigned long moveInterval = 1000; // Initial move interval in milliseconds
 volatile int level = 1;
 volatile int linesCleared = 0;
 volatile bool gameOverT = false;
 const int gridWidth = 8;
 const int gridHeight = 8;
-int grid[gridHeight][gridWidth] = {0}; // 0 for empty, 1 for filled
+int grid[gridHeight][gridWidth] = {{0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}}; // 0 for empty, 1 for filled
 int currentPiece[3][3] = { //empty piece
   {0, 0, 0},
   {0, 0, 0},
@@ -1638,36 +1149,44 @@ int currentPiece[3][3] = { //empty piece
 };
 
 bool canMove(int x, int y, int piece[3][3] = currentPiece) {
+  // Serial.print("Checking canMove for x: ");
+  // Serial.print(x);
+  // Serial.print(", y: ");
+  // Serial.println(y); 
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
             if (piece[i][j] == 1) { // Check only filled blocks
                 int newX = x + j;
                 int newY = y + i;
                 // Check boundaries
-                if (newX < 0 || newX >= gridWidth || newY < 0 || newY >= gridHeight || grid[newY][newX] == 1) {
+                if (newX < 0 || newX >= gridWidth || newY < -3 || newY >= gridHeight || grid[newY][newX] == 1) {
+                  // Serial.println("Collision detected or out of bounds!");
                     return false; // Can't move
                 }
 
             }
         }
     }
+    // Serial.println("Move is valid.");
     return true; // Can move
 }
 
 void resetTetris() {
+  // Serial.println("Resetting Tetris...");
     // Initialize the game state
     score = 0;
     level = 1;
     linesCleared = 0;
     gameOverT = false;
     currentX = 3;
-    currentY = -3;
+    currentY = -1;
     
     // Clear the grid
     for (int i = 0; i < gridHeight; i++) {
         for (int j = 0; j < gridWidth; j++) {
         grid[i][j] = 0;
         }
+        renderGridAndPiece();
     }
 
     createPiece();
@@ -1683,7 +1202,8 @@ int digitFrom(int number, int position) {
 
 void tetrisLoop() {
     if (gameOverT) {
-        showScore(digitFrom(score, 1), digitFrom(score, 2)); // Display the final score
+      // Serial.println("Game Over! Final Score: " + String(score));
+        showScore(digitFrom(score, 2), digitFrom(score, 1)); // Display the final score
         delay(5000); // Wait for 5 seconds before resetting the game
         return; // Exit the loop if the game is over
     }
@@ -1692,11 +1212,13 @@ void tetrisLoop() {
     static unsigned long lastMoveTime = 0;
     if (millis() - lastMoveTime > moveInterval) {
       lastMoveTime = millis();
+      // Serial.println("Attempting to move piece down...");
         //flash led on pin 13
         digitalWrite(13, HIGH);
         if (canMove(currentX, currentY + 1)) {
             currentY++; // Move the piece down
             lastMoveTime = millis();
+            renderGridAndPiece();
         } else {
             // Place the piece on the grid
             for (int i = 0; i < 3; i++) {
@@ -1711,32 +1233,37 @@ void tetrisLoop() {
                 }
             }
             // Check for completed lines and update score
+            // Serial.println("Piece placed. Checking for lines and creating new piece...");
             checkLines();
             // Create a new piece
             createPiece();
             // Reset the position for the new piece
             currentX = 3;
-            currentY = -3;
+            currentY = -1;
             // Check if the new piece can be placed, if not, game over
-            if (!canMove(currentX, currentY)) {
+            if (!canMove(currentX, currentY) || !canMove(currentX, currentY + 1)) {
                 gameOverT = true;
             }
             delay(100); // Short delay to prevent immediate input after placing a piece
             digitalWrite(13, LOW);
+            // Serial.println("New piece created. Current score: " + String(score) + ", Level: " + String(level) + ", Lines Cleared: " + String(linesCleared));
+            renderGridAndPiece(); // Update the display with the current grid and piece
         }
     }
 
     if(gamer.isPressed(LEFT) && canMove(currentX - 1, currentY)) {
         currentX--; // Move left
+       renderGridAndPiece(); // Update the display with the current grid and piece
     } else if(gamer.isPressed(RIGHT) && canMove(currentX + 1, currentY)) {
         currentX++; // Move right
+        renderGridAndPiece(); // Update the display with the current grid and piece
     } else if(gamer.isPressed(DOWN) && canMove(currentX, currentY + 1)) {
         currentY++; // Move down faster
+        renderGridAndPiece(); // Update the display with the current grid and piece
     } else if(gamer.isPressed(UP)) {
         rotatePiece(); // Rotate the piece
+        renderGridAndPiece(); // Update the display with the current grid and piece
     }
-    gamer.printImage(0); // Clear the display before rendering
-    renderGridAndPiece(); // Update the display with the current grid and piece
 }
 
 void checkLines() {
@@ -1749,10 +1276,22 @@ void checkLines() {
             }
         }
         if (lineComplete) {
+
+            currentX = 3;
+            currentY = -1;
             // Clear the line
+            for (int j = 0; j < gridWidth; j++) {
+                grid[i][j] = 0; // Move down the lines above
+                //animate
+                renderGridAndPiece();
+                delay(30);
+            }
             for (int k = i; k > 0; k--) {
                 for (int j = 0; j < gridWidth; j++) {
                     grid[k][j] = grid[k - 1][j]; // Move down the lines above
+                    //animate
+                    renderGridAndPiece();
+                    delay(20);
                 }
             }
             // Clear the top line
@@ -1796,9 +1335,14 @@ void renderGridAndPiece() {
     for (int i = 0; i < gridHeight; i++) {
         for (int j = 0; j < gridWidth; j++) {
             if (grid[i][j] == 1) {
-                gamer.display[j][i] = HIGH; // Set pixel for filled blocks
-            }
+                gamer.display[j][i] = 1; // Set pixel for filled blocks
+                // Serial.print('#');
+            } else { // Set pixel for filled blocks
+                // Serial.print('_');
+                gamer.display[j][i] = 0;
+              }
         }
+        // Serial.println();
     }
 
     // Render the current piece
@@ -1808,11 +1352,12 @@ void renderGridAndPiece() {
                 int x = currentX + j;
                 int y = currentY + i;
                 if (x >= 0 && x < gridWidth && y >= 0 && y < gridHeight) {
-                    gamer.display[x][y] = HIGH; // Set pixel for current piece
+                    gamer.display[x][y] = 1; // Set pixel for current piece
                 }
             }
         }
     }
+    gamer.updateDisplay(); // Update the display after rendering
 }
 
 enum PieceType { I, O, T, S, Z, J, L };
