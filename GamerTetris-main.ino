@@ -1122,6 +1122,7 @@ void snakeLoop() {
   snakeRec();
   isCollected();
   delay(100);
+  if (soundEnabled) gamer.stopTone(); // end chirp after each loop tick
   gamer.updateDisplay();
 }
 
