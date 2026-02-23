@@ -4,13 +4,13 @@
 Gamer gamer;
 
 byte startup[1][8]; //declare at top of code
-byte snake[3][8];  //snake animation
-byte breakout[3][8]; //breakout anim
+byte snake[2][8];  //snake animation
+byte breakout[2][8]; //breakout anim
 byte simon[2][8]; //simon anim
-byte flappy[4][8]; //flappy anim
-byte tetris[3][8]; //tetris anim
+byte flappy[2][8]; //flappy anim
+byte tetris[2][8]; //tetris anim
 volatile byte animationLength[] = { //how long is each animation???
-  3,3,2,4,3};
+  2,2,2,2,2};
 volatile byte animationFrame = 0; //what frame is it???
 volatile byte gameNumber = 0; //what game is it???
 volatile byte gameMax = 5; //how many games are there???
@@ -110,7 +110,7 @@ void loop() { //selector
     }
     if(gameNumber==255) gameNumber=gameMax-1;
     if(gameNumber>=gameMax) gameNumber=0;
-    delay(100);
+    delay(300);
   }
 }
 
@@ -126,129 +126,108 @@ void setupLogo() { //run this at the start
 }
 
 void setupSnake() { //run this at the start
+  // Frame 0: S-curve snake + food dot
   snake[0][0] = B00000000;
-  snake[0][1] = B00000000;
-  snake[0][2] = B00110100;
-  snake[0][3] = B00000000;
+  snake[0][1] = B00111000; // head+body (cols 2,3,4)
+  snake[0][2] = B00001000; // bend down (col 4)
+  snake[0][3] = B00001110; // tail goes right (cols 4,5,6)
   snake[0][4] = B00000000;
-  snake[0][5] = B00000000;
+  snake[0][5] = B01000000; // food dot (col 1)
   snake[0][6] = B00000000;
   snake[0][7] = B00000000;
+  // Frame 1: same snake, food dot off (blinking)
   snake[1][0] = B00000000;
-  snake[1][1] = B00000000;
-  snake[1][2] = B00011100;
-  snake[1][3] = B00000000;
+  snake[1][1] = B00111000;
+  snake[1][2] = B00001000;
+  snake[1][3] = B00001110;
   snake[1][4] = B00000000;
   snake[1][5] = B00000000;
   snake[1][6] = B00000000;
   snake[1][7] = B00000000;
-  snake[2][0] = B00000000;
-  snake[2][1] = B00000000;
-  snake[2][2] = B00001100;
-  snake[2][3] = B00000000;
-  snake[2][4] = B00000000;
-  snake[2][5] = B00000000;
-  snake[2][6] = B00000000;
-  snake[2][7] = B00000000;
 }
 
 void setupBreakout() { //run this at the start
-  breakout[0][0] = B00000000;
-  breakout[0][1] = B00000000;
-  breakout[0][2] = B00111100;
-  breakout[0][3] = B00000000;
-  breakout[0][4] = B00100000;
-  breakout[0][5] = B00110000;
+  // Frame 0: full block rows, ball mid-field, paddle at bottom
+  breakout[0][0] = B11111111; // solid block row
+  breakout[0][1] = B11111111; // solid block row
+  breakout[0][2] = B00000000;
+  breakout[0][3] = B00010000; // ball (col 3)
+  breakout[0][4] = B00000000;
+  breakout[0][5] = B00000000;
   breakout[0][6] = B00000000;
-  breakout[0][7] = B00000000;
-  breakout[1][0] = B00000000;
-  breakout[1][1] = B00000000;
-  breakout[1][2] = B00111100;
-  breakout[1][3] = B00010000;
-  breakout[1][4] = B00000000;
-  breakout[1][5] = B00011000;
+  breakout[0][7] = B00111000; // paddle (cols 2,3,4)
+  // Frame 1: one block broken, ball moved down
+  breakout[1][0] = B11111111; // top row intact
+  breakout[1][1] = B11011111; // block at col 2 broken
+  breakout[1][2] = B00000000;
+  breakout[1][3] = B00000000;
+  breakout[1][4] = B00010000; // ball dropped one row
+  breakout[1][5] = B00000000;
   breakout[1][6] = B00000000;
-  breakout[1][7] = B00000000;
-  breakout[2][0] = B00000000;
-  breakout[2][1] = B00000000;
-  breakout[2][2] = B00101100;
-  breakout[2][3] = B00000000;
-  breakout[2][4] = B00001000;
-  breakout[2][5] = B00001100;
-  breakout[2][6] = B00000000;
-  breakout[2][7] = B00000000;
+  breakout[1][7] = B00111000; // paddle (cols 2,3,4)
 }
 
 void setupSimon() {
-  simon[0][0] = B00000000; //up
-  simon[0][1] = B00011000;
-  simon[0][2] = B00111100;
-  simon[0][3] = B01111110;
-  simon[0][4] = B00011000;
-  simon[0][5] = B00011000;
-  simon[0][6] = B00011000;
-  simon[0][7] = B00000000;
-  simon[1][0] = B00000000; //blank
-  simon[1][1] = B00000000;
-  simon[1][2] = B00000000;
-  simon[1][3] = B00000000;
-  simon[1][4] = B00000000;
-  simon[1][5] = B00000000;
-  simon[1][6] = B00000000;
-  simon[1][7] = B00000000;
+  // Frame 0: top-left + bottom-right quadrants lit
+  simon[0][0] = B11110000;
+  simon[0][1] = B11110000;
+  simon[0][2] = B11110000;
+  simon[0][3] = B11110000;
+  simon[0][4] = B00001111;
+  simon[0][5] = B00001111;
+  simon[0][6] = B00001111;
+  simon[0][7] = B00001111;
+  // Frame 1: top-right + bottom-left quadrants lit
+  simon[1][0] = B00001111;
+  simon[1][1] = B00001111;
+  simon[1][2] = B00001111;
+  simon[1][3] = B00001111;
+  simon[1][4] = B11110000;
+  simon[1][5] = B11110000;
+  simon[1][6] = B11110000;
+  simon[1][7] = B11110000;
 }
 
 void setupFlappy() { //run this at the start
-  flappy[0][0] = B00000000;
-  flappy[0][1] = B00000000;
-  flappy[0][2] = B00100000;
-  flappy[0][3] = B00000000;
-  flappy[0][4] = B00000010;
-  flappy[0][5] = B00000010;
-  flappy[0][6] = B00000010;
-  flappy[0][7] = B00000000;
-  flappy[1][0] = B00000000;
-  flappy[1][1] = B00100000;
-  flappy[1][2] = B00000000;
-  flappy[1][3] = B00000000;
-  flappy[1][4] = B00000110;
-  flappy[1][5] = B00000110;
-  flappy[1][6] = B00000110;
-  flappy[1][7] = B00000000;
-  flappy[2][0] = B00000000;
-  flappy[2][1] = B00000000;
-  flappy[2][2] = B00100000;
-  flappy[2][3] = B00000000;
-  flappy[2][4] = B00001100;
-  flappy[2][5] = B00001100;
-  flappy[2][6] = B00001100;
-  flappy[2][7] = B00000000;
-  flappy[3][0] = B00000000;
-  flappy[3][1] = B00000000;
-  flappy[3][2] = B00000000;
-  flappy[3][3] = B00100000;
-  flappy[3][4] = B00011000;
-  flappy[3][5] = B00011000;
-  flappy[3][6] = B00011000;
-  flappy[3][7] = B00000000;
+  // Frame 0: bird wing up, pipe with gap at rows 2-5
+  flappy[0][0] = B00000001; // pipe (col 7)
+  flappy[0][1] = B00000001; // pipe
+  flappy[0][2] = B01000000; // bird wing up (col 1), gap
+  flappy[0][3] = B01100000; // bird body (cols 1,2), gap
+  flappy[0][4] = B00000000; // gap
+  flappy[0][5] = B00000000; // gap
+  flappy[0][6] = B00000001; // pipe resumes
+  flappy[0][7] = B00000001; // pipe
+  // Frame 1: bird wing down, same pipe gap
+  flappy[1][0] = B00000001; // pipe
+  flappy[1][1] = B00000001; // pipe
+  flappy[1][2] = B00000000; // gap
+  flappy[1][3] = B01100000; // bird body (cols 1,2), gap
+  flappy[1][4] = B01000000; // bird wing down (col 1), gap
+  flappy[1][5] = B00000000; // gap
+  flappy[1][6] = B00000001; // pipe resumes
+  flappy[1][7] = B00000001; // pipe
 }
 
-void setupTetris() {tetris[1][0] = B00000000;
-  tetris[0][1] = B00111100;
-  tetris[0][2] = B00111100;
-  tetris[0][3] = B00001100;
+void setupTetris() {
+  // Frame 0: O-piece at top (rows 0-1), blocks at bottom with gap
+  tetris[0][0] = B00110000; // O-piece top (cols 2,3)
+  tetris[0][1] = B00110000; // O-piece bottom (cols 2,3)
+  tetris[0][2] = B00000000;
+  tetris[0][3] = B00000000;
   tetris[0][4] = B00000000;
-  tetris[0][5] = B00110000;
-  tetris[0][6] = B00111100;
-  tetris[0][7] = B00111100;
+  tetris[0][5] = B00000000;
+  tetris[0][6] = B11001111; // blocks with gap at cols 2,3
+  tetris[0][7] = B11111111; // full bottom row
+  // Frame 1: O-piece dropped one row (rows 1-2)
   tetris[1][0] = B00000000;
-  tetris[1][1] = B00000000;
-  tetris[1][2] = B00111100;
-  tetris[1][3] = B00111100;
-  tetris[1][4] = B00111100;
-  tetris[1][5] = B00111100;
-  tetris[1][6] = B00111100;
-  tetris[1][7] = B00111100;
+  tetris[1][1] = B00110000; // O-piece top (cols 2,3)
+  tetris[1][2] = B00110000; // O-piece bottom (cols 2,3)
+  tetris[1][3] = B00000000;
+  tetris[1][4] = B00000000;
+  tetris[1][5] = B00000000;
+  tetris[1][6] = B11001111; // blocks with gap at cols 2,3
+  tetris[1][7] = B11111111; // full bottom row
 }
 
 //BREAKOUT CODE
