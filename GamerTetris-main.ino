@@ -15,6 +15,29 @@ volatile byte animationFrame = 0; //what frame is it???
 volatile byte gameNumber = 0; //what game is it???
 volatile byte gameMax = 5; //how many games are there???
 
+// Sound toggle — starts OFF; touching the cap sense pad toggles it
+bool soundEnabled = false;
+bool lastCapTouchState = false;
+
+// gamer.playTone() note values: frequency = 1,000,000 / (OCR2A + 1) Hz
+#define NOTE_B7  252  // ~3937 Hz
+#define NOTE_C8  238  // ~4202 Hz
+#define NOTE_D8  212  // ~4717 Hz
+#define NOTE_E8  189  // ~5263 Hz
+#define NOTE_G8  158  // ~6289 Hz
+#define NOTE_A8  140  // ~7042 Hz
+#define NOTE_B8  125  // ~7937 Hz
+
+// Detects a rising edge on the cap sense pad and toggles sound on/off
+void checkSoundToggle() {
+  bool cap = gamer.capTouch();
+  if (cap && !lastCapTouchState) {
+    soundEnabled = !soundEnabled;
+    if (!soundEnabled) gamer.stopTone();
+  }
+  lastCapTouchState = cap;
+}
+
 void setup() {
   gamer.begin();
   setupLogo(); //starting anim
@@ -35,6 +58,7 @@ void setup() {
 }
 
 void loop() { //selector
+  checkSoundToggle();
   if(gamer.isPressed(START)) {
     //start game!
     switch(gameNumber) {
@@ -46,6 +70,7 @@ void loop() { //selector
         //run the main game loop!
         snakeLoop();
       }
+      gamer.stopTone();
       break;
     case 1:
       startBreakout(true);
@@ -53,24 +78,28 @@ void loop() { //selector
       while(!gamer.isPressed(START)) {
         breakoutLoop();
       }
+      gamer.stopTone();
       break;
     case 2:
       resetSimon();
       while(!gamer.isPressed(START)) {
         simonLoop();
       }
+      gamer.stopTone();
       break;
     case 3:
       resetFlappy();
       while(!gamer.isPressed(START)) {
         flappyLoop();
       }
+      gamer.stopTone();
       break;
     case 4:
       resetTetris();
       while(!gamer.isPressed(START)) {
         tetrisLoop();
       }
+      gamer.stopTone();
       break;
     }
   } 
@@ -306,6 +335,7 @@ void startBreakout(boolean resetIt) {
 }
 
 void breakoutLoop() {
+  checkSoundToggle();
   if(counter>2) {
     for(int x=0;x<8;x++) {
       for(int y=0;y<8;y++) {
@@ -338,6 +368,10 @@ void breakoutLoop() {
       }
     }
     physics();
+    // Bounce sound — plays when velocity changes (ball hits block, wall, or paddle)
+    if (soundEnabled && (velocity[0] != origXV || velocity[1] != origYV)) {
+      gamer.playTone(currentYBreakout >= 6 ? NOTE_C8 : NOTE_E8); // lower for paddle, higher for blocks
+    }
     for(int x=0;x<8;x++) {
       for(int y=0;y<8;y++) {
         if(blocks[x][y]==0) {
@@ -791,6 +825,7 @@ void resetFlappy(){
 }
 void flappyLoop() 
 {  
+  checkSoundToggle();
   // Update
   if( menu )
   {
@@ -845,7 +880,10 @@ void flappyLoop()
            
       // Move the bird
       byte lastBirdPos = birdPos;
-      if(gamer.isPressed(UP)) birdPos = max( birdPos - 1, 0 );//move the bird upwards when UP key is pressed
+      if(gamer.isPressed(UP)) {
+        birdPos = max( birdPos - 1, 0 );//move the bird upwards when UP key is pressed
+        if (soundEnabled) gamer.playTone(NOTE_A8); // wing-flap chirp
+      }
       else{
         birdPos++;//move the bird down
         if( birdPos >= 8 )//check if the bird hit the ground
@@ -901,6 +939,9 @@ void resetSimon() {
 }
 
 void simonLoop() {
+  checkSoundToggle();
+  // Four distinct tones — one per direction (up, down, left, right)
+  static const int simonNotes[] = {NOTE_E8, NOTE_C8, NOTE_G8, NOTE_D8};
   sequence[x]=random(0,4);
   if(x>0) {
     for(byte p=3;p>0;p--) {
@@ -911,8 +952,10 @@ void simonLoop() {
     delay(delayMils);
     for(int i=0;i<x;i++) {
       if(gamer.isHeld(START)) return;
+      if (soundEnabled) gamer.playTone(simonNotes[sequence[i]]);
       gamer.printImage(framesSimon[sequence[i]]);
       delay(delayMils);
+      if (soundEnabled) gamer.stopTone();
       gamer.clear();
       delay(delayMils);
     }
@@ -1041,6 +1084,7 @@ void setupSnakeGame() {
 }
 
 void snakeLoop() {
+  checkSoundToggle();
   //gamer.clear, but DON'T UPDATE YET!!!!
   for(int x=0;x<8;x++) {
     for(int y=0;y<8;y++) {
@@ -1074,6 +1118,8 @@ void snakeLoop() {
   }
   gamer.display[currentX][currentY] = HIGH;
   snakeRec();
+  // Rising-pitch background tone — pitch increases with score for growing tension (capped at B8)
+  if (soundEnabled) gamer.playTone(max(125, 238 - min(score, 37) * 3));
   isCollected();
   delay(100);
   gamer.updateDisplay();
@@ -1085,6 +1131,7 @@ void isCollected() {
     goalY = random(0,7);
     snakeLength++;
     score++;
+    if (soundEnabled) gamer.playTone(NOTE_B8); // high-pitched chirp when food is eaten
     for(int x=0;x<8;x++) {
       for(int y=0;y<8;y++) {
         snakeMap[x][y]++;
@@ -1201,6 +1248,22 @@ int digitFrom(int number, int position) {
 }
 
 void tetrisLoop() {
+    checkSoundToggle();
+
+    // Background melody — simplified Korobeiniki (Tetris A-theme) using available frequency range
+    if (soundEnabled) {
+        static unsigned long lastNoteTime = 0;
+        static byte noteIdx = 0;
+        static const int melody[] = {NOTE_E8, NOTE_B7, NOTE_C8, NOTE_D8, NOTE_D8, NOTE_C8, NOTE_B7, NOTE_C8,
+                                     NOTE_E8, NOTE_A8, NOTE_A8, NOTE_C8, NOTE_E8, NOTE_D8, NOTE_C8, NOTE_B7};
+        const byte melodyLen = sizeof(melody) / sizeof(melody[0]);
+        if (millis() - lastNoteTime >= 200) {
+            gamer.playTone(melody[noteIdx]);
+            noteIdx = (noteIdx + 1) % melodyLen;
+            lastNoteTime = millis();
+        }
+    }
+
     if (gameOverT) {
       // Serial.println("Game Over! Final Score: " + String(score));
         showScore(digitFrom(score, 2), digitFrom(score, 1)); // Display the final score
