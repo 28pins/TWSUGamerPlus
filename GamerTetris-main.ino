@@ -18,6 +18,7 @@ volatile byte gameMax = 5; //how many games are there???
 // Sound toggle — starts OFF; touching the cap sense pad toggles it
 bool soundEnabled = false;
 bool lastCapTouchState = false;
+bool tetrisChirpPending = false; // true when an event chirp needs explicit stop next iteration
 
 // gamer.playTone() note values: frequency = 1,000,000 / (OCR2A + 1) Hz
 #define NOTE_B7  252  // ~3937 Hz
@@ -336,6 +337,7 @@ void startBreakout(boolean resetIt) {
 
 void breakoutLoop() {
   checkSoundToggle();
+  if (soundEnabled) gamer.stopTone(); // stop previous bounce chirp
   if(counter>2) {
     for(int x=0;x<8;x++) {
       for(int y=0;y<8;y++) {
@@ -826,6 +828,7 @@ void resetFlappy(){
 void flappyLoop() 
 {  
   checkSoundToggle();
+  if (soundEnabled) gamer.stopTone(); // stop previous chirp
   // Update
   if( menu )
   {
@@ -1085,6 +1088,7 @@ void setupSnakeGame() {
 
 void snakeLoop() {
   checkSoundToggle();
+  if (soundEnabled) gamer.stopTone(); // stop previous chirp
   //gamer.clear, but DON'T UPDATE YET!!!!
   for(int x=0;x<8;x++) {
     for(int y=0;y<8;y++) {
@@ -1122,7 +1126,6 @@ void snakeLoop() {
   snakeRec();
   isCollected();
   delay(100);
-  if (soundEnabled) gamer.stopTone(); // end chirp after each loop tick
   gamer.updateDisplay();
 }
 
@@ -1251,6 +1254,12 @@ int digitFrom(int number, int position) {
 void tetrisLoop() {
     checkSoundToggle();
 
+    // Stop any event chirp that was started in the previous iteration
+    if (soundEnabled && tetrisChirpPending) {
+        gamer.stopTone();
+        tetrisChirpPending = false;
+    }
+
     // Background melody — simplified Korobeiniki (Tetris A-theme) using available frequency range
     if (soundEnabled) {
         static unsigned long lastNoteTime = 0;
@@ -1298,7 +1307,7 @@ void tetrisLoop() {
             }
             // Check for completed lines and update score
             // Serial.println("Piece placed. Checking for lines and creating new piece...");
-            if (soundEnabled) gamer.playTone(NOTE_C8); // piece set-down thud
+            if (soundEnabled) { gamer.playTone(NOTE_C8); tetrisChirpPending = true; } // piece set-down thud
             checkLines();
             // Create a new piece
             createPiece();
@@ -1334,7 +1343,7 @@ void tetrisLoop() {
         tetrisBtnPressed = true;
         renderGridAndPiece(); // Update the display with the current grid and piece
     }
-    if (soundEnabled && tetrisBtnPressed) gamer.playTone(NOTE_D8); // button press chirp
+    if (soundEnabled && tetrisBtnPressed) { gamer.playTone(NOTE_D8); tetrisChirpPending = true; } // button press chirp
 }
 
 void checkLines() {
@@ -1347,7 +1356,7 @@ void checkLines() {
             }
         }
         if (lineComplete) {
-            if (soundEnabled) gamer.playTone(NOTE_A8); // line clear reward chirp
+            if (soundEnabled) { gamer.playTone(NOTE_A8); tetrisChirpPending = true; } // line clear reward chirp
             currentX = 3;
             currentY = -1;
             // Clear the line
@@ -1486,6 +1495,6 @@ void createPiece() {
             currentPiece[1][2] = 1;
             break;
     }
-    if (soundEnabled) gamer.playTone(NOTE_G8); // piece generation chirp
+    if (soundEnabled) { gamer.playTone(NOTE_G8); tetrisChirpPending = true; } // piece generation chirp
 }
 //MARK:END OF GAME CODE
