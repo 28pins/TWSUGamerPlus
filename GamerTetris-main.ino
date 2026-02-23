@@ -1094,10 +1094,12 @@ void snakeLoop() {
   //buttons should be here!
   //when upPressed etc. has been added, uncomment this next section and then comment out the random directions section:
   
-  if(gamer.isPressed(UP)) dir=1;
-  if(gamer.isPressed(RIGHT)) dir=2;
-  if(gamer.isPressed(DOWN)) dir=3;
-  if(gamer.isPressed(LEFT)) dir=4;
+  bool snakeBtnPressed = false;
+  if(gamer.isPressed(UP)) { dir=1; snakeBtnPressed=true; }
+  if(gamer.isPressed(RIGHT)) { dir=2; snakeBtnPressed=true; }
+  if(gamer.isPressed(DOWN)) { dir=3; snakeBtnPressed=true; }
+  if(gamer.isPressed(LEFT)) { dir=4; snakeBtnPressed=true; }
+  if (soundEnabled && snakeBtnPressed) gamer.playTone(NOTE_E8);
   
   //this is a random directions function. comment it out when button support has been added
   //if(random(0,10)>7) dir++;
@@ -1118,8 +1120,6 @@ void snakeLoop() {
   }
   gamer.display[currentX][currentY] = HIGH;
   snakeRec();
-  // Rising-pitch background tone — pitch increases with score for growing tension (capped at B8)
-  if (soundEnabled) gamer.playTone(max(125, 238 - min(score, 37) * 3));
   isCollected();
   delay(100);
   gamer.updateDisplay();
@@ -1131,7 +1131,7 @@ void isCollected() {
     goalY = random(0,7);
     snakeLength++;
     score++;
-    if (soundEnabled) gamer.playTone(NOTE_B8); // high-pitched chirp when food is eaten
+    if (soundEnabled) gamer.playTone(NOTE_A8); // pentatonic chirp when food is eaten
     for(int x=0;x<8;x++) {
       for(int y=0;y<8;y++) {
         snakeMap[x][y]++;
@@ -1297,6 +1297,7 @@ void tetrisLoop() {
             }
             // Check for completed lines and update score
             // Serial.println("Piece placed. Checking for lines and creating new piece...");
+            if (soundEnabled) gamer.playTone(NOTE_C8); // piece set-down thud
             checkLines();
             // Create a new piece
             createPiece();
@@ -1314,19 +1315,25 @@ void tetrisLoop() {
         }
     }
 
+    bool tetrisBtnPressed = false;
     if(gamer.isPressed(LEFT) && canMove(currentX - 1, currentY)) {
         currentX--; // Move left
+        tetrisBtnPressed = true;
        renderGridAndPiece(); // Update the display with the current grid and piece
     } else if(gamer.isPressed(RIGHT) && canMove(currentX + 1, currentY)) {
         currentX++; // Move right
+        tetrisBtnPressed = true;
         renderGridAndPiece(); // Update the display with the current grid and piece
     } else if(gamer.isPressed(DOWN) && canMove(currentX, currentY + 1)) {
         currentY++; // Move down faster
+        tetrisBtnPressed = true;
         renderGridAndPiece(); // Update the display with the current grid and piece
     } else if(gamer.isPressed(UP)) {
         rotatePiece(); // Rotate the piece
+        tetrisBtnPressed = true;
         renderGridAndPiece(); // Update the display with the current grid and piece
     }
+    if (soundEnabled && tetrisBtnPressed) gamer.playTone(NOTE_D8); // button press chirp
 }
 
 void checkLines() {
@@ -1339,7 +1346,7 @@ void checkLines() {
             }
         }
         if (lineComplete) {
-
+            if (soundEnabled) gamer.playTone(NOTE_A8); // line clear reward chirp
             currentX = 3;
             currentY = -1;
             // Clear the line
@@ -1478,5 +1485,6 @@ void createPiece() {
             currentPiece[1][2] = 1;
             break;
     }
+    if (soundEnabled) gamer.playTone(NOTE_G8); // piece generation chirp
 }
 //MARK:END OF GAME CODE
