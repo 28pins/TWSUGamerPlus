@@ -1289,9 +1289,6 @@ void checkLines() {
             for (int k = i; k > 0; k--) {
                 for (int j = 0; j < gridWidth; j++) {
                     grid[k][j] = grid[k - 1][j]; // Move down the lines above
-                    //animate
-                    renderGridAndPiece();
-                    delay(20);
                 }
             }
             // Clear the top line
