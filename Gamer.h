@@ -12,9 +12,9 @@ public:
 
 	// Keywords
 	#define UP 0
-	#define DOWN 1
-	#define LEFT 2
-	#define RIGHT 3
+	#define LEFT 1
+	#define RIGHT 2
+	#define DOWN 3
 	#define START 4
 	//Note: Gamer v1.9 is Capacitive touch instead of LDR.
 	#define LDR 5
