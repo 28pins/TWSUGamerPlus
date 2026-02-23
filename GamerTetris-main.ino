@@ -1312,6 +1312,7 @@ void checkLines() {
 
 
 void rotatePiece() {
+    if (currentPieceType == O) return; // O piece is symmetric; rotation has no effect
     int temp[3][3] = {0};
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
@@ -1374,9 +1375,9 @@ void createPiece() {
     currentPieceType = (PieceType)random(0, 7); // Randomly select a piece type
     switch (currentPieceType) {
         case I:
-            currentPiece[0][0] = 1;
-            currentPiece[0][1] = 1;
-            currentPiece[0][2] = 1;
+            currentPiece[1][0] = 1;
+            currentPiece[1][1] = 1;
+            currentPiece[1][2] = 1;
             break;
         case O:
             currentPiece[0][0] = 1;
@@ -1385,10 +1386,10 @@ void createPiece() {
             currentPiece[1][1] = 1;
             break;
         case T:
-            currentPiece[0][0] = 1;
             currentPiece[0][1] = 1;
-            currentPiece[0][2] = 1;
+            currentPiece[1][0] = 1;
             currentPiece[1][1] = 1;
+            currentPiece[1][2] = 1;
             break;
         case S:
             currentPiece[0][1] = 1;
