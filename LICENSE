@@ -12,6 +12,14 @@ furnished to do so, subject to the following conditions:
 The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
 
+The Software may not be used to train, improve, teach, extend, validate, build,
+create, or otherwise help any form of machine learning, generative,
+artificial intelligence or related algorithm, including, but not limited to,
+transformer models, convolutional models, K-Nearest Neighbor ("knn") models,
+large language models ("LLMs"), or any similar technology now in existence
+or yet to be invented.  Use of the Software in such a manner is an express
+violation of this license.
+
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
