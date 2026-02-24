@@ -2,14 +2,38 @@
 
 Arduino code and a lightweight hardware driver for the Technology Will Save Us DIY Gamer Kit. The repository bundles the `Gamer` library (LED matrix driver, button/IR/buzzer helpers) and a menu-driven sketch that runs fully featured games (not just demos), including added Tetris, richer light/sound effects, and memory optimizations on top of the base example.
 
+## About this program
+
+GamerTetris is an Arduino sketch and accompanying hardware-abstraction library built for the [Technology Will Save Us (TWSU) DIY Gamer Kit](https://www.techwillsaveus.com/shop/diy-kits/diy-gamer-kit-2/). Starting from the base TWSU example, this project adds:
+
+- A **fully playable Tetris** implementation with piece rotation, soft-drop, and automatic speed progression.
+- **Seven games** in a single sketch: Snake, Breakout, Simon Says, Flappy Bird, Tetris, Space Invaders, and Conway’s Game of Life.
+- **Richer audio/visual feedback**: distinct win and loss tunes, non-blocking LED flashes, and per-game sound effects driven by a software tone engine.
+- A **sound toggle** via the capacitive-touch pad (v1.9+ boards) so players can silence the buzzer without re-flashing.
+- **Memory optimisations** that keep the whole program inside the ATmega328P’s 32 KB flash and 2 KB SRAM with room to spare.
+
 ## What’s inside
 - `Gamer.h` / `Gamer.cpp`: the `Gamer` class that owns the 8x8 display buffer, scans buttons, drives the buzzer and IR LED, and exposes helpers like `printImage`, `printString`, `showScore`, and `playTone`.
-- `GamerTetris-main.ino`: a single sketch with a launcher and five games: Snake, Breakout, Simon, Flappy, and Tetris.
+- `GamerTetris-main.ino`: a single sketch with a launcher and seven games: Snake, Breakout, Simon, Flappy Bird, Tetris, Space Invaders, and Conway’s Game of Life.
 - `library.properties`: Arduino metadata so the folder can live in `~/Arduino/libraries/Gamer`.
 
-## Requirements
-- DIY Gamer Kit (ATmega328P/Arduino Uno compatible, 8x8 LED matrix, buzzer, buttons).
-- Arduino IDE (or arduino-cli) with the board set to Arduino Uno.
+## Hardware
+
+The DIY Gamer Kit is a soldering kit whose finished board is Arduino Uno compatible. Key components:
+
+| Component | Detail |
+|-----------|--------|
+| Microcontroller | ATmega328P (Arduino Uno) |
+| Display | 8×8 red LED matrix (64 individually addressable pixels) |
+| Buttons | 5 tactile push-buttons: UP, DOWN, LEFT, RIGHT, START |
+| Audio | Piezo buzzer driven by Timer2 PWM on pin 2 |
+| Indicator LED | Onboard LED on pin 13 |
+| Infrared | IR LED on pin 4 for 38 kHz IR transmission |
+| Sensor | LDR (boards before v1.9) or capacitive-touch pad (v1.9+) on pin 5 |
+| Power | USB or 3×AAA batteries via onboard regulator |
+
+The `Gamer` library maps all hardware to named constants so sketches never use raw pin numbers directly.
+
 
 ## Getting started
 1. Clone or download this repo. Place the folder in `~/Arduino/libraries/Gamer` (so the library files and the sketch sit together), or open the folder directly if you prefer to build from it.
@@ -17,16 +41,73 @@ Arduino code and a lightweight hardware driver for the Technology Will Save Us D
 3. Select **Board: Arduino Uno** and the correct serial port for your Gamer Kit.
 4. Click **Upload**. No other libraries are required because the `Gamer` driver is included here.
 
-## Using the launcher
-- On boot you’ll see looping icons. Press `LEFT`/`RIGHT` to pick a game and `START` to launch it. Press `START` again inside a game to return to the selector.
-- Button constants available in code: `UP`, `DOWN`, `LEFT`, `RIGHT`, `START`, and `LDR` (or `capTouch` on newer hardware).
+## User guide
+
+### Powering on
+Connect the kit via USB (or insert batteries). The display shows a looping boot animation while the launcher starts up.
+
+### Sound toggle
+On v1.9+ hardware, tap the **capacitive-touch pad** on the PCB to toggle sound on and off. The toggle is edge-triggered (one touch = one state change). Sound starts off by default.
+
+### Navigating the game menu
+| Button | Action |
+|--------|--------|
+| `LEFT` / `RIGHT` | Cycle through the game icons |
+| `START` | Launch the highlighted game |
+| `START` (in-game) | Exit back to the launcher |
 
 ### Game controls
-- **Snake**: `UP`/`RIGHT`/`DOWN`/`LEFT` steer the snake. Collect food to grow. Score shows when you collide with yourself.
-- **Breakout**: `LEFT`/`RIGHT` move the paddle. Miss the ball to lose a life; the score shows on game over.
-- **Simon**: Watch the sequence, then repeat with `UP`, `DOWN`, `LEFT`, `RIGHT`. Speed ramps up every round.
-- **Flappy**: Press `UP` to flap through pipe gaps. Score shows after a crash.
-- **Tetris**: `LEFT`/`RIGHT` move, `DOWN` soft-drops, `UP` rotates. Speed increases every 10 cleared lines; score displays when the board fills.
+
+#### Snake
+| Button | Action |
+|--------|--------|
+| `UP` / `DOWN` / `LEFT` / `RIGHT` | Steer the snake |
+
+Eat the food pixel to grow. The game ends when the snake hits itself; your score is shown before returning to the menu.
+
+#### Breakout
+| Button | Action |
+|--------|--------|
+| `LEFT` / `RIGHT` | Move the paddle |
+
+Keep the ball bouncing to break all the bricks. Miss the ball to lose a life. Score is shown on game over.
+
+#### Simon Says
+| Button | Action |
+|--------|--------|
+| `UP` / `DOWN` / `LEFT` / `RIGHT`¹ | Repeat the flashed sequence |
+
+Watch the LED pattern carefully and repeat it exactly. The sequence grows by one step each round and the pace increases.
+
+¹ The `RIGHT` direction is disabled by default (set `SIMON_RIGHT_ARROW_ENABLED 1` in the sketch to enable it).
+
+#### Flappy Bird
+| Button | Action |
+|--------|--------|
+| `UP` | Flap (rise) |
+
+Guide the bird through the gaps between pipes. Colliding with a pipe or the ground ends the game and shows your score.
+
+#### Tetris
+| Button | Action |
+|--------|--------|
+| `LEFT` / `RIGHT` | Move piece horizontally |
+| `DOWN` | Soft-drop (faster fall) |
+| `UP` | Rotate piece clockwise |
+
+Clear lines to score points. Speed increases every 10 cleared lines. The game ends when a new piece cannot be placed; score is displayed before returning to the menu.
+
+#### Space Invaders
+| Button | Action |
+|--------|--------|
+| `LEFT` / `RIGHT` | Move the cannon |
+| `UP` | Fire |
+
+Shoot the descending alien before it reaches the bottom. The alien speeds up each time it is hit.
+
+#### Conway’s Game of Life
+This is a zero-player simulation. Watch the cellular automaton evolve from a random seed. Press `START` to exit.
+
 
 ## Gamer library overview
 - **Setup**: call `gamer.begin()` in `setup()` to configure pins, timers, and defaults.
