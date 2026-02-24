@@ -545,7 +545,7 @@ void Gamer::printString(String string)
     else if( c>='0' && c<='9' ) letIx = c+27;
     int colIx = 0;
     byte col;
-    while( (col = allLetters[letIx][colIx]) != LETEND ){
+    while( (col = pgm_read_byte(&allLetters[letIx][colIx])) != LETEND ){
       appendColumn(screen, col);
       colIx++;
     }
@@ -579,17 +579,28 @@ void Gamer::showScore(int n)
   int dig1=n/10;
   int dig2=n%10;
   for(int p=0;p<8;p++) {
-    result[p]=allNumbers[dig2][p];
+    result[p]=pgm_read_byte(&allNumbers[dig2][p]);
     if( dig1>0 )
-    result[p]|=(allNumbers[dig1][p]<<4);
+    result[p]|=(pgm_read_byte(&allNumbers[dig1][p])<<4);
   }
   printImage(result);
 }
 
 /**
+  Prints an 8-byte PROGMEM image onto the display.
+  @param pgm_img pointer to 8 bytes stored in PROGMEM
+ */
+void Gamer::printImagePGM(const byte* pgm_img)
+{
+  byte buf[8];
+  for (byte i = 0; i < 8; i++) buf[i] = pgm_read_byte(pgm_img + i);
+  printImage(buf);
+}
+
+/**
   All the letters in the world.
  */
-const uint8_t Gamer::allLetters[85][9] = {
+const uint8_t Gamer::allLetters[85][9] PROGMEM = {
   {B00000000,B00000000,B00000000,LETEND},   // space
   {B01111110,B10010000,B10010000,B10010000,B01111110,B00000000,LETEND}, // A
   {B11111110,B10010010,B10010010,B10010010,B01101100,B00000000,LETEND}, // B
@@ -680,7 +691,7 @@ const uint8_t Gamer::allLetters[85][9] = {
 /**
   All the numbers in the world.
  */
-const uint8_t Gamer::allNumbers[10][8] = {
+const uint8_t Gamer::allNumbers[10][8] PROGMEM = {
   { B00000010,B00000101,B00000101,B00000101,B00000101,B00000101,B00000101,B00000010 },
   { B00000010,B00000110,B00000010,B00000010,B00000010,B00000010,B00000010,B00000111 },
   { B00000010,B00000101,B00000001,B00000010,B00000010,B00000100,B00000100,B00000111 },

@@ -4,6 +4,7 @@
 #include "Arduino.h"
 #include <avr/interrupt.h>
 #include <avr/io.h>
+#include <avr/pgmspace.h>
 
 class Gamer {
 public:
@@ -46,6 +47,7 @@ public:
 	void printString(String string);
 	void appendColumn(byte* screen, byte col);
 	void showScore(int n);
+	void printImagePGM(const byte* pgm_img);
 
 	// Infrared
 	void irBegin();
@@ -98,8 +100,8 @@ private:
 
 	// Numbers and letters for printString
 	#define LETEND B10101010
-	const static uint8_t allLetters[85][9];
-	const static uint8_t allNumbers[10][8];
+	const static uint8_t allLetters[85][9] PROGMEM;
+	const static uint8_t allNumbers[10][8] PROGMEM;
 };
 
 #endif
