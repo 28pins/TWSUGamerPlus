@@ -14,6 +14,7 @@ volatile byte animationLength[] = { //how long is each animation???
 volatile byte animationFrame = 0; //what frame is it???
 volatile byte gameNumber = 0; //what game is it???
 volatile byte gameMax = 5; //how many games are there???
+bool soundEnabled = true; //sound on/off toggle (UP in menu)
 
 void setup() {
   gamer.begin();
@@ -110,6 +111,14 @@ void loop() { //selector
     }
     if(gameNumber==255) gameNumber=gameMax-1;
     if(gameNumber>=gameMax) gameNumber=0;
+    if(gamer.isPressed(UP)) { //toggle sound on/off
+      soundEnabled = !soundEnabled;
+      if(soundEnabled) {
+        gamer.playTone(80);
+        delay(150);
+        gamer.stopTone();
+      }
+    }
     delay(100);
   }
 }
@@ -923,11 +932,12 @@ void simonLoop() {
       byte key = 4;
       while(key==4) { //wait for a keypress
         if(gamer.isHeld(START)) return;
-        if(gamer.isPressed(UP))    key=0;
-        if(gamer.isPressed(DOWN))  key=1;
-        if(gamer.isPressed(LEFT))  key=2;
-        if(gamer.isPressed(RIGHT)) key=3;
+        if(gamer.isHeld(UP))         key=0;
+        else if(gamer.isHeld(DOWN))  key=1;
+        else if(gamer.isHeld(LEFT))  key=2;
+        else if(gamer.isHeld(RIGHT)) key=3;
       }
+      while(gamer.isHeld(UP) || gamer.isHeld(DOWN) || gamer.isHeld(LEFT) || gamer.isHeld(RIGHT)) delay(10); //wait for release
       gamer.printImage(framesSimon[key]);
       //is it riiggghhhttt???
       if(key!=sequence[count]) {
@@ -1257,9 +1267,10 @@ void tetrisLoop() {
     } else if(gamer.isPressed(RIGHT) && canMove(currentX + 1, currentY)) {
         currentX++; // Move right
         renderGridAndPiece(); // Update the display with the current grid and piece
-    } else if(gamer.isPressed(DOWN) && canMove(currentX, currentY + 1)) {
-        currentY++; // Move down faster
-        renderGridAndPiece(); // Update the display with the current grid and piece
+    } else if(gamer.isHeld(DOWN)) {
+        while(canMove(currentX, currentY + 1)) currentY++; // hard drop to bottom
+        renderGridAndPiece();
+        while(gamer.isHeld(DOWN)) delay(10); // wait for release
     } else if(gamer.isPressed(UP)) {
         rotatePiece(); // Rotate the piece
         renderGridAndPiece(); // Update the display with the current grid and piece
