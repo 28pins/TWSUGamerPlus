@@ -76,8 +76,9 @@ inline void loadHighScores() {
     _hsSlot = 1; _hsSeq = seq1;
     Serial.print(F("HS: slot 1 valid, seq=")); Serial.println(seq1);
   } else {
-    // Both valid — pick most recent by sequence number (wrapping-safe)
-    byte diff = seq0 - seq1; // wraps correctly for byte arithmetic
+    // Both valid — pick most recent by sequence number (wrapping-safe via unsigned subtraction)
+    // diff = seq0 - seq1: if diff < 128, seq0 is ahead (more recent); otherwise seq1 is more recent.
+    byte diff = seq0 - seq1;
     if (diff < 128) {
       for (byte i = 0; i < HS_NUM_SCORES; i++) _hsScores[i] = scores0[i];
       _hsSlot = 0; _hsSeq = seq0;

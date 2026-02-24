@@ -28,7 +28,12 @@ bool canMove(int x, int y, int piece[3][3] = currentPiece) {
       if (piece[i][j] == 1) {
         int newX = x + j;
         int newY = y + i;
-        if (newX < 0 || newX >= gridWidth || newY < -3 || newY >= gridHeight || grid[newY][newX] == 1) {
+        // Boundary checks: allow newY down to -3 (off-screen top) but never < -3
+        if (newX < 0 || newX >= gridWidth || newY < -3 || newY >= gridHeight) {
+          return false;
+        }
+        // Only check grid occupancy once newY is on-screen (avoids negative index UB)
+        if (newY >= 0 && grid[newY][newX] == 1) {
           return false;
         }
       }
