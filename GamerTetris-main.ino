@@ -924,9 +924,9 @@ void simonLoop() {
       while(key==4) { //wait for a keypress
         if(gamer.isHeld(START)) return;
         if(gamer.isPressed(UP))    key=0;
-        if(gamer.isPressed(LEFT))  key=1;
-        if(gamer.isPressed(RIGHT)) key=2;
-        if(gamer.isPressed(DOWN))  key=3;
+        if(gamer.isPressed(DOWN))  key=1;
+        if(gamer.isPressed(LEFT))  key=2;
+        if(gamer.isPressed(RIGHT)) key=3;
       }
       gamer.printImage(framesSimon[key]);
       //is it riiggghhhttt???
