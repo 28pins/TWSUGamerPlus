@@ -46,6 +46,9 @@ void updateLEDFlash() {
 #define NOTE_A8  140  // ~7042 Hz
 #define NOTE_B8  125  // ~7937 Hz
 
+#define WIN_NOTE_DURATION  120  // ms per note in win tune
+#define LOSS_NOTE_DURATION 150  // ms per note in loss tune
+
 // Detects a rising edge on the cap sense pad and toggles sound on/off
 void checkSoundToggle() {
   bool cap = gamer.capTouch();
@@ -54,6 +57,22 @@ void checkSoundToggle() {
     if (!soundEnabled) gamer.stopTone();
   }
   lastCapTouchState = cap;
+}
+
+// Plays a short ascending tune on win/success events (if sound enabled).
+void playWinTune() {
+  if (!soundEnabled) return;
+  static const byte notes[] = {NOTE_C8, NOTE_E8, NOTE_G8, NOTE_B8};
+  for (byte i = 0; i < 4; i++) { gamer.playTone(notes[i]); delay(WIN_NOTE_DURATION); }
+  gamer.stopTone();
+}
+
+// Plays a short descending tune on loss/fail events (if sound enabled).
+void playLossTune() {
+  if (!soundEnabled) return;
+  static const byte notes[] = {NOTE_B8, NOTE_G8, NOTE_E8, NOTE_B7};
+  for (byte i = 0; i < 4; i++) { gamer.playTone(notes[i]); delay(LOSS_NOTE_DURATION); }
+  gamer.stopTone();
 }
 
 void setup() {
@@ -66,10 +85,7 @@ void setup() {
   setupTetris(); //tetris anim
   setupImages(); //breakout win/lose images
   setupSimonImages(); //simon arrow and result images
-  for(int i=0;i<16;i++) { //the animation
-    gamer.printImage(startup[i]);
-    delay(100);
-  }
+  gamer.printImage(startup[0]); delay(100); // startup frame
   // Serial.begin(9600);
   // Serial.println("Setup complete!");
 }
@@ -105,6 +121,7 @@ void loop() { //selector
       gamer.stopTone();
       break;
     case 3:
+      menu = true;
       resetFlappy();
       while(!gamer.isPressed(START)) {
         flappyLoop();
@@ -469,6 +486,7 @@ void breakoutLoop() {
       gamer.updateDisplay();
       delay(150);
     }
+    playLossTune();
     if(scoreBreakout==0){
       gamer.clear();
       gamer.printImage(framesBreakout[1]);
@@ -493,16 +511,17 @@ void breakoutLoop() {
     }
   }
   if(finished) {
+    playWinTune();
     startBreakout(false);
   }
   delay(50);
 }
  
 boolean outOfBounds(int xV, int yV) {
-  if(xV > 8 || xV < 0) {
+  if(xV >= 8 || xV < 0) {
     return true;
   } 
-  else if(yV > 8 || yV < 0) {
+  else if(yV >= 8 || yV < 0) {
     return true;
   } 
   else {
@@ -721,6 +740,7 @@ void flappyLoop()
         if( birdPos >= 8 )//check if the bird hit the ground
         {
           gameOver = true;
+          playLossTune();
           pipePos = lastPipePos;
           birdPos = lastBirdPos;
           ticks = 0;
@@ -731,6 +751,7 @@ void flappyLoop()
       if( (pipePos == 1 || pipePos == 0) && (birdPos < pipeGap || birdPos >= pipeGap + 3) )
       {
         gameOver = true;
+        playLossTune();
         pipePos = lastPipePos;
         birdPos = lastBirdPos;
         ticks = 0;
@@ -817,9 +838,11 @@ void simonLoop() {
     delay(delayMils);
     if(success) {
       x++; //they got it right, MAKE IT HARDER!
+      playWinTune();
       gamer.printImage(right);
     } 
     else {
+      playLossTune();
       gamer.printImage(wrong);
       delay(500);
       showScore((x-1)/10,(x-1)%10); //showScore wants digits, not numbers! (as in 1,5 rather than 15)
@@ -906,6 +929,7 @@ int score = 0;
 void setupSnakeGame() {
   snakeLength = 2;
   score = 0;
+  dir = 1;
   goalX = random(0,7);
   goalY = random(0,7);
   currentX = 0;
@@ -932,10 +956,10 @@ void snakeLoop() {
   //when upPressed etc. has been added, uncomment this next section and then comment out the random directions section:
   
   bool snakeBtnPressed = false;
-  if(gamer.isPressed(UP)) { dir=1; snakeBtnPressed=true; }
-  if(gamer.isPressed(RIGHT)) { dir=2; snakeBtnPressed=true; }
-  if(gamer.isPressed(DOWN)) { dir=3; snakeBtnPressed=true; }
-  if(gamer.isPressed(LEFT)) { dir=4; snakeBtnPressed=true; }
+  if(gamer.isPressed(UP) && dir!=3) { dir=1; snakeBtnPressed=true; }
+  if(gamer.isPressed(RIGHT) && dir!=4) { dir=2; snakeBtnPressed=true; }
+  if(gamer.isPressed(DOWN) && dir!=1) { dir=3; snakeBtnPressed=true; }
+  if(gamer.isPressed(LEFT) && dir!=2) { dir=4; snakeBtnPressed=true; }
   if (soundEnabled && snakeBtnPressed) gamer.playTone(NOTE_E8);
   if (snakeBtnPressed) startLEDFlash(); // flash on direction button press
   
@@ -1007,6 +1031,7 @@ void collided() {
         if(currentX == x && currentY == y) {
           gamer.clear();
           delay(20);
+          playLossTune();
           //printString("GAME OVER  you scored",40);
           byte dig2 = score % 10;  //split score into two digits (eg 10 -> 1 and 0)
           byte dig1 = (score-(score%10))/10;
@@ -1063,6 +1088,7 @@ void resetTetris() {
     score = 0;
     level = 1;
     linesCleared = 0;
+    moveInterval = 1000;
     gameOverT = false;
     currentX = 3;
     currentY = -1;
@@ -1112,9 +1138,11 @@ void tetrisLoop() {
 
     if (gameOverT) {
       // Serial.println("Game Over! Final Score: " + String(score));
+        playLossTune();
         showScore(digitFrom(score, 2), digitFrom(score, 1)); // Display the final score
-        delay(5000); // Wait for 5 seconds before resetting the game
-        return; // Exit the loop if the game is over
+        delay(3000); // Wait for 3 seconds before resetting the game
+        resetTetris();
+        return; // Exit the loop so next call starts fresh
     }
 
     // Move the current piece down every second
