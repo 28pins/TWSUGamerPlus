@@ -20,6 +20,23 @@ bool soundEnabled = false;
 bool lastCapTouchState = false;
 bool tetrisChirpPending = false; // true when an event chirp needs explicit stop next iteration
 
+// Non-blocking LED flash: call startLEDFlash() on an event, updateLEDFlash() each loop tick
+unsigned long ledFlashStartTime = 0;
+bool ledFlashing = false;
+
+void startLEDFlash() {
+  gamer.setLED(true);
+  ledFlashStartTime = millis();
+  ledFlashing = true;
+}
+
+void updateLEDFlash() {
+  if (ledFlashing && millis() - ledFlashStartTime >= 300UL) {
+    gamer.setLED(false);
+    ledFlashing = false;
+  }
+}
+
 // gamer.playTone() note values: frequency = 1,000,000 / (OCR2A + 1) Hz
 #define NOTE_B7  252  // ~3937 Hz
 #define NOTE_C8  238  // ~4202 Hz
@@ -316,6 +333,7 @@ void startBreakout(boolean resetIt) {
 
 void breakoutLoop() {
   checkSoundToggle();
+  updateLEDFlash();
   if (soundEnabled) gamer.stopTone(); // stop previous bounce chirp
   if(counter>2) {
     for(int x=0;x<8;x++) {
@@ -349,9 +367,10 @@ void breakoutLoop() {
       }
     }
     physics();
-    // Bounce sound — plays when velocity changes (ball hits block, wall, or paddle)
-    if (soundEnabled && (velocity[0] != origXV || velocity[1] != origYV)) {
-      gamer.playTone(currentYBreakout >= 6 ? NOTE_C8 : NOTE_E8); // lower for paddle, higher for blocks
+    // Bounce sound and LED flash — plays when velocity changes (ball hits block, wall, or paddle)
+    if (velocity[0] != origXV || velocity[1] != origYV) {
+      if (soundEnabled) gamer.playTone(currentYBreakout >= 6 ? NOTE_C8 : NOTE_E8); // lower for paddle, higher for blocks
+      startLEDFlash(); // flash on every collision
     }
     for(int x=0;x<8;x++) {
       for(int y=0;y<8;y++) {
@@ -807,6 +826,7 @@ void resetFlappy(){
 void flappyLoop() 
 {  
   checkSoundToggle();
+  updateLEDFlash();
   if (soundEnabled) gamer.stopTone(); // stop previous chirp
   // Update
   if( menu )
@@ -856,6 +876,7 @@ void flappyLoop()
       if( pipePos < -1 )
       {
         flappyScore++;
+        startLEDFlash(); // flash when a gate is passed
         pipePos = 7; 
         pipeGap = 1 + rand()%4;
       }
@@ -922,6 +943,7 @@ void resetSimon() {
 
 void simonLoop() {
   checkSoundToggle();
+  updateLEDFlash();
   // Four distinct tones — one per direction (up, down, left, right)
   static const int simonNotes[] = {NOTE_E8, NOTE_C8, NOTE_G8, NOTE_D8};
   sequence[x]=random(0,4);
@@ -936,6 +958,7 @@ void simonLoop() {
       if(gamer.isHeld(START)) return;
       if (soundEnabled) gamer.playTone(simonNotes[sequence[i]]);
       gamer.printImage(framesSimon[sequence[i]]);
+      startLEDFlash(); // flash when arrow is displayed
       delay(delayMils);
       if (soundEnabled) gamer.stopTone();
       gamer.clear();
@@ -953,6 +976,7 @@ void simonLoop() {
         if(gamer.isPressed(LEFT)) key=2;
         if(gamer.isPressed(RIGHT)) key=3;
       }
+      startLEDFlash(); // flash when player presses a button
       gamer.printImage(framesSimon[key]);
       //is it riiggghhhttt???
       if(key!=sequence[count]) {
@@ -1067,6 +1091,7 @@ void setupSnakeGame() {
 
 void snakeLoop() {
   checkSoundToggle();
+  updateLEDFlash();
   if (soundEnabled) gamer.stopTone(); // stop previous chirp
   //gamer.clear, but DON'T UPDATE YET!!!!
   for(int x=0;x<8;x++) {
@@ -1083,6 +1108,7 @@ void snakeLoop() {
   if(gamer.isPressed(DOWN)) { dir=3; snakeBtnPressed=true; }
   if(gamer.isPressed(LEFT)) { dir=4; snakeBtnPressed=true; }
   if (soundEnabled && snakeBtnPressed) gamer.playTone(NOTE_E8);
+  if (snakeBtnPressed) startLEDFlash(); // flash on direction button press
   
   //this is a random directions function. comment it out when button support has been added
   //if(random(0,10)>7) dir++;
@@ -1115,6 +1141,7 @@ void isCollected() {
     snakeLength++;
     score++;
     if (soundEnabled) gamer.playTone(NOTE_A8); // pentatonic chirp when food is eaten
+    startLEDFlash(); // flash when food square is eaten
     for(int x=0;x<8;x++) {
       for(int y=0;y<8;y++) {
         snakeMap[x][y]++;
@@ -1232,6 +1259,7 @@ int digitFrom(int number, int position) {
 
 void tetrisLoop() {
     checkSoundToggle();
+    updateLEDFlash();
 
     // Stop any event chirp that was started in the previous iteration
     if (soundEnabled && tetrisChirpPending) {
@@ -1265,10 +1293,9 @@ void tetrisLoop() {
     if (millis() - lastMoveTime > moveInterval) {
       lastMoveTime = millis();
       // Serial.println("Attempting to move piece down...");
-        //flash led on pin 13
-        digitalWrite(13, HIGH);
         if (canMove(currentX, currentY + 1)) {
             currentY++; // Move the piece down
+            startLEDFlash(); // flash when piece moves down (gravity)
             lastMoveTime = millis();
             renderGridAndPiece();
         } else {
@@ -1298,7 +1325,6 @@ void tetrisLoop() {
                 gameOverT = true;
             }
             delay(100); // Short delay to prevent immediate input after placing a piece
-            digitalWrite(13, LOW);
             // Serial.println("New piece created. Current score: " + String(score) + ", Level: " + String(level) + ", Lines Cleared: " + String(linesCleared));
             renderGridAndPiece(); // Update the display with the current grid and piece
         }
@@ -1322,6 +1348,7 @@ void tetrisLoop() {
         tetrisBtnPressed = true;
         renderGridAndPiece(); // Update the display with the current grid and piece
     }
+    if (tetrisBtnPressed) startLEDFlash(); // flash on any button press (move/rotate)
     if (soundEnabled && tetrisBtnPressed) { gamer.playTone(NOTE_D8); tetrisChirpPending = true; } // button press chirp
 }
 
@@ -1336,6 +1363,7 @@ void checkLines() {
         }
         if (lineComplete) {
             if (soundEnabled) { gamer.playTone(NOTE_A8); tetrisChirpPending = true; } // line clear reward chirp
+            startLEDFlash(); // flash when a row is cleared
             currentX = 3;
             currentY = -1;
             // Clear the line
@@ -1473,5 +1501,6 @@ void createPiece() {
             break;
     }
     if (soundEnabled) { gamer.playTone(NOTE_G8); tetrisChirpPending = true; } // piece generation chirp
+    startLEDFlash(); // flash when a new piece is created
 }
 //MARK:END OF GAME CODE
