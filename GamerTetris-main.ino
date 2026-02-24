@@ -15,6 +15,7 @@ volatile byte animationLength[] = { //how long is each animation???
   2,2,2,2,2,2,2};
 volatile byte animationFrame = 0; //what frame is it???
 volatile byte gameNumber = 0; //what game is it???
+bool soundEnabled = true; //sound on/off toggle (UP in menu)
 volatile byte gameMax = 7; //how many games are there???
 
 // Sound toggle — starts OFF; touching the cap sense pad toggles it
@@ -209,6 +210,14 @@ void loop() { //selector
     }
     if(gameNumber==255) gameNumber=gameMax-1;
     if(gameNumber>=gameMax) gameNumber=0;
+    if(gamer.isPressed(UP)) { //toggle sound on/off
+      soundEnabled = !soundEnabled;
+      if(soundEnabled) {
+        gamer.playTone(80);
+        delay(150);
+        gamer.stopTone();
+      }
+    }
     delay(300);
   }
 }
@@ -857,12 +866,13 @@ void simonLoop() {
       byte key = 4;
       while(key==4) { //wait for a keypress
         if(gamer.isHeld(START)) return;
-        if(gamer.isPressed(UP)) key=0;
-        if(gamer.isPressed(DOWN)) key=1;
-        if(gamer.isPressed(LEFT)) key=2;
+        if(gamer.isHeld(UP)) key=0;
+        if(gamer.isHeld(DOWN)) key=1;
+        if(gamer.isHeld(LEFT)) key=2;
 #if SIMON_RIGHT_ARROW_ENABLED
-        if(gamer.isPressed(RIGHT)) key=3;
+        if(gamer.isHeld(RIGHT)) key=3;
 #endif
+        while(gamer.isHeld(RIGHT) || gamer.isHeld(LEFT) || gamer.isHeld(UP) || gamer.isHeld(DOWN))
       }
       startLEDFlash(); // flash when player presses a button
       gamer.printImage(framesSimon[key]);
@@ -1234,10 +1244,15 @@ void tetrisLoop() {
         currentX++; // Move right
         tetrisBtnPressed = true;
         renderGridAndPiece(); // Update the display with the current grid and piece
-    } else if(gamer.isPressed(DOWN) && canMove(currentX, currentY + 1)) {
+    } else if(gamer.isPressed(DOWN) && canMove(currentX, currentY + 1) && !gamer.isHeld(DOWN)) {
         currentY++; // Move down faster
         tetrisBtnPressed = true;
         renderGridAndPiece(); // Update the display with the current grid and piece
+    } else if(gamer.isHeld(DOWN){
+        tetrisBtnPressed = true;
+        while(canMove(currentX, currentY + 1)) currentY++; // hard drop to bottom
+        renderGridAndPiece();
+        while(gamer.isHeld(DOWN)) delay(10);
     } else if(gamer.isPressed(UP)) {
         rotatePiece(); // Rotate the piece
         tetrisBtnPressed = true;
