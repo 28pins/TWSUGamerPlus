@@ -182,18 +182,16 @@ void tetrisLoop() {
   if (soundEnabled) {
     static unsigned long lastNoteTime = 0;
     static byte noteIdx = 0;
-    static const int melody[] = {NOTE_E8, NOTE_B7, NOTE_C8, NOTE_D8, NOTE_D8, NOTE_C8, NOTE_B7, NOTE_C8,
-                                  NOTE_E8, NOTE_A8, NOTE_A8, NOTE_C8, NOTE_E8, NOTE_D8, NOTE_C8, NOTE_B7};
-    const byte melodyLen = sizeof(melody) / sizeof(melody[0]);
     if (millis() - lastNoteTime >= 200) {
-      gamer.playTone(melody[noteIdx]);
-      noteIdx = (noteIdx + 1) % melodyLen;
+      gamer.playTone(pgm_read_byte(&tetrisMelody_pgm[noteIdx]));
+      noteIdx = (noteIdx + 1) % TETRIS_MELODY_LEN;
       lastNoteTime = millis();
     }
   }
 
   if (gameOverT) {
     playLossTune();
+    saveHighScore((byte)min(score, 99));
     showScore(digitFrom(score, 2), digitFrom(score, 1));
     delay(3000);
     resetTetris();

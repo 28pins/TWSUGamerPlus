@@ -25,13 +25,13 @@ inline void registerGame(const char* name, void (*reset)(), void (*loop_fn)(),
 }
 
 void launcherSetup() {
-  registerGame("SNAKE",  setupSnakeGame,      snakeLoop,   &snake_pgm[0][0],      2);
-  registerGame("BRKOUT", startBreakoutReset,  breakoutLoop,&breakout_pgm[0][0],   2);
-  registerGame("SIMON",  resetSimon,          simonLoop,   &simon_pgm[0][0],      2);
-  registerGame("FLAPPY", resetFlappyLauncher, flappyLoop,  &flappy_pgm[0][0],     2);
-  registerGame("TETRIS", resetTetris,         tetrisLoop,  &tetris_pgm[0][0],     2);
-  registerGame("ALIEN",  resetAlienGame,      alienLoop,   &alienAnim_pgm[0][0],  2);
-  registerGame("CONWAY", resetConway,         conwayLoop,  &conwayAnim_pgm[0][0], 2);
+  registerGame("SNAKE",  setupSnakeGame,      snakeLoop,   &snake_pgm[0][0],      SNAKE_ANIM_FRAMES);
+  registerGame("BRKOUT", startBreakoutReset,  breakoutLoop,&breakout_pgm[0][0],   BREAKOUT_ANIM_FRAMES);
+  registerGame("SIMON",  resetSimon,          simonLoop,   &simon_pgm[0][0],      SIMON_ANIM_FRAMES);
+  registerGame("FLAPPY", resetFlappyLauncher, flappyLoop,  &flappy_pgm[0][0],     FLAPPY_ANIM_FRAMES);
+  registerGame("TETRIS", resetTetris,         tetrisLoop,  &tetris_pgm[0][0],     TETRIS_ANIM_FRAMES);
+  registerGame("ALIEN",  resetAlienGame,      alienLoop,   &alienAnim_pgm[0][0],  ALIEN_ANIM_FRAMES);
+  registerGame("CONWAY", resetConway,         conwayLoop,  &conwayAnim_pgm[0][0], CONWAY_ANIM_FRAMES);
 
   // Show startup logo from PROGMEM
   byte buf[8];

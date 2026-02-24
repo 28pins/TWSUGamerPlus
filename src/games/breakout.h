@@ -12,6 +12,9 @@ volatile int origXV = -1;
 volatile int origYV = -1;
 volatile byte scoreBreakout = 0;
 
+// Forward declaration needed by startBreakoutReset wrapper below
+void startBreakout(boolean resetIt);
+
 // Wrapper used by the launcher to reset and start a fresh game
 inline void startBreakoutReset() { startBreakout(true); }
 
@@ -220,6 +223,7 @@ void breakoutLoop() {
       delay(150);
     }
     playLossTune();
+    saveHighScore(scoreBreakout);
     if(scoreBreakout==0){
       gamer.clear();
       byte buf[8]; pgm_readimg(framesBreakout_pgm[1], buf);

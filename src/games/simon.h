@@ -17,7 +17,7 @@ void resetSimon() {
 void simonLoop() {
   checkSoundToggle();
   updateLEDFlash();
-  static const int simonNotes[] = {NOTE_E8, NOTE_C8, NOTE_G8, NOTE_D8};
+  static const byte simonNotes[] PROGMEM = {NOTE_E8, NOTE_C8, NOTE_G8, NOTE_D8};
   sequence[x]=random(0, SIMON_NUM_DIRECTIONS);
   if(x>0) {
     for(byte p=3;p>0;p--) {
@@ -29,7 +29,7 @@ void simonLoop() {
     delay(delayMils);
     for(int i=0;i<x;i++) {
       if(gamer.isHeld(START)) return;
-      if (soundEnabled) gamer.playTone(simonNotes[sequence[i]]);
+      if (soundEnabled) gamer.playTone(pgm_read_byte(&simonNotes[sequence[i]]));
       byte fbuf[8]; pgm_readimg(framesSimon_pgm[sequence[i]], fbuf);
       gamer.printImage(fbuf);
       startLEDFlash();

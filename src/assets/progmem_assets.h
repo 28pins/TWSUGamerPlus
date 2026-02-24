@@ -2,6 +2,16 @@
 #define PROGMEM_ASSETS_H
 #include <avr/pgmspace.h>
 
+// ── Animation frame counts ────────────────────────────────────────────────────
+#define STARTUP_ANIM_FRAMES   1
+#define SNAKE_ANIM_FRAMES     2
+#define BREAKOUT_ANIM_FRAMES  2
+#define SIMON_ANIM_FRAMES     2
+#define FLAPPY_ANIM_FRAMES    2
+#define TETRIS_ANIM_FRAMES    2
+#define ALIEN_ANIM_FRAMES     2
+#define CONWAY_ANIM_FRAMES    2
+
 // ── Launcher animation frames in PROGMEM ────────────────────────────────────
 
 static const byte startup_pgm[1][8] PROGMEM = {
@@ -94,6 +104,16 @@ static const byte numbers_pgm[10][8] PROGMEM = {
   { B00000111, B00000101, B00000101, B00000111, B00000101, B00000101, B00000101, B00000111 }, // 8
   { B00000111, B00000101, B00000101, B00000111, B00000001, B00000001, B00000001, B00000111 }, // 9
 };
+
+// ── Tetris background melody (Korobeiniki A-theme fragment) in PROGMEM ───────
+// Note values for gamer.playTone(): OCR2A register bytes (frequency ≈ 1 MHz / (n+1))
+// NOTE_B7=252 (~3937 Hz)  NOTE_C8=238 (~4202 Hz)  NOTE_D8=212 (~4717 Hz)
+// NOTE_E8=189 (~5263 Hz)  NOTE_A8=140 (~7042 Hz)
+static const byte tetrisMelody_pgm[] PROGMEM = {
+  189, 252, 238, 212, 212, 238, 252, 238,  // NOTE_E8 B7 C8 D8 D8 C8 B7 C8
+  189, 140, 140, 238, 189, 212, 238, 252   // NOTE_E8 A8 A8 C8 E8 D8 C8 B7
+};
+#define TETRIS_MELODY_LEN 16
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

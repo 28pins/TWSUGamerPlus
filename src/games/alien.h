@@ -80,6 +80,7 @@ void alienLoop() {
         gamer.updateDisplay(); delay(120);
       }
       playLossTune();
+      saveHighScore(sInvScore);
       showScore(sInvScore / 10, sInvScore % 10);
       delay(1500);
       resetAlienGame();

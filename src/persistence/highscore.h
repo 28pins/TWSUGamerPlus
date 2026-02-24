@@ -35,6 +35,8 @@ static bool _hsReadSlot(byte slot, byte* seq_out, byte scores[HS_NUM_SCORES]) {
   int addr = (slot == 0) ? HS_SLOT0_ADDR : HS_SLOT1_ADDR;
   byte buf[HS_SLOT_SIZE];
   for (byte i = 0; i < HS_SLOT_SIZE; i++) buf[i] = EEPROM.read(addr + i);
+  // Magic-byte check first: fast rejection of uninitialised/erased slots (0xFF).
+  // CRC-8 then covers the remaining data bytes for corruption detection.
   if (buf[0] != HS_MAGIC) return false;
   byte crc = _hsCRC8(buf, HS_SLOT_SIZE - 1);
   if (crc != buf[HS_SLOT_SIZE - 1]) return false;
@@ -94,7 +96,9 @@ inline void loadHighScores() {
 // Save a new score if it beats an existing slot; applies wear-leveling.
 inline void saveHighScore(byte newScore) {
   if (newScore == 0) return;
-  // Rate-limit writes
+  // Rate-limit writes. The subtraction is wrap-safe for unsigned long arithmetic:
+  // when millis() overflows (~49.7 days), the difference still gives the correct
+  // elapsed time modulo 2^32.
   if (_hsLastWrite != 0 && millis() - _hsLastWrite < HS_WRITE_MIN_INTERVAL_MS) return;
 
   bool improved = false;

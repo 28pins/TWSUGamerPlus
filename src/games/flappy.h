@@ -101,6 +101,7 @@ void flappyLoop()
       resetFlappy();
     }
   }else if(displayflappyScore){
+    saveHighScore(flappyScore);
     gamer.clear();
     byte dig2 = flappyScore % 10;
     byte dig1 = (flappyScore-dig2)/10;
