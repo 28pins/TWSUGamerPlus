@@ -30,7 +30,7 @@ The DIY Gamer Kit is a soldering kit whose finished board is Arduino Uno compati
 | Indicator LED | Onboard LED on pin 13 |
 | Infrared | IR LED on pin 4 for 38 kHz IR transmission |
 | Sensor | LDR (boards before v1.9) or capacitive-touch pad (v1.9+) on pin 5 |
-| Power | USB or 3×AAA batteries via onboard regulator |
+| Power | USB or 9v battery (rechargeable recommended) via onboard regulator |
 
 The `Gamer` library maps all hardware to named constants so sketches never use raw pin numbers directly.
 
@@ -79,7 +79,7 @@ Keep the ball bouncing to break all the bricks. Miss the ball to lose a life. Sc
 
 Watch the LED pattern carefully and repeat it exactly. The sequence grows by one step each round and the pace increases.
 
-¹ The `RIGHT` direction is disabled by default (set `SIMON_RIGHT_ARROW_ENABLED 1` in the sketch to enable it).
+¹ The `RIGHT` direction is disabled by default (set `SIMON_RIGHT_ARROW_ENABLED` to `1` in the sketch to enable it).
 
 #### Flappy Bird
 | Button | Action |
@@ -122,4 +122,4 @@ This is a zero-player simulation. Watch the cellular automaton evolve from a ran
 - The library runs on AVR/Uno only (`architectures=avr`). Other boards will need pin and timer changes.
 
 ## License
-MIT. See `LICENSE` for details.
+MIT (No AI version: see https://github.com/28pins/NoAiLicense?tab=License-1-ov-file). See `LICENSE` for details.
