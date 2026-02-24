@@ -1292,15 +1292,16 @@ void tetrisLoop() {
             createPiece();
             // Reset the position for the new piece
             currentX = 3;
-            currentY = -1;
+            currentY = -3;
             // Check if the new piece can be placed, if not, game over
-            if (!canMove(currentX, currentY) || !canMove(currentX, currentY + 1)) {
+            if (!canMove(currentX, currentY) || !canMove(currentX, currentY + 2)) {
                 gameOverT = true;
             }
             delay(100); // Short delay to prevent immediate input after placing a piece
             digitalWrite(13, LOW);
             // Serial.println("New piece created. Current score: " + String(score) + ", Level: " + String(level) + ", Lines Cleared: " + String(linesCleared));
             renderGridAndPiece(); // Update the display with the current grid and piece
+            currentY = -1;
         }
     }
 
@@ -1356,7 +1357,7 @@ void checkLines() {
             }
             linesCleared++;
             score += level; // Increase score based on level
-            if (linesCleared % 10 == 0) { // Increase level every 10 lines
+            if (linesCleared % 7 == 0) { // Increase level every 10 lines
                 level++;
                 moveInterval = max(300, moveInterval - 200); // Decrease move interval to increase speed
             }
