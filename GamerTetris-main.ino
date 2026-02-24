@@ -9,11 +9,13 @@ byte breakout[2][8]; //breakout anim
 byte simon[2][8]; //simon anim
 byte flappy[2][8]; //flappy anim
 byte tetris[2][8]; //tetris anim
+byte alienAnim[2][8]; //alien (space invaders) anim
+byte conwayAnim[2][8]; //conway's game of life anim
 volatile byte animationLength[] = { //how long is each animation???
-  2,2,2,2,2};
+  2,2,2,2,2,2,2};
 volatile byte animationFrame = 0; //what frame is it???
 volatile byte gameNumber = 0; //what game is it???
-volatile byte gameMax = 5; //how many games are there???
+volatile byte gameMax = 7; //how many games are there???
 
 // Sound toggle — starts OFF; touching the cap sense pad toggles it
 bool soundEnabled = false;
@@ -83,6 +85,8 @@ void setup() {
   setupSimon(); //simon says anim
   setupFlappy(); //flappy anim
   setupTetris(); //tetris anim
+  setupAlienAnim(); //alien (space invaders) anim
+  setupConwayAnim(); //conway's game of life anim
   setupImages(); //breakout win/lose images
   setupSimonImages(); //simon arrow and result images
   gamer.printImage(startup[0]); delay(100); // startup frame
@@ -135,6 +139,20 @@ void loop() { //selector
       }
       gamer.stopTone();
       break;
+    case 5:
+      resetAlienGame();
+      while(!gamer.isPressed(START)) {
+        alienLoop();
+      }
+      gamer.stopTone();
+      break;
+    case 6:
+      resetConway();
+      while(!gamer.isPressed(START)) {
+        conwayLoop();
+      }
+      gamer.stopTone();
+      break;
     }
   } 
   else {
@@ -158,6 +176,14 @@ void loop() { //selector
     case 4:
       //tetris
       gamer.printImage(tetris[animationFrame]);
+      break;
+    case 5:
+      //alien (space invaders)
+      gamer.printImage(alienAnim[animationFrame]);
+      break;
+    case 6:
+      //conway's game of life
+      gamer.printImage(conwayAnim[animationFrame]);
       break;
     }
     animationFrame++;
@@ -923,7 +949,6 @@ byte goalX = random(0,7);
 byte goalY = random(0,7);
 volatile byte snakeMap[8][8];
 byte snakeLength = 2;
-byte frames[11][8];
 int score = 0;
 
 void setupSnakeGame() {
@@ -1362,3 +1387,250 @@ void createPiece() {
     startLEDFlash(); // flash when a new piece is created
 }
 //MARK:END OF GAME CODE
+
+// ─────────────────────────────────────────────────────────────────────────────
+//MARK: ALIEN (Space Invaders) setup animation
+// Uses alien sprites from the original techwillsaveus/Gamer "Alien" example.
+// ─────────────────────────────────────────────────────────────────────────────
+void setupAlienAnim() {
+  // Frame 0: alien1 sprite (body centred, legs down)
+  alienAnim[0][0] = B00000000;
+  alienAnim[0][1] = B00000000;
+  alienAnim[0][2] = B01111110;
+  alienAnim[0][3] = B01011010;
+  alienAnim[0][4] = B01111110;
+  alienAnim[0][5] = B00100100;
+  alienAnim[0][6] = B00100100;
+  alienAnim[0][7] = B01100110;
+  // Frame 1: alien2 sprite (body jumped up one row, arms spread)
+  alienAnim[1][0] = B00000000;
+  alienAnim[1][1] = B01111110;
+  alienAnim[1][2] = B01011010;
+  alienAnim[1][3] = B01111110;
+  alienAnim[1][4] = B00100100;
+  alienAnim[1][5] = B01000010;
+  alienAnim[1][6] = B11000011;
+  alienAnim[1][7] = B00000000;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+//MARK: CONWAY setup animation
+// Two frames of a glider from Conway's Game of Life.
+// ─────────────────────────────────────────────────────────────────────────────
+void setupConwayAnim() {
+  // Frame 0: glider step 0  (.#. / ..# / ###)
+  conwayAnim[0][0] = B01000000; // .#......
+  conwayAnim[0][1] = B00100000; // ..#.....
+  conwayAnim[0][2] = B11100000; // ###.....
+  conwayAnim[0][3] = B00000000;
+  conwayAnim[0][4] = B00000000;
+  conwayAnim[0][5] = B00000000;
+  conwayAnim[0][6] = B00000000;
+  conwayAnim[0][7] = B00000000;
+  // Frame 1: glider step 1  (#.# / .## / .#.)
+  conwayAnim[1][0] = B10100000; // #.#.....
+  conwayAnim[1][1] = B01100000; // .##.....
+  conwayAnim[1][2] = B01000000; // .#......
+  conwayAnim[1][3] = B00000000;
+  conwayAnim[1][4] = B00000000;
+  conwayAnim[1][5] = B00000000;
+  conwayAnim[1][6] = B00000000;
+  conwayAnim[1][7] = B00000000;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+//MARK: ALIEN (Space Invaders) GAME CODE
+// Inspired by techwillsaveus/Gamer "Alien" example sprites.
+// 3 rows × 3 cols of aliens march left; player at col 0 shoots right.
+// UP/DOWN = move player  RIGHT = fire  START = exit
+// ─────────────────────────────────────────────────────────────────────────────
+// Alien state – bit-packed (bits 0-2 = cols 0-2 alive for that row)
+byte sInvRows[3];    // y = 1, 3, 5 for rows 0, 1, 2
+int8_t sInvBaseX;    // x of alien col 0 (cols at baseX, baseX+1, baseX+2)
+int8_t sInvPlayerY;  // player row (0-7)
+int8_t sInvBulletX;  // -1 = no bullet in flight
+int8_t sInvBulletY;
+byte sInvScore;
+byte sInvMarchTick;
+
+inline bool sInvAlive(byte row, byte col) { return (sInvRows[row] >> col) & 1; }
+inline void sInvKill(byte row, byte col)  { sInvRows[row] &= ~(1 << col); }
+
+byte sInvCount() {
+  byte n = 0;
+  for (byte r = 0; r < 3; r++)
+    for (byte c = 0; c < 3; c++)
+      if (sInvAlive(r, c)) n++;
+  return n;
+}
+
+void resetAlienGame() {
+  sInvRows[0] = 0x07; // 3 aliens
+  sInvRows[1] = 0x07;
+  sInvRows[2] = 0x07;
+  sInvBaseX   = 5;    // alien cols at x=5,6,7
+  sInvPlayerY = 3;    // player middle
+  sInvBulletX = -1;   // no bullet
+  sInvScore   = 0;
+  sInvMarchTick = 0;
+}
+
+void alienLoop() {
+  checkSoundToggle();
+  updateLEDFlash();
+  if (soundEnabled) gamer.stopTone(); // stop previous chirp
+
+  // Clear display buffer
+  for (int cx = 0; cx < 8; cx++)
+    for (int cy = 0; cy < 8; cy++)
+      gamer.display[cx][cy] = 0;
+
+  // ── Bullet movement ──────────────────────────────────────────────────────
+  if (sInvBulletX >= 0) {
+    sInvBulletX++;
+    if (sInvBulletX >= 8) {
+      sInvBulletX = -1; // missed
+    } else {
+      // Collision with aliens
+      for (byte r = 0; r < 3; r++) {
+        byte ay = 1 + r * 2;
+        if (sInvBulletY == ay) {
+          for (byte c = 0; c < 3; c++) {
+            if (sInvAlive(r, c) && (sInvBaseX + (int8_t)c) == sInvBulletX) {
+              sInvKill(r, c);
+              sInvBulletX = -1;
+              sInvScore++;
+              if (soundEnabled) gamer.playTone(NOTE_A8);
+              startLEDFlash();
+              break;
+            }
+          }
+        }
+        if (sInvBulletX < 0) break;
+      }
+    }
+  }
+
+  // ── Alien march ──────────────────────────────────────────────────────────
+  byte marchRate = (sInvScore < 12) ? (20 - sInvScore) : 8;
+  sInvMarchTick++;
+  if (sInvMarchTick >= marchRate) {
+    sInvMarchTick = 0;
+    sInvBaseX--;
+    if (sInvBaseX < 0) {
+      // Aliens reached player column – game over
+      for (byte b = 0; b < 4; b++) {
+        for (int cx = 0; cx < 8; cx++) for (int cy = 0; cy < 8; cy++) gamer.display[cx][cy] = 0;
+        gamer.updateDisplay(); delay(120);
+        gamer.display[0][(byte)sInvPlayerY] = 1;
+        gamer.updateDisplay(); delay(120);
+      }
+      playLossTune();
+      showScore(sInvScore / 10, sInvScore % 10);
+      delay(1500);
+      resetAlienGame();
+      return;
+    }
+  }
+
+  // ── All aliens killed – next wave ─────────────────────────────────────
+  if (sInvCount() == 0) {
+    playWinTune();
+    sInvRows[0] = sInvRows[1] = sInvRows[2] = 0x07;
+    sInvBaseX = 5;
+    sInvBulletX = -1;
+  }
+
+  // ── Player input ─────────────────────────────────────────────────────────
+  if (gamer.isHeld(UP)   && sInvPlayerY > 0) sInvPlayerY--;
+  if (gamer.isHeld(DOWN) && sInvPlayerY < 7) sInvPlayerY++;
+  if (gamer.isPressed(RIGHT) && sInvBulletX < 0) {
+    sInvBulletX = 1;
+    sInvBulletY = sInvPlayerY;
+    if (soundEnabled) gamer.playTone(NOTE_B7);
+    startLEDFlash();
+  }
+
+  // ── Draw ─────────────────────────────────────────────────────────────────
+  gamer.display[0][(byte)sInvPlayerY] = 1; // player
+  if (sInvBulletX > 0)
+    gamer.display[(byte)sInvBulletX][(byte)sInvBulletY] = 1;
+  for (byte r = 0; r < 3; r++) {
+    byte ay = 1 + r * 2;
+    for (byte c = 0; c < 3; c++) {
+      if (sInvAlive(r, c)) {
+        int8_t ax = sInvBaseX + (int8_t)c;
+        if (ax >= 0 && ax < 8) gamer.display[(byte)ax][ay] = 1;
+      }
+    }
+  }
+  gamer.updateDisplay();
+  delay(80);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+//MARK: CONWAY'S GAME OF LIFE CODE
+// From techwillsaveus/GamerCA2D (adapted to single-player launcher).
+// Runs simulation automatically; RIGHT = reseed random pattern; START = exit.
+// Uses bit-packed 8-byte rows (16 bytes total) for minimal SRAM use.
+// ─────────────────────────────────────────────────────────────────────────────
+#define CONWAY_STAGNATION_LIMIT 20  // reseed after this many unchanging generations
+
+byte conwayCurr[8]; // each byte = one row; bit x (LSB=col 0) = cell at (x, row)
+byte conwayNext[8];
+byte conwayStuck;   // frames without any change (detect stasis/extinction)
+
+void conwayRandomize() {
+  for (byte i = 0; i < 8; i++) conwayCurr[i] = (byte)random(0, 256);
+  conwayStuck = 0;
+}
+
+// Advance one generation; returns true if any cell changed.
+bool conwayStep() {
+  bool anyChange = false;
+  for (byte y = 0; y < 8; y++) {
+    conwayNext[y] = 0;
+    for (byte x = 0; x < 8; x++) {
+      byte alive = 0;
+      for (int8_t dy = -1; dy <= 1; dy++)
+        for (int8_t dx = -1; dx <= 1; dx++) {
+          if (dx == 0 && dy == 0) continue;
+          byte nx = (x + dx + 8) & 7;
+          byte ny = (y + dy + 8) & 7;
+          if ((conwayCurr[ny] >> nx) & 1) alive++;
+        }
+      bool curr = (conwayCurr[y] >> x) & 1;
+      bool next = (alive == 3) || (curr && alive == 2);
+      if (next) conwayNext[y] |= (1 << x);
+      if (next != curr) anyChange = true;
+    }
+  }
+  for (byte i = 0; i < 8; i++) conwayCurr[i] = conwayNext[i];
+  return anyChange;
+}
+
+void resetConway() { conwayRandomize(); }
+
+void conwayLoop() {
+  checkSoundToggle();
+  updateLEDFlash();
+
+  bool changed = conwayStep();
+  if (!changed) {
+    conwayStuck++;
+    if (conwayStuck > CONWAY_STAGNATION_LIMIT) conwayRandomize(); // static or extinct – reseed
+  } else {
+    conwayStuck = 0;
+  }
+
+  // RIGHT = plant new random seed manually
+  if (gamer.isPressed(RIGHT)) conwayRandomize();
+
+  // Render
+  for (byte x = 0; x < 8; x++)
+    for (byte y = 0; y < 8; y++)
+      gamer.display[x][y] = (conwayCurr[y] >> x) & 1;
+  gamer.updateDisplay();
+  delay(180);
+}
+
