@@ -39,6 +39,16 @@ void updateLEDFlash() {
   }
 }
 
+// Feature flag: set to 1 to enable the right-arrow direction in Simon.
+// Disabled by default because the RIGHT button has a known recognition bug.
+#define SIMON_RIGHT_ARROW_ENABLED 0
+
+#if SIMON_RIGHT_ARROW_ENABLED
+  #define SIMON_NUM_DIRECTIONS 4
+#else
+  #define SIMON_NUM_DIRECTIONS 3
+#endif
+
 // gamer.playTone() note values: frequency = 1,000,000 / (OCR2A + 1) Hz
 #define NOTE_B7  252  // ~3937 Hz
 #define NOTE_C8  238  // ~4202 Hz
@@ -822,7 +832,7 @@ void simonLoop() {
   updateLEDFlash();
   // Four distinct tones — one per direction (up, down, left, right)
   static const int simonNotes[] = {NOTE_E8, NOTE_C8, NOTE_G8, NOTE_D8};
-  sequence[x]=random(0,4);
+  sequence[x]=random(0, SIMON_NUM_DIRECTIONS);
   if(x>0) {
     for(byte p=3;p>0;p--) {
       showScore(0,p);
@@ -850,7 +860,9 @@ void simonLoop() {
         if(gamer.isPressed(UP)) key=0;
         if(gamer.isPressed(DOWN)) key=1;
         if(gamer.isPressed(LEFT)) key=2;
+#if SIMON_RIGHT_ARROW_ENABLED
         if(gamer.isPressed(RIGHT)) key=3;
+#endif
       }
       startLEDFlash(); // flash when player presses a button
       gamer.printImage(framesSimon[key]);
