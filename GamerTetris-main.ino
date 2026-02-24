@@ -4,17 +4,89 @@
 Gamer gamer;
 
 byte startup[1][8]; //declare at top of code
-byte snake[3][8];  //snake animation
-byte breakout[3][8]; //breakout anim
+byte snake[2][8];  //snake animation
+byte breakout[2][8]; //breakout anim
 byte simon[2][8]; //simon anim
-byte flappy[4][8]; //flappy anim
-byte tetris[3][8]; //tetris anim
+byte flappy[2][8]; //flappy anim
+byte tetris[2][8]; //tetris anim
+byte alienAnim[2][8]; //alien (space invaders) anim
+byte conwayAnim[2][8]; //conway's game of life anim
 volatile byte animationLength[] = { //how long is each animation???
-  3,3,2,4,3};
+  2,2,2,2,2,2,2};
 volatile byte animationFrame = 0; //what frame is it???
 volatile byte gameNumber = 0; //what game is it???
-volatile byte gameMax = 5; //how many games are there???
 bool soundEnabled = true; //sound on/off toggle (UP in menu)
+volatile byte gameMax = 7; //how many games are there???
+
+// Sound toggle — starts OFF; touching the cap sense pad toggles it
+bool soundEnabled = false;
+bool lastCapTouchState = false;
+bool tetrisChirpPending = false; // true when an event chirp needs explicit stop next iteration
+
+// Non-blocking LED flash: call startLEDFlash() on an event, updateLEDFlash() each loop tick
+unsigned long ledFlashStartTime = 0;
+bool ledFlashing = false;
+
+void startLEDFlash() {
+  gamer.setLED(true);
+  ledFlashStartTime = millis();
+  ledFlashing = true;
+}
+
+void updateLEDFlash() {
+  if (ledFlashing && millis() - ledFlashStartTime >= 300UL) {
+    gamer.setLED(false);
+    ledFlashing = false;
+  }
+}
+
+// Feature flag: set to 1 to enable the right-arrow direction in Simon.
+// Disabled by default because the RIGHT button has a known recognition bug.
+#define SIMON_RIGHT_ARROW_ENABLED 0
+
+#if SIMON_RIGHT_ARROW_ENABLED
+  #define SIMON_NUM_DIRECTIONS 4
+#else
+  #define SIMON_NUM_DIRECTIONS 3
+#endif
+
+// gamer.playTone() note values: frequency = 1,000,000 / (OCR2A + 1) Hz
+#define NOTE_B7  252  // ~3937 Hz
+#define NOTE_C8  238  // ~4202 Hz
+#define NOTE_D8  212  // ~4717 Hz
+#define NOTE_E8  189  // ~5263 Hz
+#define NOTE_G8  158  // ~6289 Hz
+#define NOTE_A8  140  // ~7042 Hz
+#define NOTE_B8  125  // ~7937 Hz
+
+#define WIN_NOTE_DURATION  120  // ms per note in win tune
+#define LOSS_NOTE_DURATION 150  // ms per note in loss tune
+
+// Detects a rising edge on the cap sense pad and toggles sound on/off
+void checkSoundToggle() {
+  bool cap = gamer.capTouch();
+  if (cap && !lastCapTouchState) {
+    soundEnabled = !soundEnabled;
+    if (!soundEnabled) gamer.stopTone();
+  }
+  lastCapTouchState = cap;
+}
+
+// Plays a short ascending tune on win/success events (if sound enabled).
+void playWinTune() {
+  if (!soundEnabled) return;
+  static const byte notes[] = {NOTE_C8, NOTE_E8, NOTE_G8, NOTE_B8};
+  for (byte i = 0; i < 4; i++) { gamer.playTone(notes[i]); delay(WIN_NOTE_DURATION); }
+  gamer.stopTone();
+}
+
+// Plays a short descending tune on loss/fail events (if sound enabled).
+void playLossTune() {
+  if (!soundEnabled) return;
+  static const byte notes[] = {NOTE_B8, NOTE_G8, NOTE_E8, NOTE_B7};
+  for (byte i = 0; i < 4; i++) { gamer.playTone(notes[i]); delay(LOSS_NOTE_DURATION); }
+  gamer.stopTone();
+}
 
 void setup() {
   gamer.begin();
@@ -23,19 +95,18 @@ void setup() {
   setupBreakout(); //breakout anim
   setupSimon(); //simon says anim
   setupFlappy(); //flappy anim
-  setupScore(); //printString / showScore
   setupTetris(); //tetris anim
+  setupAlienAnim(); //alien (space invaders) anim
+  setupConwayAnim(); //conway's game of life anim
   setupImages(); //breakout win/lose images
   setupSimonImages(); //simon arrow and result images
-  for(int i=0;i<16;i++) { //the animation
-    gamer.printImage(startup[i]);
-    delay(100);
-  }
+  gamer.printImage(startup[0]); delay(100); // startup frame
   // Serial.begin(9600);
   // Serial.println("Setup complete!");
 }
 
 void loop() { //selector
+  checkSoundToggle();
   if(gamer.isPressed(START)) {
     //start game!
     switch(gameNumber) {
@@ -47,6 +118,7 @@ void loop() { //selector
         //run the main game loop!
         snakeLoop();
       }
+      gamer.stopTone();
       break;
     case 1:
       startBreakout(true);
@@ -54,24 +126,43 @@ void loop() { //selector
       while(!gamer.isPressed(START)) {
         breakoutLoop();
       }
+      gamer.stopTone();
       break;
     case 2:
       resetSimon();
       while(!gamer.isPressed(START)) {
         simonLoop();
       }
+      gamer.stopTone();
       break;
     case 3:
+      menu = true;
       resetFlappy();
       while(!gamer.isPressed(START)) {
         flappyLoop();
       }
+      gamer.stopTone();
       break;
     case 4:
       resetTetris();
       while(!gamer.isPressed(START)) {
         tetrisLoop();
       }
+      gamer.stopTone();
+      break;
+    case 5:
+      resetAlienGame();
+      while(!gamer.isPressed(START)) {
+        alienLoop();
+      }
+      gamer.stopTone();
+      break;
+    case 6:
+      resetConway();
+      while(!gamer.isPressed(START)) {
+        conwayLoop();
+      }
+      gamer.stopTone();
       break;
     }
   } 
@@ -97,6 +188,14 @@ void loop() { //selector
       //tetris
       gamer.printImage(tetris[animationFrame]);
       break;
+    case 5:
+      //alien (space invaders)
+      gamer.printImage(alienAnim[animationFrame]);
+      break;
+    case 6:
+      //conway's game of life
+      gamer.printImage(conwayAnim[animationFrame]);
+      break;
     }
     animationFrame++;
     if(animationFrame>animationLength[gameNumber]-1) animationFrame=0;
@@ -119,7 +218,7 @@ void loop() { //selector
         gamer.stopTone();
       }
     }
-    delay(100);
+    delay(300);
   }
 }
 
@@ -135,129 +234,108 @@ void setupLogo() { //run this at the start
 }
 
 void setupSnake() { //run this at the start
+  // Frame 0: S-curve snake + food dot
   snake[0][0] = B00000000;
-  snake[0][1] = B00000000;
-  snake[0][2] = B00110100;
-  snake[0][3] = B00000000;
+  snake[0][1] = B00111000; // head+body (cols 2,3,4)
+  snake[0][2] = B00001000; // bend down (col 4)
+  snake[0][3] = B00001110; // tail goes right (cols 4,5,6)
   snake[0][4] = B00000000;
-  snake[0][5] = B00000000;
+  snake[0][5] = B01000000; // food dot (col 1)
   snake[0][6] = B00000000;
   snake[0][7] = B00000000;
+  // Frame 1: same snake, food dot off (blinking)
   snake[1][0] = B00000000;
-  snake[1][1] = B00000000;
-  snake[1][2] = B00011100;
-  snake[1][3] = B00000000;
+  snake[1][1] = B00111000;
+  snake[1][2] = B00001000;
+  snake[1][3] = B00001110;
   snake[1][4] = B00000000;
   snake[1][5] = B00000000;
   snake[1][6] = B00000000;
   snake[1][7] = B00000000;
-  snake[2][0] = B00000000;
-  snake[2][1] = B00000000;
-  snake[2][2] = B00001100;
-  snake[2][3] = B00000000;
-  snake[2][4] = B00000000;
-  snake[2][5] = B00000000;
-  snake[2][6] = B00000000;
-  snake[2][7] = B00000000;
 }
 
 void setupBreakout() { //run this at the start
-  breakout[0][0] = B00000000;
-  breakout[0][1] = B00000000;
-  breakout[0][2] = B00111100;
-  breakout[0][3] = B00000000;
-  breakout[0][4] = B00100000;
-  breakout[0][5] = B00110000;
+  // Frame 0: full block rows, ball mid-field, paddle at bottom
+  breakout[0][0] = B11111111; // solid block row
+  breakout[0][1] = B11111111; // solid block row
+  breakout[0][2] = B00000000;
+  breakout[0][3] = B00010000; // ball (col 3)
+  breakout[0][4] = B00000000;
+  breakout[0][5] = B00000000;
   breakout[0][6] = B00000000;
-  breakout[0][7] = B00000000;
-  breakout[1][0] = B00000000;
-  breakout[1][1] = B00000000;
-  breakout[1][2] = B00111100;
-  breakout[1][3] = B00010000;
-  breakout[1][4] = B00000000;
-  breakout[1][5] = B00011000;
+  breakout[0][7] = B00111000; // paddle (cols 2,3,4)
+  // Frame 1: one block broken, ball moved down
+  breakout[1][0] = B11111111; // top row intact
+  breakout[1][1] = B11011111; // block at col 2 broken
+  breakout[1][2] = B00000000;
+  breakout[1][3] = B00000000;
+  breakout[1][4] = B00010000; // ball dropped one row
+  breakout[1][5] = B00000000;
   breakout[1][6] = B00000000;
-  breakout[1][7] = B00000000;
-  breakout[2][0] = B00000000;
-  breakout[2][1] = B00000000;
-  breakout[2][2] = B00101100;
-  breakout[2][3] = B00000000;
-  breakout[2][4] = B00001000;
-  breakout[2][5] = B00001100;
-  breakout[2][6] = B00000000;
-  breakout[2][7] = B00000000;
+  breakout[1][7] = B00111000; // paddle (cols 2,3,4)
 }
 
 void setupSimon() {
-  simon[0][0] = B00000000; //up
-  simon[0][1] = B00011000;
-  simon[0][2] = B00111100;
-  simon[0][3] = B01111110;
-  simon[0][4] = B00011000;
-  simon[0][5] = B00011000;
-  simon[0][6] = B00011000;
-  simon[0][7] = B00000000;
-  simon[1][0] = B00000000; //blank
-  simon[1][1] = B00000000;
-  simon[1][2] = B00000000;
-  simon[1][3] = B00000000;
-  simon[1][4] = B00000000;
-  simon[1][5] = B00000000;
-  simon[1][6] = B00000000;
-  simon[1][7] = B00000000;
+  // Frame 0: top-left + bottom-right quadrants lit
+  simon[0][0] = B11110000;
+  simon[0][1] = B11110000;
+  simon[0][2] = B11110000;
+  simon[0][3] = B11110000;
+  simon[0][4] = B00001111;
+  simon[0][5] = B00001111;
+  simon[0][6] = B00001111;
+  simon[0][7] = B00001111;
+  // Frame 1: top-right + bottom-left quadrants lit
+  simon[1][0] = B00001111;
+  simon[1][1] = B00001111;
+  simon[1][2] = B00001111;
+  simon[1][3] = B00001111;
+  simon[1][4] = B11110000;
+  simon[1][5] = B11110000;
+  simon[1][6] = B11110000;
+  simon[1][7] = B11110000;
 }
 
 void setupFlappy() { //run this at the start
-  flappy[0][0] = B00000000;
-  flappy[0][1] = B00000000;
-  flappy[0][2] = B00100000;
-  flappy[0][3] = B00000000;
-  flappy[0][4] = B00000010;
-  flappy[0][5] = B00000010;
-  flappy[0][6] = B00000010;
-  flappy[0][7] = B00000000;
-  flappy[1][0] = B00000000;
-  flappy[1][1] = B00100000;
-  flappy[1][2] = B00000000;
-  flappy[1][3] = B00000000;
-  flappy[1][4] = B00000110;
-  flappy[1][5] = B00000110;
-  flappy[1][6] = B00000110;
-  flappy[1][7] = B00000000;
-  flappy[2][0] = B00000000;
-  flappy[2][1] = B00000000;
-  flappy[2][2] = B00100000;
-  flappy[2][3] = B00000000;
-  flappy[2][4] = B00001100;
-  flappy[2][5] = B00001100;
-  flappy[2][6] = B00001100;
-  flappy[2][7] = B00000000;
-  flappy[3][0] = B00000000;
-  flappy[3][1] = B00000000;
-  flappy[3][2] = B00000000;
-  flappy[3][3] = B00100000;
-  flappy[3][4] = B00011000;
-  flappy[3][5] = B00011000;
-  flappy[3][6] = B00011000;
-  flappy[3][7] = B00000000;
+  // Frame 0: bird wing up, pipe with gap at rows 2-5
+  flappy[0][0] = B00000001; // pipe (col 7)
+  flappy[0][1] = B00000001; // pipe
+  flappy[0][2] = B01000000; // bird wing up (col 1), gap
+  flappy[0][3] = B01100000; // bird body (cols 1,2), gap
+  flappy[0][4] = B00000000; // gap
+  flappy[0][5] = B00000000; // gap
+  flappy[0][6] = B00000001; // pipe resumes
+  flappy[0][7] = B00000001; // pipe
+  // Frame 1: bird wing down, same pipe gap
+  flappy[1][0] = B00000001; // pipe
+  flappy[1][1] = B00000001; // pipe
+  flappy[1][2] = B00000000; // gap
+  flappy[1][3] = B01100000; // bird body (cols 1,2), gap
+  flappy[1][4] = B01000000; // bird wing down (col 1), gap
+  flappy[1][5] = B00000000; // gap
+  flappy[1][6] = B00000001; // pipe resumes
+  flappy[1][7] = B00000001; // pipe
 }
 
-void setupTetris() {tetris[1][0] = B00000000;
-  tetris[0][1] = B00111100;
-  tetris[0][2] = B00111100;
-  tetris[0][3] = B00001100;
+void setupTetris() {
+  // Frame 0: O-piece at top (rows 0-1), blocks at bottom with gap
+  tetris[0][0] = B00110000; // O-piece top (cols 2,3)
+  tetris[0][1] = B00110000; // O-piece bottom (cols 2,3)
+  tetris[0][2] = B00000000;
+  tetris[0][3] = B00000000;
   tetris[0][4] = B00000000;
-  tetris[0][5] = B00110000;
-  tetris[0][6] = B00111100;
-  tetris[0][7] = B00111100;
+  tetris[0][5] = B00000000;
+  tetris[0][6] = B11001111; // blocks with gap at cols 2,3
+  tetris[0][7] = B11111111; // full bottom row
+  // Frame 1: O-piece dropped one row (rows 1-2)
   tetris[1][0] = B00000000;
-  tetris[1][1] = B00000000;
-  tetris[1][2] = B00111100;
-  tetris[1][3] = B00111100;
-  tetris[1][4] = B00111100;
-  tetris[1][5] = B00111100;
-  tetris[1][6] = B00111100;
-  tetris[1][7] = B00111100;
+  tetris[1][1] = B00110000; // O-piece top (cols 2,3)
+  tetris[1][2] = B00110000; // O-piece bottom (cols 2,3)
+  tetris[1][3] = B00000000;
+  tetris[1][4] = B00000000;
+  tetris[1][5] = B00000000;
+  tetris[1][6] = B11001111; // blocks with gap at cols 2,3
+  tetris[1][7] = B11111111; // full bottom row
 }
 
 //BREAKOUT CODE
@@ -315,6 +393,9 @@ void startBreakout(boolean resetIt) {
 }
 
 void breakoutLoop() {
+  checkSoundToggle();
+  updateLEDFlash();
+  if (soundEnabled) gamer.stopTone(); // stop previous bounce chirp
   if(counter>2) {
     for(int x=0;x<8;x++) {
       for(int y=0;y<8;y++) {
@@ -347,6 +428,11 @@ void breakoutLoop() {
       }
     }
     physics();
+    // Bounce sound and LED flash — plays when velocity changes (ball hits block, wall, or paddle)
+    if (velocity[0] != origXV || velocity[1] != origYV) {
+      if (soundEnabled) gamer.playTone(currentYBreakout >= 6 ? NOTE_C8 : NOTE_E8); // lower for paddle, higher for blocks
+      startLEDFlash(); // flash on every collision
+    }
     for(int x=0;x<8;x++) {
       for(int y=0;y<8;y++) {
         if(blocks[x][y]==0) {
@@ -445,6 +531,7 @@ void breakoutLoop() {
       gamer.updateDisplay();
       delay(150);
     }
+    playLossTune();
     if(scoreBreakout==0){
       gamer.clear();
       gamer.printImage(framesBreakout[1]);
@@ -469,16 +556,17 @@ void breakoutLoop() {
     }
   }
   if(finished) {
+    playWinTune();
     startBreakout(false);
   }
   delay(50);
 }
  
 boolean outOfBounds(int xV, int yV) {
-  if(xV > 8 || xV < 0) {
+  if(xV >= 8 || xV < 0) {
     return true;
   } 
-  else if(yV > 8 || yV < 0) {
+  else if(yV >= 8 || yV < 0) {
     return true;
   } 
   else {
@@ -537,196 +625,26 @@ void physics() {
 
 
 //MARK: ADVANCED DISPLAY CODE
-volatile byte numbers[10][2][8];
+const byte numbers[10][8] = {
+  { B00000111, B00000101, B00000101, B00000101, B00000101, B00000101, B00000101, B00000111 }, // 0
+  { B00000100, B00000100, B00000100, B00000100, B00000100, B00000100, B00000100, B00000100 }, // 1
+  { B00000111, B00000001, B00000001, B00000111, B00000100, B00000100, B00000100, B00000111 }, // 2
+  { B00000111, B00000001, B00000001, B00000011, B00000001, B00000001, B00000001, B00000111 }, // 3
+  { B00000101, B00000101, B00000101, B00000111, B00000001, B00000001, B00000001, B00000001 }, // 4
+  { B00000111, B00000100, B00000100, B00000111, B00000001, B00000001, B00000001, B00000111 }, // 5
+  { B00000111, B00000100, B00000100, B00000111, B00000101, B00000101, B00000101, B00000111 }, // 6
+  { B00000111, B00000001, B00000001, B00000001, B00000001, B00000001, B00000001, B00000001 }, // 7
+  { B00000111, B00000101, B00000101, B00000111, B00000101, B00000101, B00000101, B00000111 }, // 8
+  { B00000111, B00000101, B00000101, B00000111, B00000001, B00000001, B00000001, B00000111 }, // 9
+};
 
 void showScore(byte dig1,byte dig2) {
   byte result[8];
   for(int p=0;p<8;p++) {
-    result[p]=numbers[dig1][0][p]^numbers[dig2][1][p];
+    // shift tens digit into upper 3 bits (cols 7-5), units digit occupies lower 3 bits (cols 2-0)
+    result[p]=(numbers[dig1][p]<<5)|numbers[dig2][p];
   }
   gamer.printImage(result);
-}
-
-void setupScore() {
-  numbers[1][0][0] = B10000000;
-  numbers[1][0][1] = B10000000;
-  numbers[1][0][2] = B10000000;
-  numbers[1][0][3] = B10000000;
-  numbers[1][0][4] = B10000000;
-  numbers[1][0][5] = B10000000;
-  numbers[1][0][6] = B10000000;
-  numbers[1][0][7] = B10000000;
-
-  numbers[1][1][0] = B00000100;
-  numbers[1][1][1] = B00000100;
-  numbers[1][1][2] = B00000100;
-  numbers[1][1][3] = B00000100;
-  numbers[1][1][4] = B00000100;
-  numbers[1][1][5] = B00000100;
-  numbers[1][1][6] = B00000100;
-  numbers[1][1][7] = B00000100;
-
-  numbers[2][0][0] = B11100000;
-  numbers[2][0][1] = B00100000;
-  numbers[2][0][2] = B00100000;
-  numbers[2][0][3] = B11100000;
-  numbers[2][0][4] = B10000000;
-  numbers[2][0][5] = B10000000;
-  numbers[2][0][6] = B10000000;
-  numbers[2][0][7] = B11100000;
-
-  numbers[2][1][0] = B00000111;
-  numbers[2][1][1] = B00000001;
-  numbers[2][1][2] = B00000001;
-  numbers[2][1][3] = B00000111;
-  numbers[2][1][4] = B00000100;
-  numbers[2][1][5] = B00000100;
-  numbers[2][1][6] = B00000100;
-  numbers[2][1][7] = B00000111;
-
-  numbers[3][0][0] = B11100000;
-  numbers[3][0][1] = B00100000;
-  numbers[3][0][2] = B00100000;
-  numbers[3][0][3] = B01100000;
-  numbers[3][0][4] = B00100000;
-  numbers[3][0][5] = B00100000;
-  numbers[3][0][6] = B00100000;
-  numbers[3][0][7] = B11100000;
-
-  numbers[3][1][0] = B00000111;
-  numbers[3][1][1] = B00000001;
-  numbers[3][1][2] = B00000001;
-  numbers[3][1][3] = B00000011;
-  numbers[3][1][4] = B00000001;
-  numbers[3][1][5] = B00000001;
-  numbers[3][1][6] = B00000001;
-  numbers[3][1][7] = B00000111;
-
-  numbers[4][0][0] = B10100000;
-  numbers[4][0][1] = B10100000;
-  numbers[4][0][2] = B10100000;
-  numbers[4][0][3] = B11100000;
-  numbers[4][0][4] = B00100000;
-  numbers[4][0][5] = B00100000;
-  numbers[4][0][6] = B00100000;
-  numbers[4][0][7] = B00100000;
-
-  numbers[4][1][0] = B00000101;
-  numbers[4][1][1] = B00000101;
-  numbers[4][1][2] = B00000101;
-  numbers[4][1][3] = B00000111;
-  numbers[4][1][4] = B00000001;
-  numbers[4][1][5] = B00000001;
-  numbers[4][1][6] = B00000001;
-  numbers[4][1][7] = B00000001;
-
-  numbers[5][0][0] = B11100000;
-  numbers[5][0][1] = B10000000;
-  numbers[5][0][2] = B10000000;
-  numbers[5][0][3] = B11100000;
-  numbers[5][0][4] = B00100000;
-  numbers[5][0][5] = B00100000;
-  numbers[5][0][6] = B00100000;
-  numbers[5][0][7] = B11100000;
-
-  numbers[5][1][0] = B00000111;
-  numbers[5][1][1] = B00000100;
-  numbers[5][1][2] = B00000100;
-  numbers[5][1][3] = B00000111;
-  numbers[5][1][4] = B00000001;
-  numbers[5][1][5] = B00000001;
-  numbers[5][1][6] = B00000001;
-  numbers[5][1][7] = B00000111;
-
-  numbers[6][0][0] = B11100000;
-  numbers[6][0][1] = B10000000;
-  numbers[6][0][2] = B10000000;
-  numbers[6][0][3] = B11100000;
-  numbers[6][0][4] = B10100000;
-  numbers[6][0][5] = B10100000;
-  numbers[6][0][6] = B10100000;
-  numbers[6][0][7] = B11100000;
-
-  numbers[6][1][0] = B00000111;
-  numbers[6][1][1] = B00000100;
-  numbers[6][1][2] = B00000100;
-  numbers[6][1][3] = B00000111;
-  numbers[6][1][4] = B00000101;
-  numbers[6][1][5] = B00000101;
-  numbers[6][1][6] = B00000101;
-  numbers[6][1][7] = B00000111;
-
-  numbers[7][0][0] = B11100000;
-  numbers[7][0][1] = B00100000;
-  numbers[7][0][2] = B00100000;
-  numbers[7][0][3] = B00100000;
-  numbers[7][0][4] = B00100000;
-  numbers[7][0][5] = B00100000;
-  numbers[7][0][6] = B00100000;
-  numbers[7][0][7] = B00100000;
-
-  numbers[7][1][0] = B00000111;
-  numbers[7][1][1] = B00000001;
-  numbers[7][1][2] = B00000001;
-  numbers[7][1][3] = B00000001;
-  numbers[7][1][4] = B00000001;
-  numbers[7][1][5] = B00000001;
-  numbers[7][1][6] = B00000001;
-  numbers[7][1][7] = B00000001;
-
-  numbers[8][0][0] = B11100000;
-  numbers[8][0][1] = B10100000;
-  numbers[8][0][2] = B10100000;
-  numbers[8][0][3] = B11100000;
-  numbers[8][0][4] = B10100000;
-  numbers[8][0][5] = B10100000;
-  numbers[8][0][6] = B10100000;
-  numbers[8][0][7] = B11100000;
-
-  numbers[8][1][0] = B00000111;
-  numbers[8][1][1] = B00000101;
-  numbers[8][1][2] = B00000101;
-  numbers[8][1][3] = B00000111;
-  numbers[8][1][4] = B00000101;
-  numbers[8][1][5] = B00000101;
-  numbers[8][1][6] = B00000101;
-  numbers[8][1][7] = B00000111;
-
-  numbers[9][0][0] = B11100000;
-  numbers[9][0][1] = B10100000;
-  numbers[9][0][2] = B10100000;
-  numbers[9][0][3] = B11100000;
-  numbers[9][0][4] = B00100000;
-  numbers[9][0][5] = B00100000;
-  numbers[9][0][6] = B00100000;
-  numbers[9][0][7] = B11100000;
-
-  numbers[9][1][0] = B00000111;
-  numbers[9][1][1] = B00000101;
-  numbers[9][1][2] = B00000101;
-  numbers[9][1][3] = B00000111;
-  numbers[9][1][4] = B00000001;
-  numbers[9][1][5] = B00000001;
-  numbers[9][1][6] = B00000001;
-  numbers[9][1][7] = B00000111;
-
-  numbers[0][0][0] = B11100000;
-  numbers[0][0][1] = B10100000;
-  numbers[0][0][2] = B10100000;
-  numbers[0][0][3] = B10100000;
-  numbers[0][0][4] = B10100000;
-  numbers[0][0][5] = B10100000;
-  numbers[0][0][6] = B10100000;
-  numbers[0][0][7] = B11100000;
-
-  numbers[0][1][0] = B00000111;
-  numbers[0][1][1] = B00000101;
-  numbers[0][1][2] = B00000101;
-  numbers[0][1][3] = B00000101;
-  numbers[0][1][4] = B00000101;
-  numbers[0][1][5] = B00000101;
-  numbers[0][1][6] = B00000101;
-  numbers[0][1][7] = B00000111;
 }
 
 //MARK:FLAPPY code
@@ -800,6 +718,9 @@ void resetFlappy(){
 }
 void flappyLoop() 
 {  
+  checkSoundToggle();
+  updateLEDFlash();
+  if (soundEnabled) gamer.stopTone(); // stop previous chirp
   // Update
   if( menu )
   {
@@ -848,18 +769,23 @@ void flappyLoop()
       if( pipePos < -1 )
       {
         flappyScore++;
+        startLEDFlash(); // flash when a gate is passed
         pipePos = 7; 
         pipeGap = 1 + rand()%4;
       }
            
       // Move the bird
       byte lastBirdPos = birdPos;
-      if(gamer.isPressed(UP)) birdPos = max( birdPos - 1, 0 );//move the bird upwards when UP key is pressed
+      if(gamer.isPressed(UP)) {
+        birdPos = max( birdPos - 1, 0 );//move the bird upwards when UP key is pressed
+        if (soundEnabled) gamer.playTone(NOTE_A8); // wing-flap chirp
+      }
       else{
         birdPos++;//move the bird down
         if( birdPos >= 8 )//check if the bird hit the ground
         {
           gameOver = true;
+          playLossTune();
           pipePos = lastPipePos;
           birdPos = lastBirdPos;
           ticks = 0;
@@ -870,6 +796,7 @@ void flappyLoop()
       if( (pipePos == 1 || pipePos == 0) && (birdPos < pipeGap || birdPos >= pipeGap + 3) )
       {
         gameOver = true;
+        playLossTune();
         pipePos = lastPipePos;
         birdPos = lastBirdPos;
         ticks = 0;
@@ -910,7 +837,11 @@ void resetSimon() {
 }
 
 void simonLoop() {
-  sequence[x]=random(0,4);
+  checkSoundToggle();
+  updateLEDFlash();
+  // Four distinct tones — one per direction (up, down, left, right)
+  static const int simonNotes[] = {NOTE_E8, NOTE_C8, NOTE_G8, NOTE_D8};
+  sequence[x]=random(0, SIMON_NUM_DIRECTIONS);
   if(x>0) {
     for(byte p=3;p>0;p--) {
       showScore(0,p);
@@ -920,8 +851,11 @@ void simonLoop() {
     delay(delayMils);
     for(int i=0;i<x;i++) {
       if(gamer.isHeld(START)) return;
+      if (soundEnabled) gamer.playTone(simonNotes[sequence[i]]);
       gamer.printImage(framesSimon[sequence[i]]);
+      startLEDFlash(); // flash when arrow is displayed
       delay(delayMils);
+      if (soundEnabled) gamer.stopTone();
       gamer.clear();
       delay(delayMils);
     }
@@ -932,12 +866,15 @@ void simonLoop() {
       byte key = 4;
       while(key==4) { //wait for a keypress
         if(gamer.isHeld(START)) return;
-        if(gamer.isHeld(UP))         key=0;
-        else if(gamer.isHeld(DOWN))  key=1;
-        else if(gamer.isHeld(LEFT))  key=2;
-        else if(gamer.isHeld(RIGHT)) key=3;
+        if(gamer.isHeld(UP)) key=0;
+        if(gamer.isHeld(DOWN)) key=1;
+        if(gamer.isHeld(LEFT)) key=2;
+#if SIMON_RIGHT_ARROW_ENABLED
+        if(gamer.isHeld(RIGHT)) key=3;
+#endif
+        while(gamer.isHeld(RIGHT) || gamer.isHeld(LEFT) || gamer.isHeld(UP) || gamer.isHeld(DOWN))
       }
-      while(gamer.isHeld(UP) || gamer.isHeld(DOWN) || gamer.isHeld(LEFT) || gamer.isHeld(RIGHT)) delay(10); //wait for release
+      startLEDFlash(); // flash when player presses a button
       gamer.printImage(framesSimon[key]);
       //is it riiggghhhttt???
       if(key!=sequence[count]) {
@@ -949,9 +886,11 @@ void simonLoop() {
     delay(delayMils);
     if(success) {
       x++; //they got it right, MAKE IT HARDER!
+      playWinTune();
       gamer.printImage(right);
     } 
     else {
+      playLossTune();
       gamer.printImage(wrong);
       delay(500);
       showScore((x-1)/10,(x-1)%10); //showScore wants digits, not numbers! (as in 1,5 rather than 15)
@@ -1032,12 +971,12 @@ byte goalX = random(0,7);
 byte goalY = random(0,7);
 volatile byte snakeMap[8][8];
 byte snakeLength = 2;
-byte frames[11][8];
 int score = 0;
 
 void setupSnakeGame() {
   snakeLength = 2;
   score = 0;
+  dir = 1;
   goalX = random(0,7);
   goalY = random(0,7);
   currentX = 0;
@@ -1051,6 +990,9 @@ void setupSnakeGame() {
 }
 
 void snakeLoop() {
+  checkSoundToggle();
+  updateLEDFlash();
+  if (soundEnabled) gamer.stopTone(); // stop previous chirp
   //gamer.clear, but DON'T UPDATE YET!!!!
   for(int x=0;x<8;x++) {
     for(int y=0;y<8;y++) {
@@ -1060,10 +1002,13 @@ void snakeLoop() {
   //buttons should be here!
   //when upPressed etc. has been added, uncomment this next section and then comment out the random directions section:
   
-  if(gamer.isPressed(UP)) dir=1;
-  if(gamer.isPressed(RIGHT)) dir=2;
-  if(gamer.isPressed(DOWN)) dir=3;
-  if(gamer.isPressed(LEFT)) dir=4;
+  bool snakeBtnPressed = false;
+  if(gamer.isPressed(UP) && dir!=3) { dir=1; snakeBtnPressed=true; }
+  if(gamer.isPressed(RIGHT) && dir!=4) { dir=2; snakeBtnPressed=true; }
+  if(gamer.isPressed(DOWN) && dir!=1) { dir=3; snakeBtnPressed=true; }
+  if(gamer.isPressed(LEFT) && dir!=2) { dir=4; snakeBtnPressed=true; }
+  if (soundEnabled && snakeBtnPressed) gamer.playTone(NOTE_E8);
+  if (snakeBtnPressed) startLEDFlash(); // flash on direction button press
   
   //this is a random directions function. comment it out when button support has been added
   //if(random(0,10)>7) dir++;
@@ -1095,6 +1040,8 @@ void isCollected() {
     goalY = random(0,7);
     snakeLength++;
     score++;
+    if (soundEnabled) gamer.playTone(NOTE_A8); // pentatonic chirp when food is eaten
+    startLEDFlash(); // flash when food square is eaten
     for(int x=0;x<8;x++) {
       for(int y=0;y<8;y++) {
         snakeMap[x][y]++;
@@ -1131,6 +1078,7 @@ void collided() {
         if(currentX == x && currentY == y) {
           gamer.clear();
           delay(20);
+          playLossTune();
           //printString("GAME OVER  you scored",40);
           byte dig2 = score % 10;  //split score into two digits (eg 10 -> 1 and 0)
           byte dig1 = (score-(score%10))/10;
@@ -1187,6 +1135,7 @@ void resetTetris() {
     score = 0;
     level = 1;
     linesCleared = 0;
+    moveInterval = 1000;
     gameOverT = false;
     currentX = 3;
     currentY = -1;
@@ -1211,11 +1160,36 @@ int digitFrom(int number, int position) {
 }
 
 void tetrisLoop() {
+    checkSoundToggle();
+    updateLEDFlash();
+
+    // Stop any event chirp that was started in the previous iteration
+    if (soundEnabled && tetrisChirpPending) {
+        gamer.stopTone();
+        tetrisChirpPending = false;
+    }
+
+    // Background melody — simplified Korobeiniki (Tetris A-theme) using available frequency range
+    if (soundEnabled) {
+        static unsigned long lastNoteTime = 0;
+        static byte noteIdx = 0;
+        static const int melody[] = {NOTE_E8, NOTE_B7, NOTE_C8, NOTE_D8, NOTE_D8, NOTE_C8, NOTE_B7, NOTE_C8,
+                                     NOTE_E8, NOTE_A8, NOTE_A8, NOTE_C8, NOTE_E8, NOTE_D8, NOTE_C8, NOTE_B7};
+        const byte melodyLen = sizeof(melody) / sizeof(melody[0]);
+        if (millis() - lastNoteTime >= 200) {
+            gamer.playTone(melody[noteIdx]);
+            noteIdx = (noteIdx + 1) % melodyLen;
+            lastNoteTime = millis();
+        }
+    }
+
     if (gameOverT) {
       // Serial.println("Game Over! Final Score: " + String(score));
+        playLossTune();
         showScore(digitFrom(score, 2), digitFrom(score, 1)); // Display the final score
-        delay(5000); // Wait for 5 seconds before resetting the game
-        return; // Exit the loop if the game is over
+        delay(3000); // Wait for 3 seconds before resetting the game
+        resetTetris();
+        return; // Exit the loop so next call starts fresh
     }
 
     // Move the current piece down every second
@@ -1223,10 +1197,9 @@ void tetrisLoop() {
     if (millis() - lastMoveTime > moveInterval) {
       lastMoveTime = millis();
       // Serial.println("Attempting to move piece down...");
-        //flash led on pin 13
-        digitalWrite(13, HIGH);
         if (canMove(currentX, currentY + 1)) {
             currentY++; // Move the piece down
+            startLEDFlash(); // flash when piece moves down (gravity)
             lastMoveTime = millis();
             renderGridAndPiece();
         } else {
@@ -1244,37 +1217,49 @@ void tetrisLoop() {
             }
             // Check for completed lines and update score
             // Serial.println("Piece placed. Checking for lines and creating new piece...");
+            if (soundEnabled) { gamer.playTone(NOTE_C8); tetrisChirpPending = true; } // piece set-down thud
             checkLines();
             // Create a new piece
             createPiece();
             // Reset the position for the new piece
             currentX = 3;
-            currentY = -1;
+            currentY = -3;
             // Check if the new piece can be placed, if not, game over
-            if (!canMove(currentX, currentY) || !canMove(currentX, currentY + 1)) {
+            if (!canMove(currentX, currentY) || !canMove(currentX, currentY + 2)) {
                 gameOverT = true;
             }
             delay(100); // Short delay to prevent immediate input after placing a piece
-            digitalWrite(13, LOW);
             // Serial.println("New piece created. Current score: " + String(score) + ", Level: " + String(level) + ", Lines Cleared: " + String(linesCleared));
             renderGridAndPiece(); // Update the display with the current grid and piece
+            currentY = -1;
         }
     }
 
+    bool tetrisBtnPressed = false;
     if(gamer.isPressed(LEFT) && canMove(currentX - 1, currentY)) {
         currentX--; // Move left
+        tetrisBtnPressed = true;
        renderGridAndPiece(); // Update the display with the current grid and piece
     } else if(gamer.isPressed(RIGHT) && canMove(currentX + 1, currentY)) {
         currentX++; // Move right
+        tetrisBtnPressed = true;
         renderGridAndPiece(); // Update the display with the current grid and piece
-    } else if(gamer.isHeld(DOWN)) {
+    } else if(gamer.isPressed(DOWN) && canMove(currentX, currentY + 1) && !gamer.isHeld(DOWN)) {
+        currentY++; // Move down faster
+        tetrisBtnPressed = true;
+        renderGridAndPiece(); // Update the display with the current grid and piece
+    } else if(gamer.isHeld(DOWN){
+        tetrisBtnPressed = true;
         while(canMove(currentX, currentY + 1)) currentY++; // hard drop to bottom
         renderGridAndPiece();
-        while(gamer.isHeld(DOWN)) delay(10); // wait for release
+        while(gamer.isHeld(DOWN)) delay(10);
     } else if(gamer.isPressed(UP)) {
         rotatePiece(); // Rotate the piece
+        tetrisBtnPressed = true;
         renderGridAndPiece(); // Update the display with the current grid and piece
     }
+    if (tetrisBtnPressed) startLEDFlash(); // flash on any button press (move/rotate)
+    if (soundEnabled && tetrisBtnPressed) { gamer.playTone(NOTE_D8); tetrisChirpPending = true; } // button press chirp
 }
 
 void checkLines() {
@@ -1287,7 +1272,8 @@ void checkLines() {
             }
         }
         if (lineComplete) {
-
+            if (soundEnabled) { gamer.playTone(NOTE_A8); tetrisChirpPending = true; } // line clear reward chirp
+            startLEDFlash(); // flash when a row is cleared
             currentX = 3;
             currentY = -1;
             // Clear the line
@@ -1300,9 +1286,6 @@ void checkLines() {
             for (int k = i; k > 0; k--) {
                 for (int j = 0; j < gridWidth; j++) {
                     grid[k][j] = grid[k - 1][j]; // Move down the lines above
-                    //animate
-                    renderGridAndPiece();
-                    delay(20);
                 }
             }
             // Clear the top line
@@ -1311,7 +1294,7 @@ void checkLines() {
             }
             linesCleared++;
             score += level; // Increase score based on level
-            if (linesCleared % 10 == 0) { // Increase level every 10 lines
+            if (linesCleared % 7 == 0) { // Increase level every 10 lines
                 level++;
                 moveInterval = max(300, moveInterval - 200); // Decrease move interval to increase speed
             }
@@ -1323,6 +1306,7 @@ void checkLines() {
 
 
 void rotatePiece() {
+    if (currentPieceType == O) return; // O piece is symmetric; rotation has no effect
     int temp[3][3] = {0};
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
@@ -1385,9 +1369,9 @@ void createPiece() {
     currentPieceType = (PieceType)random(0, 7); // Randomly select a piece type
     switch (currentPieceType) {
         case I:
-            currentPiece[0][0] = 1;
-            currentPiece[0][1] = 1;
-            currentPiece[0][2] = 1;
+            currentPiece[1][0] = 1;
+            currentPiece[1][1] = 1;
+            currentPiece[1][2] = 1;
             break;
         case O:
             currentPiece[0][0] = 1;
@@ -1396,10 +1380,10 @@ void createPiece() {
             currentPiece[1][1] = 1;
             break;
         case T:
-            currentPiece[0][0] = 1;
             currentPiece[0][1] = 1;
-            currentPiece[0][2] = 1;
+            currentPiece[1][0] = 1;
             currentPiece[1][1] = 1;
+            currentPiece[1][2] = 1;
             break;
         case S:
             currentPiece[0][1] = 1;
@@ -1426,5 +1410,254 @@ void createPiece() {
             currentPiece[1][2] = 1;
             break;
     }
+    if (soundEnabled) { gamer.playTone(NOTE_G8); tetrisChirpPending = true; } // piece generation chirp
+    startLEDFlash(); // flash when a new piece is created
 }
 //MARK:END OF GAME CODE
+
+// ─────────────────────────────────────────────────────────────────────────────
+//MARK: ALIEN (Space Invaders) setup animation
+// Uses alien sprites from the original techwillsaveus/Gamer "Alien" example.
+// ─────────────────────────────────────────────────────────────────────────────
+void setupAlienAnim() {
+  // Frame 0: alien1 sprite (body centred, legs down)
+  alienAnim[0][0] = B00000000;
+  alienAnim[0][1] = B00000000;
+  alienAnim[0][2] = B01111110;
+  alienAnim[0][3] = B01011010;
+  alienAnim[0][4] = B01111110;
+  alienAnim[0][5] = B00100100;
+  alienAnim[0][6] = B00100100;
+  alienAnim[0][7] = B01100110;
+  // Frame 1: alien2 sprite (body jumped up one row, arms spread)
+  alienAnim[1][0] = B00000000;
+  alienAnim[1][1] = B01111110;
+  alienAnim[1][2] = B01011010;
+  alienAnim[1][3] = B01111110;
+  alienAnim[1][4] = B00100100;
+  alienAnim[1][5] = B01000010;
+  alienAnim[1][6] = B11000011;
+  alienAnim[1][7] = B00000000;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+//MARK: CONWAY setup animation
+// Two frames of a glider from Conway's Game of Life.
+// ─────────────────────────────────────────────────────────────────────────────
+void setupConwayAnim() {
+  // Frame 0: glider step 0  (.#. / ..# / ###)
+  conwayAnim[0][0] = B01000000; // .#......
+  conwayAnim[0][1] = B00100000; // ..#.....
+  conwayAnim[0][2] = B11100000; // ###.....
+  conwayAnim[0][3] = B00000000;
+  conwayAnim[0][4] = B00000000;
+  conwayAnim[0][5] = B00000000;
+  conwayAnim[0][6] = B00000000;
+  conwayAnim[0][7] = B00000000;
+  // Frame 1: glider step 1  (#.# / .## / .#.)
+  conwayAnim[1][0] = B10100000; // #.#.....
+  conwayAnim[1][1] = B01100000; // .##.....
+  conwayAnim[1][2] = B01000000; // .#......
+  conwayAnim[1][3] = B00000000;
+  conwayAnim[1][4] = B00000000;
+  conwayAnim[1][5] = B00000000;
+  conwayAnim[1][6] = B00000000;
+  conwayAnim[1][7] = B00000000;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+//MARK: ALIEN (Space Invaders) GAME CODE
+// Inspired by techwillsaveus/Gamer "Alien" example sprites.
+// 3 rows × 3 cols of aliens march left; player at col 0 shoots right.
+// UP/DOWN = move player  RIGHT = fire  START = exit
+// ─────────────────────────────────────────────────────────────────────────────
+// Alien state – bit-packed (bits 0-2 = cols 0-2 alive for that row)
+byte sInvRows[3];    // y = 1, 3, 5 for rows 0, 1, 2
+int8_t sInvBaseX;    // x of alien col 0 (cols at baseX, baseX+1, baseX+2)
+int8_t sInvPlayerY;  // player row (0-7)
+int8_t sInvBulletX;  // -1 = no bullet in flight
+int8_t sInvBulletY;
+byte sInvScore;
+byte sInvMarchTick;
+
+inline bool sInvAlive(byte row, byte col) { return (sInvRows[row] >> col) & 1; }
+inline void sInvKill(byte row, byte col)  { sInvRows[row] &= ~(1 << col); }
+
+byte sInvCount() {
+  byte n = 0;
+  for (byte r = 0; r < 3; r++)
+    for (byte c = 0; c < 3; c++)
+      if (sInvAlive(r, c)) n++;
+  return n;
+}
+
+void resetAlienGame() {
+  sInvRows[0] = 0x07; // 3 aliens
+  sInvRows[1] = 0x07;
+  sInvRows[2] = 0x07;
+  sInvBaseX   = 5;    // alien cols at x=5,6,7
+  sInvPlayerY = 3;    // player middle
+  sInvBulletX = -1;   // no bullet
+  sInvScore   = 0;
+  sInvMarchTick = 0;
+}
+
+void alienLoop() {
+  checkSoundToggle();
+  updateLEDFlash();
+  if (soundEnabled) gamer.stopTone(); // stop previous chirp
+
+  // Clear display buffer
+  for (int cx = 0; cx < 8; cx++)
+    for (int cy = 0; cy < 8; cy++)
+      gamer.display[cx][cy] = 0;
+
+  // ── Bullet movement ──────────────────────────────────────────────────────
+  if (sInvBulletX >= 0) {
+    sInvBulletX++;
+    if (sInvBulletX >= 8) {
+      sInvBulletX = -1; // missed
+    } else {
+      // Collision with aliens
+      for (byte r = 0; r < 3; r++) {
+        byte ay = 1 + r * 2;
+        if (sInvBulletY == ay) {
+          for (byte c = 0; c < 3; c++) {
+            if (sInvAlive(r, c) && (sInvBaseX + (int8_t)c) == sInvBulletX) {
+              sInvKill(r, c);
+              sInvBulletX = -1;
+              sInvScore++;
+              if (soundEnabled) gamer.playTone(NOTE_A8);
+              startLEDFlash();
+              break;
+            }
+          }
+        }
+        if (sInvBulletX < 0) break;
+      }
+    }
+  }
+
+  // ── Alien march ──────────────────────────────────────────────────────────
+  byte marchRate = (sInvScore < 12) ? (20 - sInvScore) : 8;
+  sInvMarchTick++;
+  if (sInvMarchTick >= marchRate) {
+    sInvMarchTick = 0;
+    sInvBaseX--;
+    if (sInvBaseX < 0) {
+      // Aliens reached player column – game over
+      for (byte b = 0; b < 4; b++) {
+        for (int cx = 0; cx < 8; cx++) for (int cy = 0; cy < 8; cy++) gamer.display[cx][cy] = 0;
+        gamer.updateDisplay(); delay(120);
+        gamer.display[0][(byte)sInvPlayerY] = 1;
+        gamer.updateDisplay(); delay(120);
+      }
+      playLossTune();
+      showScore(sInvScore / 10, sInvScore % 10);
+      delay(1500);
+      resetAlienGame();
+      return;
+    }
+  }
+
+  // ── All aliens killed – next wave ─────────────────────────────────────
+  if (sInvCount() == 0) {
+    playWinTune();
+    sInvRows[0] = sInvRows[1] = sInvRows[2] = 0x07;
+    sInvBaseX = 5;
+    sInvBulletX = -1;
+  }
+
+  // ── Player input ─────────────────────────────────────────────────────────
+  if (gamer.isHeld(UP)   && sInvPlayerY > 0) sInvPlayerY--;
+  if (gamer.isHeld(DOWN) && sInvPlayerY < 7) sInvPlayerY++;
+  if (gamer.isPressed(RIGHT) && sInvBulletX < 0) {
+    sInvBulletX = 1;
+    sInvBulletY = sInvPlayerY;
+    if (soundEnabled) gamer.playTone(NOTE_B7);
+    startLEDFlash();
+  }
+
+  // ── Draw ─────────────────────────────────────────────────────────────────
+  gamer.display[0][(byte)sInvPlayerY] = 1; // player
+  if (sInvBulletX > 0)
+    gamer.display[(byte)sInvBulletX][(byte)sInvBulletY] = 1;
+  for (byte r = 0; r < 3; r++) {
+    byte ay = 1 + r * 2;
+    for (byte c = 0; c < 3; c++) {
+      if (sInvAlive(r, c)) {
+        int8_t ax = sInvBaseX + (int8_t)c;
+        if (ax >= 0 && ax < 8) gamer.display[(byte)ax][ay] = 1;
+      }
+    }
+  }
+  gamer.updateDisplay();
+  delay(80);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+//MARK: CONWAY'S GAME OF LIFE CODE
+// From techwillsaveus/GamerCA2D (adapted to single-player launcher).
+// Runs simulation automatically; RIGHT = reseed random pattern; START = exit.
+// Uses bit-packed 8-byte rows (16 bytes total) for minimal SRAM use.
+// ─────────────────────────────────────────────────────────────────────────────
+#define CONWAY_STAGNATION_LIMIT 20  // reseed after this many unchanging generations
+
+byte conwayCurr[8]; // each byte = one row; bit x (LSB=col 0) = cell at (x, row)
+byte conwayNext[8];
+byte conwayStuck;   // frames without any change (detect stasis/extinction)
+
+void conwayRandomize() {
+  for (byte i = 0; i < 8; i++) conwayCurr[i] = (byte)random(0, 256);
+  conwayStuck = 0;
+}
+
+// Advance one generation; returns true if any cell changed.
+bool conwayStep() {
+  bool anyChange = false;
+  for (byte y = 0; y < 8; y++) {
+    conwayNext[y] = 0;
+    for (byte x = 0; x < 8; x++) {
+      byte alive = 0;
+      for (int8_t dy = -1; dy <= 1; dy++)
+        for (int8_t dx = -1; dx <= 1; dx++) {
+          if (dx == 0 && dy == 0) continue;
+          byte nx = (x + dx + 8) & 7;
+          byte ny = (y + dy + 8) & 7;
+          if ((conwayCurr[ny] >> nx) & 1) alive++;
+        }
+      bool curr = (conwayCurr[y] >> x) & 1;
+      bool next = (alive == 3) || (curr && alive == 2);
+      if (next) conwayNext[y] |= (1 << x);
+      if (next != curr) anyChange = true;
+    }
+  }
+  for (byte i = 0; i < 8; i++) conwayCurr[i] = conwayNext[i];
+  return anyChange;
+}
+
+void resetConway() { conwayRandomize(); }
+
+void conwayLoop() {
+  checkSoundToggle();
+  updateLEDFlash();
+
+  bool changed = conwayStep();
+  if (!changed) {
+    conwayStuck++;
+    if (conwayStuck > CONWAY_STAGNATION_LIMIT) conwayRandomize(); // static or extinct – reseed
+  } else {
+    conwayStuck = 0;
+  }
+
+  // RIGHT = plant new random seed manually
+  if (gamer.isPressed(RIGHT)) conwayRandomize();
+
+  // Render
+  for (byte x = 0; x < 8; x++)
+    for (byte y = 0; y < 8; y++)
+      gamer.display[x][y] = (conwayCurr[y] >> x) & 1;
+  gamer.updateDisplay();
+  delay(180);
+}
+
