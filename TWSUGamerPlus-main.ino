@@ -31,7 +31,7 @@ bool ledFlashing = false;
 #define SIMON_MAX_SEQUENCE 30
 
 // Feature flag: set to 1 to enable Serial debug output at startup.
-#define GAMER_DEBUG 0
+#define GAMER_DEBUG 1
 
 #if SIMON_RIGHT_ARROW_ENABLED
   #define SIMON_NUM_DIRECTIONS 4
