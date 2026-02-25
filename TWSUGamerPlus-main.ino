@@ -15,7 +15,6 @@ volatile byte animationLength[] = { //how long is each animation???
   2,2,2,2,2,2,2};
 volatile byte animationFrame = 0; //what frame is it???
 volatile byte gameNumber = 0; //what game is it???
-bool soundEnabled = true; //sound on/off toggle (UP in menu)
 volatile byte gameMax = 7; //how many games are there???
 
 // Sound toggle — starts OFF; touching the cap sense pad toggles it
