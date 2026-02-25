@@ -46,15 +46,15 @@ void startLEDFlash() {
   ledFlashing = true;
 }
 
-void updateLEDFlash() {
-  if (ledFlashing && millis() - ledFlashStartTime >= 300UL) {
+inline void updateLEDFlash() {
+  if (ledFlashing && millis() - ledFlashStartTime >= 250UL) {
     gamer.setLED(false);
     ledFlashing = false;
   }
 }
 
 // Detects a rising edge on the cap sense pad and toggles sound on/off
-void checkSoundToggle() {
+inline void checkSoundToggle() {
   bool cap = gamer.capTouch();
   if (cap && !lastCapTouchState) {
     soundEnabled = !soundEnabled;
