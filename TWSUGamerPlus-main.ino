@@ -43,6 +43,7 @@ void updateLEDFlash() {
 // Feature flag: set to 1 to enable the right-arrow direction in Simon.
 // Disabled by default because the RIGHT button has a known recognition bug.
 #define SIMON_RIGHT_ARROW_ENABLED 0
+#define SIMON_MAX_SEQUENCE 30
 
 #if SIMON_RIGHT_ARROW_ENABLED
   #define SIMON_NUM_DIRECTIONS 4
@@ -826,7 +827,7 @@ byte framesSimon[4][8];
 byte go[8];
 byte right[8];
 byte wrong[8];
-volatile byte sequence[30];
+volatile byte sequence[SIMON_MAX_SEQUENCE];
 
 void resetSimon() {
   gamer.clear();
@@ -841,6 +842,7 @@ void simonLoop() {
   updateLEDFlash();
   // Four distinct tones — one per direction (up, down, left, right)
   static const int simonNotes[] = {NOTE_E8, NOTE_C8, NOTE_G8, NOTE_D8};
+  if(x >= SIMON_MAX_SEQUENCE) x = SIMON_MAX_SEQUENCE - 1;
   sequence[x]=random(0, SIMON_NUM_DIRECTIONS);
   if(x>0) {
     for(byte p=3;p>0;p--) {
