@@ -648,7 +648,7 @@ void showScore(byte dig1,byte dig2) {
 }
 
 //MARK:FLAPPY code
-boolean menu = true;
+volatile boolean menu = true;
 boolean gameOver = false;
 boolean displayflappyScore = false;
 
