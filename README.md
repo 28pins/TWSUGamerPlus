@@ -1,10 +1,10 @@
-# GamerTetris
+# TWSUGamerPlus
 
 Arduino code and a lightweight hardware driver for the Technology Will Save Us DIY Gamer Kit. The repository bundles the `Gamer` library (LED matrix driver, button/IR/buzzer helpers) and a menu-driven sketch that runs fully featured games (not just demos), including added Tetris, richer light/sound effects, and memory optimizations on top of the base example.
 
 ## About this program
 
-GamerTetris is an Arduino sketch and accompanying hardware-abstraction library built for the [Technology Will Save Us (TWSU) DIY Gamer Kit](https://www.techwillsaveus.com/shop/diy-kits/diy-gamer-kit-2/). Starting from the base TWSU example, this project adds:
+TWSUGamerPlus is an Arduino sketch and accompanying hardware-abstraction library built for the [Technology Will Save Us (TWSU) DIY Gamer Kit](https://www.techwillsaveus.com/shop/diy-kits/diy-gamer-kit-2/). Starting from the base TWSU example, this project adds:
 
 - A **fully playable Tetris** implementation with piece rotation, soft-drop, and automatic speed progression.
 - **Seven games** in a single sketch: Snake, Breakout, Simon Says, Flappy Bird, Tetris, Space Invaders, and Conway’s Game of Life.
@@ -14,7 +14,7 @@ GamerTetris is an Arduino sketch and accompanying hardware-abstraction library b
 
 ## What’s inside
 - `Gamer.h` / `Gamer.cpp`: the `Gamer` class that owns the 8x8 display buffer, scans buttons, drives the buzzer and IR LED, and exposes helpers like `printImage`, `printString`, `showScore`, and `playTone`.
-- `GamerTetris-main.ino`: a single sketch with a launcher and seven games: Snake, Breakout, Simon, Flappy Bird, Tetris, Space Invaders, and Conway’s Game of Life.
+- `TWSUGamerPlus-main.ino`: a single sketch with a launcher and seven games: Snake, Breakout, Simon, Flappy Bird, Tetris, Space Invaders, and Conway’s Game of Life.
 - `library.properties`: Arduino metadata so the folder can live in `~/Arduino/libraries/Gamer`.
 
 ## Hardware
@@ -37,7 +37,7 @@ The `Gamer` library maps all hardware to named constants so sketches never use r
 
 ## Getting started
 1. Clone or download this repo. Place the folder in `~/Arduino/libraries/Gamer` (so the library files and the sketch sit together), or open the folder directly if you prefer to build from it.
-2. Open `GamerTetris-main.ino` in the Arduino IDE.
+2. Open `TWSUGamerPlus-main.ino` in the Arduino IDE.
 3. Select **Board: Arduino Uno** and the correct serial port for your Gamer Kit.
 4. Click **Upload**. No other libraries are required because the `Gamer` driver is included here.
 
@@ -131,7 +131,7 @@ MIT (No AI version: see https://github.com/28pins/NoAiLicense?tab=License-1-ov-f
 ### Repository structure
 
 ```
-GamerTetris-main.ino   — slim main sketch (globals + helpers + includes)
+TWSUGamerPlus-main.ino   — slim main sketch (globals + helpers + includes)
 Gamer.h / Gamer.cpp    — hardware-abstraction library
 src/
   assets/
@@ -167,7 +167,7 @@ translation unit, so there are no link-time issues and no need for separate
    ```cpp
    static const byte myGame_pgm[2][8] PROGMEM = { { … }, { … } };
    ```
-5. `#include "src/games/mygame.h"` in `GamerTetris-main.ino` (after the other
+5. `#include "src/games/mygame.h"` in `TWSUGamerPlus-main.ino` (after the other
    game includes).
 6. In `src/launcher/launcher.h`, add inside `launcherSetup()`:
    ```cpp
