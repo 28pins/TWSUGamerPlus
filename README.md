@@ -123,3 +123,81 @@ This is a zero-player simulation. Watch the cellular automaton evolve from a ran
 
 ## License
 MIT (No AI version: see https://github.com/28pins/NoAiLicense?tab=License-1-ov-file). See `LICENSE` for details.
+
+---
+
+## Developer notes
+
+### Repository structure
+
+```
+GamerTetris-main.ino   — slim main sketch (globals + helpers + includes)
+Gamer.h / Gamer.cpp    — hardware-abstraction library
+src/
+  assets/
+    progmem_assets.h   — all animation frames and image data in PROGMEM
+  persistence/
+    highscore.h        — header-only EEPROM high-score module (2-slot, CRC-8)
+  games/
+    game_interface.h   — GameDescriptor struct
+    snake.h            — Snake game state + functions
+    breakout.h         — Breakout game state + functions
+    simon.h            — Simon Says game state + functions
+    flappy.h           — Flappy Bird game state + functions
+    tetris.h           — Tetris game state + functions
+    alien.h            — Space Invaders game state + functions
+    conway.h           — Conway's Game of Life state + functions
+  launcher/
+    launcher.h         — game registration, animation loop, START-to-launch
+docs/
+  memory-report.md     — before/after SRAM analysis
+```
+
+All game headers are `#include`d directly into the main `.ino` — they share one
+translation unit, so there are no link-time issues and no need for separate
+`.cpp` files.
+
+### How to add a new game
+
+1. Create `src/games/mygame.h` with include guards.
+2. Declare any game-specific state variables (not `currentX`/`currentY`/`score`
+   — those are shared globals in the main INO).
+3. Implement `void resetMyGame()` and `void myGameLoop()`.
+4. Add two PROGMEM animation frames to `src/assets/progmem_assets.h`:
+   ```cpp
+   static const byte myGame_pgm[2][8] PROGMEM = { { … }, { … } };
+   ```
+5. `#include "src/games/mygame.h"` in `GamerTetris-main.ino` (after the other
+   game includes).
+6. In `src/launcher/launcher.h`, add inside `launcherSetup()`:
+   ```cpp
+   registerGame("MYGAME", resetMyGame, myGameLoop, &myGame_pgm[0][0], 2);
+   ```
+7. Increase `LAUNCHER_MAX_GAMES` by 1.
+
+### PROGMEM usage
+
+Constant data (fonts, images, note arrays) is stored in flash via `PROGMEM` and
+read at runtime with `pgm_read_byte()`. The helper `pgm_readimg(src, dst)` in
+`progmem_assets.h` copies one 8-byte image row from PROGMEM to a stack buffer
+for `gamer.printImage()`. String literals use the `F()` macro.
+
+### High-score persistence
+
+`src/persistence/highscore.h` provides a header-only EEPROM module:
+
+- **Two-slot wear-levelling**: writes alternate between EEPROM addresses 0 and 8
+  to spread erase cycles.
+- **CRC-8 integrity**: each 8-byte slot ends with a CRC so corrupted or
+  uninitialised EEPROM is detected cleanly.
+- **Rate-limiting**: writes are suppressed if fewer than 1 s have elapsed since
+  the last write.
+
+API:
+```cpp
+loadHighScores();              // call in setup(); logs via Serial
+saveHighScore(byte newScore);  // inserts into top-4 sorted list if improved
+byte best = getHighScore();    // returns top score
+clearHighScores();             // wipes EEPROM slots
+```
+
