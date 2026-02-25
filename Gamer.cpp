@@ -245,84 +245,46 @@ bool Gamer::capTouch()
 	  delay(1);
 
 	  // Prevent the timer IRQ from disturbing our measurement
-
 	  noInterrupts();
 
 	  // Make the pin an input with the internal pull-up on
-
 	  pinMode(19, INPUT_PULLUP);
 
-
-
 	  // Now see how long the pin to get pulled up. This manual unrolling of the loop
-
 	  // decreases the number of hardware cycles between each read of the pin,
-
 	  // thus increasing sensitivity.
-
 	  uint8_t cycles = 17;
-
 	       if (digitalRead(19)) { cycles =  0;}
-
 	  else if (digitalRead(19)) { cycles =  1;}
-
 	  else if (digitalRead(19)) { cycles =  2;}
-
 	  else if (digitalRead(19)) { cycles =  3;}
-
 	  else if (digitalRead(19)) { cycles =  4;}
-
 	  else if (digitalRead(19)) { cycles =  5;}
-
 	  else if (digitalRead(19)) { cycles =  6;}
-
 	  else if (digitalRead(19)) { cycles =  7;}
-
 	  else if (digitalRead(19)) { cycles =  8;}
-
 	  else if (digitalRead(19)) { cycles =  9;}
-
 	  else if (digitalRead(19)) { cycles = 10;}
-
 	  else if (digitalRead(19)) { cycles = 11;}
-
 	  else if (digitalRead(19)) { cycles = 12;}
-
 	  else if (digitalRead(19)) { cycles = 13;}
-
 	  else if (digitalRead(19)) { cycles = 14;}
-
 	  else if (digitalRead(19)) { cycles = 15;}
-
 	  else if (digitalRead(19)) { cycles = 16;}
 
 	  // End of timing-critical section
-
 	  interrupts();
 
 	  // Discharge the pin again by setting it low and output
-
 	  //  It's important to leave the pins low if you want to 
-
 	  //  be able to touch more than 1 sensor at a time - if
-
 	  //  the sensor is left pulled high, when you touch
-
 	  //  two sensors, your body will transfer the charge between
-
 	  //  sensors.
-
 	  digitalWrite(19, LOW);
-
 	  pinMode(19, OUTPUT);
 
-
-	  if(cycles > 0){
-		  return true;
-	  } else {
-	  	  return false;
-	  }
-	
+	  return (cycles > 0);
 }
 
 // Outputs -------------------------------
@@ -342,15 +304,23 @@ void Gamer::setRefreshRate(uint16_t refreshRate)
 void Gamer::updateDisplay()
 {
   byte newImage[8];
-  for(int j=0; j<8; j++) {
+  for(byte j=0; j<8; j++) {
     newImage[j] = 0x00;
-    for(int i=0; i<8; i++) {
+    for(byte i=0; i<8; i++) {
       newImage[j] <<= 1;
       newImage[j] |= display[i][j];
     }
   }
-  if(newImage != image) {
-    for(int i=0; i<8; i++) image[i] = newImage[i];
+  // Only copy if changed (optimize unnecessary writes)
+  bool changed = false;
+  for(byte i=0; i<8; i++) {
+    if (newImage[i] != image[i]) {
+      changed = true;
+      break;
+    }
+  }
+  if(changed) {
+    for(byte i=0; i<8; i++) image[i] = newImage[i];
   }
 }
 
@@ -359,8 +329,8 @@ void Gamer::updateDisplay()
  */
 void Gamer::allOn()
 {
-  for(int j=0; j<8; j++) {
-    for(int i=0; i<8; i++) display[i][j] = 1;
+  for(byte j=0; j<8; j++) {
+    for(byte i=0; i<8; i++) display[i][j] = 1;
   }
   updateDisplay();
 }
@@ -370,8 +340,8 @@ void Gamer::allOn()
  */
 void Gamer::clear()
 {
-  for(int j=0; j<8; j++) {
-    for(int i=0; i<8; i++) display[i][j] = 0;
+  for(byte j=0; j<8; j++) {
+    for(byte i=0; i<8; i++) display[i][j] = 0;
   }
   updateDisplay();
 }
@@ -382,8 +352,8 @@ void Gamer::clear()
  */
 void Gamer::printImage(byte* img)
 {
-  for(int j=0; j<8; j++) {
-    for(int i=0; i<8; i++) {
+  for(byte j=0; j<8; j++) {
+    for(byte i=0; i<8; i++) {
       display[i][j] = (img[j] & (1 << (7-i))) != 0;
     }
   }
@@ -398,8 +368,8 @@ void Gamer::printImage(byte* img)
  */
 void Gamer::printImage(byte* img, int x, int y)
 {
-  for(int j=0; j<8; j++) {
-    for(int i=0; i<8; i++) {
+  for(byte j=0; j<8; j++) {
+    for(byte i=0; i<8; i++) {
       if(i+x >= 0 && i+x < 8 && j+y >= 0 && j+y < 8) {
         display[i+x][j+y] = (img[j] & (1 << (7-i))) != 0;
       }
@@ -561,12 +531,12 @@ void Gamer::printString(String string)
  */
 void Gamer::appendColumn(byte* screen, byte col)
 {
-  for( int i=0; i<8; i++){
+  for( byte i=0; i<8; i++){
     screen[i]<<=1;
     if( (col&(1<<(7-i)))!=0 ) screen[i]++;
   }
   printImage(screen);
-  delay(70);
+  delay(60);
 }
 
 /**
@@ -578,7 +548,7 @@ void Gamer::showScore(int n)
   byte result[8];
   int dig1=n/10;
   int dig2=n%10;
-  for(int p=0;p<8;p++) {
+  for(byte p=0;p<8;p++) {
     result[p]=pgm_read_byte(&allNumbers[dig2][p]);
     if( dig1>0 )
     result[p]|=(pgm_read_byte(&allNumbers[dig1][p])<<4);

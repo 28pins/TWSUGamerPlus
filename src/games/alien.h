@@ -37,8 +37,8 @@ void alienLoop() {
   updateLEDFlash();
   if (soundEnabled) gamer.stopTone();
 
-  for (int cx = 0; cx < 8; cx++)
-    for (int cy = 0; cy < 8; cy++)
+  for (byte cx = 0; cx < 8; cx++)
+    for (byte cy = 0; cy < 8; cy++)
       gamer.display[cx][cy] = 0;
 
   // ── Bullet movement ──────────────────────────────────────────────────────
@@ -74,10 +74,10 @@ void alienLoop() {
     sInvBaseX--;
     if (sInvBaseX < 0) {
       for (byte b = 0; b < 4; b++) {
-        for (int cx = 0; cx < 8; cx++) for (int cy = 0; cy < 8; cy++) gamer.display[cx][cy] = 0;
-        gamer.updateDisplay(); delay(120);
+        for (byte cx = 0; cx < 8; cx++) for (byte cy = 0; cy < 8; cy++) gamer.display[cx][cy] = 0;
+        gamer.updateDisplay(); delay(100);
         gamer.display[0][(byte)sInvPlayerY] = 1;
-        gamer.updateDisplay(); delay(120);
+        gamer.updateDisplay(); delay(100);
       }
       playLossTune();
       saveHighScore(sInvScore);

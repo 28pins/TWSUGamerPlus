@@ -19,9 +19,7 @@ void startBreakout(boolean resetIt);
 inline void startBreakoutReset() { startBreakout(true); }
 
 boolean outOfBounds(int xV, int yV) {
-  if(xV >= 8 || xV < 0) return true;
-  else if(yV >= 8 || yV < 0) return true;
-  else return false;
+  return (xV >= 8 || xV < 0 || yV >= 8 || yV < 0);
 }
 
 void physics() {
@@ -82,8 +80,8 @@ void physics() {
 }
 
 void startBreakout(boolean resetIt) {
-  for(int x=0;x<8;x++) {
-    for(int y=0;y<4;y++) {
+  for(byte x=0;x<8;x++) {
+    for(byte y=0;y<4;y++) {
       blocks[x][y] = 1;
     }
   }
@@ -105,13 +103,13 @@ void breakoutLoop() {
   updateLEDFlash();
   if (soundEnabled) gamer.stopTone();
   if(counter>2) {
-    for(int x=0;x<8;x++) {
-      for(int y=0;y<8;y++) {
+    for(byte x=0;x<8;x++) {
+      for(byte y=0;y<8;y++) {
         gamer.display[x][y] = LOW;
       }
     }
   }
-  for(int x=0;x<8;x++) {
+  for(byte x=0;x<8;x++) {
     gamer.display[x][7]=LOW;
   }
   if(gamer.isHeld(LEFT)&&paddleX>0){
@@ -120,7 +118,7 @@ void breakoutLoop() {
   else if(gamer.isHeld(RIGHT)&&paddleX<4) {
     paddleX++;
   }
-  for(int a=0;a<4;a++) {
+  for(byte a=0;a<4;a++) {
     if(paddleX+a<8) {
       gamer.display[paddleX+a][7]=HIGH;
     }
@@ -128,8 +126,8 @@ void breakoutLoop() {
   if(counter>2) {
     origXV = velocity[0];
     origYV = velocity[1];
-    for(int x=0;x<8;x++) {
-      for(int y=0;y<4;y++) {
+    for(byte x=0;x<8;x++) {
+      for(byte y=0;y<4;y++) {
         if(blocks[x][y] == 1) {
           gamer.display[x][y] = HIGH;
         }
@@ -140,11 +138,11 @@ void breakoutLoop() {
       if (soundEnabled) gamer.playTone(currentYBreakout >= 6 ? NOTE_C8 : NOTE_E8);
       startLEDFlash();
     }
-    for(int x=0;x<8;x++) {
-      for(int y=0;y<8;y++) {
+    for(byte x=0;x<8;x++) {
+      for(byte y=0;y<8;y++) {
         if(blocks[x][y]==0) {
-          if(x%2==0) {
-            if(y%2==0) {
+          if((x & 1) == 0) {  // x%2==0
+            if((y & 1) == 0) {  // y%2==0
               if(x<7) { blocks[x+1][y]=0; } else { blocks[0][y]=0; }
             }
             else {
@@ -152,7 +150,7 @@ void breakoutLoop() {
             }
           }
           else {
-            if(y%2==0) {
+            if((y & 1) == 0) {  // y%2==0
               if(x>0) { blocks[x-1][y]=0; } else { blocks[7][y]=0; }
             }
             else {
@@ -162,8 +160,8 @@ void breakoutLoop() {
         }
       }
     }
-    for(int x=0;x<8;x++) {
-      for(int y=0;y<4;y++) {
+    for(byte x=0;x<8;x++) {
+      for(byte y=0;y<4;y++) {
         if(blocks[x][y] == 0) {
           gamer.display[x][y] = LOW;
         }
@@ -215,12 +213,12 @@ void breakoutLoop() {
   else counter++;
   gamer.updateDisplay();
   if(currentYBreakout==7) {
-    for(int b=0;b<4;b++) {
+    for(byte b=0;b<4;b++) {
       gamer.clear();
-      delay(150);
+      delay(100);
       gamer.display[currentXBreakout][currentYBreakout]=HIGH;
       gamer.updateDisplay();
-      delay(150);
+      delay(100);
     }
     playLossTune();
     saveHighScore(scoreBreakout);
@@ -234,8 +232,8 @@ void breakoutLoop() {
       showScore(0,scoreBreakout);
     }
     else {
-      int dig2 = scoreBreakout % 10;
-      int dig1 = (scoreBreakout-(scoreBreakout%10))/10;
+      byte dig2 = scoreBreakout % 10;
+      byte dig1 = scoreBreakout / 10;
       gamer.clear();
       showScore(dig1,dig2);
     }
@@ -243,8 +241,8 @@ void breakoutLoop() {
     startBreakout(true);
   }
   boolean finished = true;
-  for(int x=0;x<8;x++) {
-    for(int y=0;y<4;y++) {
+  for(byte x=0;x<8;x++) {
+    for(byte y=0;y<4;y++) {
       if(blocks[x][y]==HIGH) finished=false;
     }
   }
@@ -252,7 +250,7 @@ void breakoutLoop() {
     playWinTune();
     startBreakout(false);
   }
-  delay(50);
+  delay(40);
 }
 
 #endif // BREAKOUT_H

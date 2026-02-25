@@ -42,7 +42,7 @@ void drawInGameScreen( byte colour )
       inGameScreen[ 1 + birdPos*8 ] = colour;
     }
   }
-  for( int y=0; y<8; ++y )
+  for( byte y=0; y<8; ++y )
   {
     if( y < pipeGap || y >= pipeGap + 3 )
     {
@@ -104,11 +104,11 @@ void flappyLoop()
     saveHighScore(flappyScore);
     gamer.clear();
     byte dig2 = flappyScore % 10;
-    byte dig1 = (flappyScore-dig2)/10;
+    byte dig1 = flappyScore / 10;
     showScore(dig1,dig2);
-    delay(1000);
+    delay(800);
     displayflappyScore = false;
-    for(int i = 0 ; i < 64; i++) inGameScreen[i] = 0;
+    for(byte i = 0 ; i < 64; i++) inGameScreen[i] = 0;
     resetFlappy();
     menu = true;
   }else{
@@ -158,14 +158,14 @@ void flappyLoop()
 
   if(!displayflappyScore){
     byte* screen = menu ? menuScreen : inGameScreen;
-    for(int i = 0 ; i < 64; i++){
-      int x = i%8;
-      int y = i/8;
+    for(byte i = 0 ; i < 64; i++){
+      byte x = i & 7;  // i % 8
+      byte y = i >> 3; // i / 8
       gamer.display[x][y] = screen[i];
     }
     gamer.updateDisplay();
   }
-  delay(12);
+  delay(10);
 }
 
 #endif // FLAPPY_H

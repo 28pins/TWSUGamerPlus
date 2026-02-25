@@ -67,7 +67,10 @@ void checkSoundToggle() {
 void playWinTune() {
   if (!soundEnabled) return;
   static const byte notes[] PROGMEM = {NOTE_C8, NOTE_E8, NOTE_G8, NOTE_B8};
-  for (byte i = 0; i < 4; i++) { gamer.playTone(pgm_read_byte(&notes[i])); delay(WIN_NOTE_DURATION); }
+  for (byte i = 0; i < 4; i++) { 
+    gamer.playTone(pgm_read_byte(&notes[i])); 
+    delay(WIN_NOTE_DURATION); 
+  }
   gamer.stopTone();
 }
 
@@ -75,14 +78,17 @@ void playWinTune() {
 void playLossTune() {
   if (!soundEnabled) return;
   static const byte notes[] PROGMEM = {NOTE_B8, NOTE_G8, NOTE_E8, NOTE_B7};
-  for (byte i = 0; i < 4; i++) { gamer.playTone(pgm_read_byte(&notes[i])); delay(LOSS_NOTE_DURATION); }
+  for (byte i = 0; i < 4; i++) { 
+    gamer.playTone(pgm_read_byte(&notes[i])); 
+    delay(LOSS_NOTE_DURATION); 
+  }
   gamer.stopTone();
 }
 
 // Score display using PROGMEM number bitmaps (3-pixel wide; tens shifted 5, units as-is)
 void showScore(byte dig1, byte dig2) {
   byte result[8];
-  for (int p = 0; p < 8; p++)
+  for (byte p = 0; p < 8; p++)
     result[p] = (pgm_read_byte(&numbers_pgm[dig1][p]) << 5) | pgm_read_byte(&numbers_pgm[dig2][p]);
   gamer.printImage(result);
 }

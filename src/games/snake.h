@@ -17,8 +17,8 @@ void setupSnakeGame() {
   goalY = random(0,7);
   currentX = 0;
   currentY = 0;
-  for(int x=0;x<8;x++) {
-    for(int y=0;y<8;y++) {
+  for(byte x=0;x<8;x++) {
+    for(byte y=0;y<8;y++) {
       snakeMap[x][y] = 0;
     }
   }
@@ -33,8 +33,8 @@ void isCollected() {
     score++;
     if (soundEnabled) gamer.playTone(NOTE_A8);
     startLEDFlash();
-    for(int x=0;x<8;x++) {
-      for(int y=0;y<8;y++) {
+    for(byte x=0;x<8;x++) {
+      for(byte y=0;y<8;y++) {
         snakeMap[x][y]++;
       }
     }
@@ -44,8 +44,8 @@ void isCollected() {
 }
 
 void collided() {
-  for(int x=0;x<8;x++) {
-    for(int y=0;y<8;y++) {
+  for(byte x=0;x<8;x++) {
+    for(byte y=0;y<8;y++) {
       if(snakeMap[x][y] > 0) {
         if(currentX == x && currentY == y) {
           gamer.clear();
@@ -53,7 +53,7 @@ void collided() {
           playLossTune();
           saveHighScore((byte)min(score, 99));
           byte dig2 = score % 10;
-          byte dig1 = (score-(score%10))/10;
+          byte dig1 = score / 10;
           showScore(dig1,dig2);
           delay(300);
           setupSnakeGame();
@@ -64,8 +64,8 @@ void collided() {
 }
 
 void snakeRec() {
-  for(int x=0;x<8;x++) {
-    for(int y=0;y<8;y++) {
+  for(byte x=0;x<8;x++) {
+    for(byte y=0;y<8;y++) {
       if(snakeMap[x][y] > 0) {
         snakeMap[x][y]--;
       }
@@ -73,8 +73,8 @@ void snakeRec() {
   }
   collided();
   snakeMap[currentX][currentY] = snakeLength;
-  for(int x=0;x<8;x++) {
-    for(int y=0;y<8;y++) {
+  for(byte x=0;x<8;x++) {
+    for(byte y=0;y<8;y++) {
       if(snakeMap[x][y] > 0) {
         gamer.display[x][y] = HIGH;
       }
@@ -86,8 +86,8 @@ void snakeLoop() {
   checkSoundToggle();
   updateLEDFlash();
   if (soundEnabled) gamer.stopTone();
-  for(int x=0;x<8;x++) {
-    for(int y=0;y<8;y++) {
+  for(byte x=0;x<8;x++) {
+    for(byte y=0;y<8;y++) {
       gamer.display[x][y] = LOW;
     }
   }
@@ -116,7 +116,7 @@ void snakeLoop() {
   gamer.display[currentX][currentY] = HIGH;
   snakeRec();
   isCollected();
-  delay(100);
+  delay(80);
   gamer.updateDisplay();
 }
 

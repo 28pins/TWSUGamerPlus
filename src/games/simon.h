@@ -27,7 +27,7 @@ void simonLoop() {
     byte gbuf[8]; pgm_readimg(go_pgm, gbuf);
     gamer.printImage(gbuf);
     delay(delayMils);
-    for(int i=0;i<x;i++) {
+    for(byte i=0;i<x;i++) {
       if(gamer.isHeld(START)) return;
       if (soundEnabled) gamer.playTone(pgm_read_byte(&simonNotes[sequence[i]]));
       byte fbuf[8]; pgm_readimg(framesSimon_pgm[sequence[i]], fbuf);
@@ -73,15 +73,15 @@ void simonLoop() {
       playLossTune();
       byte wbuf[8]; pgm_readimg(wrong_pgm, wbuf);
       gamer.printImage(wbuf);
-      delay(500);
+      delay(400);
       showScore((x-1)/10,(x-1)%10);
-      delay(500);
+      delay(400);
       resetSimon();
     }
   } else {
     x++;
   }
-  delay(500);
+  delay(400);
 }
 
 #endif // SIMON_H

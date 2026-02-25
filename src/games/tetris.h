@@ -23,8 +23,8 @@ enum PieceType { I, O, T, S, Z, J, L };
 PieceType currentPieceType;
 
 bool canMove(int x, int y, int piece[3][3] = currentPiece) {
-  for (int i = 0; i < 3; i++) {
-    for (int j = 0; j < 3; j++) {
+  for (byte i = 0; i < 3; i++) {
+    for (byte j = 0; j < 3; j++) {
       if (piece[i][j] == 1) {
         int newX = x + j;
         int newY = y + i;
@@ -43,13 +43,13 @@ bool canMove(int x, int y, int piece[3][3] = currentPiece) {
 }
 
 void renderGridAndPiece() {
-  for (int i = 0; i < gridHeight; i++) {
-    for (int j = 0; j < gridWidth; j++) {
+  for (byte i = 0; i < gridHeight; i++) {
+    for (byte j = 0; j < gridWidth; j++) {
       gamer.display[j][i] = (grid[i][j] == 1) ? 1 : 0;
     }
   }
-  for (int i = 0; i < 3; i++) {
-    for (int j = 0; j < 3; j++) {
+  for (byte i = 0; i < 3; i++) {
+    for (byte j = 0; j < 3; j++) {
       if (currentPiece[i][j] == 1) {
         int x = currentX + j;
         int y = currentY + i;
@@ -63,8 +63,8 @@ void renderGridAndPiece() {
 }
 
 void createPiece() {
-  for (int i = 0; i < 3; i++)
-    for (int j = 0; j < 3; j++)
+  for (byte i = 0; i < 3; i++)
+    for (byte j = 0; j < 3; j++)
       currentPiece[i][j] = 0;
   currentPieceType = (PieceType)random(0, 7);
   switch (currentPieceType) {
@@ -101,9 +101,9 @@ void createPiece() {
 }
 
 void checkLines() {
-  for (int i = 0; i < gridHeight; i++) {
+  for (byte i = 0; i < gridHeight; i++) {
     bool lineComplete = true;
-    for (int j = 0; j < gridWidth; j++) {
+    for (byte j = 0; j < gridWidth; j++) {
       if (grid[i][j] == 0) { lineComplete = false; break; }
     }
     if (lineComplete) {
@@ -111,17 +111,17 @@ void checkLines() {
       startLEDFlash();
       currentX = 3;
       currentY = -1;
-      for (int j = 0; j < gridWidth; j++) {
+      for (byte j = 0; j < gridWidth; j++) {
         grid[i][j] = 0;
         renderGridAndPiece();
-        delay(30);
+        delay(25);
       }
-      for (int k = i; k > 0; k--) {
-        for (int j = 0; j < gridWidth; j++) {
+      for (byte k = i; k > 0; k--) {
+        for (byte j = 0; j < gridWidth; j++) {
           grid[k][j] = grid[k - 1][j];
         }
       }
-      for (int j = 0; j < gridWidth; j++) grid[0][j] = 0;
+      for (byte j = 0; j < gridWidth; j++) grid[0][j] = 0;
       linesCleared++;
       score += level;
       if (linesCleared % 7 == 0) {
@@ -135,21 +135,22 @@ void checkLines() {
 void rotatePiece() {
   if (currentPieceType == O) return;
   int temp[3][3] = {0};
-  for (int i = 0; i < 3; i++)
-    for (int j = 0; j < 3; j++)
+  for (byte i = 0; i < 3; i++)
+    for (byte j = 0; j < 3; j++)
       temp[j][2 - i] = currentPiece[i][j];
   if (canMove(currentX, currentY, temp)) {
-    for (int i = 0; i < 3; i++)
-      for (int j = 0; j < 3; j++)
+    for (byte i = 0; i < 3; i++)
+      for (byte j = 0; j < 3; j++)
         currentPiece[i][j] = temp[i][j];
   }
 }
 
 int digitFrom(int number, int position) {
-  if (position < 1) return 0;
-  if (number == 0) return 0;
+  if (position < 1 || number == 0) return 0;
   if (number > 99) number = 99;
-  int digit = (number / (int)pow(10, position - 1)) % 10;
+  // Replace pow() with simple division
+  int divisor = (position == 1) ? 1 : 10;
+  int digit = (number / divisor) % 10;
   return digit;
 }
 
@@ -161,8 +162,8 @@ void resetTetris() {
   gameOverT = false;
   currentX = 3;
   currentY = -1;
-  for (int i = 0; i < gridHeight; i++) {
-    for (int j = 0; j < gridWidth; j++) {
+  for (byte i = 0; i < gridHeight; i++) {
+    for (byte j = 0; j < gridWidth; j++) {
       grid[i][j] = 0;
     }
     renderGridAndPiece();
@@ -193,7 +194,7 @@ void tetrisLoop() {
     playLossTune();
     saveHighScore((byte)min(score, 99));
     showScore(digitFrom(score, 2), digitFrom(score, 1));
-    delay(3000);
+    delay(2000);
     resetTetris();
     return;
   }
@@ -207,8 +208,8 @@ void tetrisLoop() {
       lastMoveTime = millis();
       renderGridAndPiece();
     } else {
-      for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
+      for (byte i = 0; i < 3; i++) {
+        for (byte j = 0; j < 3; j++) {
           if (currentPiece[i][j] == 1) {
             int x = currentX + j;
             int y = currentY + i;
@@ -226,7 +227,7 @@ void tetrisLoop() {
       if (!canMove(currentX, currentY) || !canMove(currentX, currentY + 2)) {
         gameOverT = true;
       }
-      delay(100);
+      delay(80);
       renderGridAndPiece();
       currentY = -1;
     }
@@ -249,7 +250,7 @@ void tetrisLoop() {
     tetrisBtnPressed = true;
     while(canMove(currentX, currentY + 1)) currentY++;
     renderGridAndPiece();
-    while(gamer.isHeld(DOWN)) delay(10);
+    while(gamer.isHeld(DOWN)) delay(8);
   } else if(gamer.isPressed(UP)) {
     rotatePiece();
     tetrisBtnPressed = true;
