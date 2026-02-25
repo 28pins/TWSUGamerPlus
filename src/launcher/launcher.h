@@ -1,8 +1,8 @@
 #ifndef LAUNCHER_H
 #define LAUNCHER_H
 
-#include "src/games/game_interface.h"
-#include "src/assets/progmem_assets.h"
+#include "../games/game_interface.h"
+#include "../assets/progmem_assets.h"
 
 // ── Launcher state ────────────────────────────────────────────────────────────
 #define LAUNCHER_MAX_GAMES 7

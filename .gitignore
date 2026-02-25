@@ -1,0 +1,30 @@
+# Arduino IDE / arduino-cli build artefacts
+build/
+*.elf
+*.hex
+*.bin
+*.map
+*.lst
+
+# Arduino IDE temporary files
+*.tmp
+*.bak
+
+# Stray build/compile directories created by tools
+sketch_build/
+TWSUGamerPlus_sketch/
+bin/
+
+# CodeQL source-root symlink (causes arduino-cli symlink-loop error)
+_codeql_detected_source_root
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

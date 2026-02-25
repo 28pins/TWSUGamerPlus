@@ -2,23 +2,23 @@
 #define BREAKOUT_H
 
 // ── Breakout game state ───────────────────────────────────────────────────────
-volatile int currentXBreakout = 5;
-volatile int currentYBreakout = 5;
-volatile int velocity[2] = {-1,-1};
-volatile byte blocks[8][8];
-volatile byte paddleX = 2;
-volatile byte counter = 0;
-volatile int origXV = -1;
-volatile int origYV = -1;
-volatile byte scoreBreakout = 0;
+int currentXBreakout = 5;
+int currentYBreakout = 5;
+int velocity[2] = {-1,-1};
+byte blocks[8][8];
+byte paddleX = 2;
+byte breakoutCounter = 0;
+int origXV = -1;
+int origYV = -1;
+byte scoreBreakout = 0;
 
 // Forward declaration needed by startBreakoutReset wrapper below
-void startBreakout(boolean resetIt);
+void startBreakout(bool resetIt);
 
 // Wrapper used by the launcher to reset and start a fresh game
 inline void startBreakoutReset() { startBreakout(true); }
 
-boolean outOfBounds(int xV, int yV) {
+bool outOfBounds(int xV, int yV) {
   return (xV >= 8 || xV < 0 || yV >= 8 || yV < 0);
 }
 
@@ -79,7 +79,7 @@ void physics() {
   }
 }
 
-void startBreakout(boolean resetIt) {
+void startBreakout(bool resetIt) {
   for(byte x=0;x<8;x++) {
     for(byte y=0;y<4;y++) {
       blocks[x][y] = 1;
@@ -101,8 +101,8 @@ void startBreakout(boolean resetIt) {
 void breakoutLoop() {
   checkSoundToggle();
   updateLEDFlash();
-  if (soundEnabled) gamer.stopTone();
-  if(counter>2) {
+  if(soundEnabled) gamer.stopTone();
+  if(breakoutCounter>2) {
     for(byte x=0;x<8;x++) {
       for(byte y=0;y<8;y++) {
         gamer.display[x][y] = LOW;
@@ -123,7 +123,7 @@ void breakoutLoop() {
       gamer.display[paddleX+a][7]=HIGH;
     }
   }
-  if(counter>2) {
+  if(breakoutCounter>2) {
     origXV = velocity[0];
     origYV = velocity[1];
     for(byte x=0;x<8;x++) {
@@ -208,9 +208,9 @@ void breakoutLoop() {
     currentXBreakout = currentXBreakout+velocity[0];
     currentYBreakout = currentYBreakout+velocity[1];
     gamer.display[currentXBreakout][currentYBreakout] = HIGH;
-    counter=0;
+    breakoutCounter=0;
   }
-  else counter++;
+  else breakoutCounter++;
   gamer.updateDisplay();
   if(currentYBreakout==7) {
     for(byte b=0;b<4;b++) {
@@ -240,7 +240,7 @@ void breakoutLoop() {
     delay(500);
     startBreakout(true);
   }
-  boolean finished = true;
+  bool finished = true;
   for(byte x=0;x<8;x++) {
     for(byte y=0;y<4;y++) {
       if(blocks[x][y]==HIGH) finished=false;

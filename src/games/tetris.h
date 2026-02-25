@@ -4,9 +4,9 @@
 // ── Tetris game state ─────────────────────────────────────────────────────────
 // score, currentX, currentY declared in main INO
 unsigned long moveInterval = 1000;
-volatile int level = 1;
-volatile int linesCleared = 0;
-volatile bool gameOverT = false;
+int level = 1;
+int linesCleared = 0;
+bool gameOverT = false;
 const int gridWidth = 8;
 const int gridHeight = 8;
 int grid[gridHeight][gridWidth] = {
@@ -22,7 +22,9 @@ int currentPiece[3][3] = {
 enum PieceType { I, O, T, S, Z, J, L };
 PieceType currentPieceType;
 
-bool canMove(int x, int y, int piece[3][3] = currentPiece) {
+bool canMove(int x, int y, int piece[3][3]);
+inline bool canMove(int x, int y) { return canMove(x, y, currentPiece); }
+bool canMove(int x, int y, int piece[3][3]) {
   for (byte i = 0; i < 3; i++) {
     for (byte j = 0; j < 3; j++) {
       if (piece[i][j] == 1) {

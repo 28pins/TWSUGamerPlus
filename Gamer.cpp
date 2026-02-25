@@ -1,17 +1,20 @@
 #include "Gamer.h"
 #include "Arduino.h"
 
-int count;
-bool toggleVal = false;
-int split = 0;
-bool ir = false;
-bool irTog = false;
-bool toneIsPlaying = false;
-bool playTog = false;
-bool toneStopped = false;
-char prevChar;
+// Font-table sentinel — end of character bitmap column list
+#define LETEND B10101010
 
-Gamer *thisGamer = NULL;
+static int count = 0;
+static bool toggleVal = false;
+static int split = 0;
+static bool ir = false;
+static bool irTog = false;
+static bool toneIsPlaying = false;
+static bool playTog = false;
+static bool toneStopped = false;
+static char prevChar = 0;
+
+static Gamer *thisGamer = NULL;
 
 // Interrupt service routine.
 ISR(TIMER2_COMPB_vect)
@@ -33,7 +36,6 @@ ISR(TIMER2_COMPA_vect)
         if(split % 10 == 0 ){
           thisGamer->isrRoutine();
         }
-        split++;
       }
       else {
         PORTD &= ~_BV(PORTD2);
@@ -41,9 +43,7 @@ ISR(TIMER2_COMPA_vect)
         if(split % 10== 0 ) {
           thisGamer->isrRoutine();
         }
-        split++;
       }
-      split++;
     }
     else {
       PORTD &= ~_BV(PORTD2);
@@ -108,7 +108,7 @@ void Gamer::playTone(int note)
 void Gamer::stopTone()
 {
   if(toneStopped == false){
-    TIMSK2 &= (1<<OCIE1A);
+    TIMSK2 &= ~(1<<OCIE2A);
     toneStopped = true;
     toneIsPlaying = false;
     playTog = false;
@@ -238,9 +238,9 @@ void Gamer::setldrThreshold(uint16_t threshold)
 */
 bool Gamer::capTouch()
 {
-	pinMode(19, OUTPUT);
+	pinMode(CAP_TOUCH_PIN, OUTPUT);
 
-	  digitalWrite(19, LOW);
+	  digitalWrite(CAP_TOUCH_PIN, LOW);
 
 	  delay(1);
 
@@ -248,29 +248,29 @@ bool Gamer::capTouch()
 	  noInterrupts();
 
 	  // Make the pin an input with the internal pull-up on
-	  pinMode(19, INPUT_PULLUP);
+	  pinMode(CAP_TOUCH_PIN, INPUT_PULLUP);
 
 	  // Now see how long the pin to get pulled up. This manual unrolling of the loop
 	  // decreases the number of hardware cycles between each read of the pin,
 	  // thus increasing sensitivity.
 	  uint8_t cycles = 17;
-	       if (digitalRead(19)) { cycles =  0;}
-	  else if (digitalRead(19)) { cycles =  1;}
-	  else if (digitalRead(19)) { cycles =  2;}
-	  else if (digitalRead(19)) { cycles =  3;}
-	  else if (digitalRead(19)) { cycles =  4;}
-	  else if (digitalRead(19)) { cycles =  5;}
-	  else if (digitalRead(19)) { cycles =  6;}
-	  else if (digitalRead(19)) { cycles =  7;}
-	  else if (digitalRead(19)) { cycles =  8;}
-	  else if (digitalRead(19)) { cycles =  9;}
-	  else if (digitalRead(19)) { cycles = 10;}
-	  else if (digitalRead(19)) { cycles = 11;}
-	  else if (digitalRead(19)) { cycles = 12;}
-	  else if (digitalRead(19)) { cycles = 13;}
-	  else if (digitalRead(19)) { cycles = 14;}
-	  else if (digitalRead(19)) { cycles = 15;}
-	  else if (digitalRead(19)) { cycles = 16;}
+	       if (digitalRead(CAP_TOUCH_PIN)) { cycles =  0;}
+	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles =  1;}
+	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles =  2;}
+	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles =  3;}
+	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles =  4;}
+	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles =  5;}
+	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles =  6;}
+	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles =  7;}
+	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles =  8;}
+	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles =  9;}
+	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles = 10;}
+	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles = 11;}
+	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles = 12;}
+	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles = 13;}
+	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles = 14;}
+	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles = 15;}
+	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles = 16;}
 
 	  // End of timing-critical section
 	  interrupts();
@@ -281,8 +281,8 @@ bool Gamer::capTouch()
 	  //  the sensor is left pulled high, when you touch
 	  //  two sensors, your body will transfer the charge between
 	  //  sensors.
-	  digitalWrite(19, LOW);
-	  pinMode(19, OUTPUT);
+	  digitalWrite(CAP_TOUCH_PIN, LOW);
+	  pinMode(CAP_TOUCH_PIN, OUTPUT);
 
 	  return (cycles > 0);
 }
@@ -384,7 +384,7 @@ void Gamer::printImage(byte* img, int x, int y)
  */
 void Gamer::setLED(bool value)
 {
-  digitalWrite(LED, value);
+  digitalWrite(PIN_LED, value);
 }
 
 /**
@@ -392,7 +392,7 @@ void Gamer::setLED(bool value)
  */
 void Gamer::toggleLED()
 {
-  digitalWrite(LED, !digitalRead(LED));
+  digitalWrite(PIN_LED, !digitalRead(PIN_LED));
 }
 
 /**
@@ -501,11 +501,11 @@ void Gamer::isrRoutine()
   Scrolls a string across the display.
   @param string the string that will be scrolled
  */
-void Gamer::printString(String string)
+void Gamer::printString(const char* string)
 {
   byte screen[8]={0};
   clear();
-  for( int index = 0; index<string.length(); index++ ){
+  for( int index = 0; string[index] != '\0'; index++ ){
     char c = string[index];
     int letIx = 0;
     if( c>='A' && c<='Z' ) letIx = c-'A'+1;
