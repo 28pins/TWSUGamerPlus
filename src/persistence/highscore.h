@@ -135,4 +135,4 @@ inline void clearHighScores() {
 inline byte         getHighScore()  { return _hsScores[0]; }
 inline const byte*  getHighScores() { return _hsScores; }
 
-#endif // HIGHSCORE_H
+#endif // HIGHSCORE_H 
