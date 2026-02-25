@@ -1,0 +1,22 @@
+# Arduino IDE / arduino-cli build artefacts
+build/
+*.elf
+*.hex
+*.bin
+*.map
+*.lst
+
+# Arduino IDE temporary files
+*.tmp
+*.bak
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

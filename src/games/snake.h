@@ -6,7 +6,7 @@
 int dir = 1;
 byte goalX = random(0,7);
 byte goalY = random(0,7);
-volatile byte snakeMap[8][8];
+byte snakeMap[8][8];
 byte snakeLength = 2;
 
 void setupSnakeGame() {

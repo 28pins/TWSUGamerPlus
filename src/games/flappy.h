@@ -2,9 +2,9 @@
 #define FLAPPY_H
 
 // ── Flappy Bird game state ────────────────────────────────────────────────────
-boolean menu = true;
-boolean gameOver = false;
-boolean displayflappyScore = false;
+bool menu = true;
+bool gameOver = false;
+bool displayflappyScore = false;
 
 int birdPos = 2;
 int pipePos = 8;

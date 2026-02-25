@@ -1,0 +1,136 @@
+#include "Gamer.h"
+#include <avr/pgmspace.h>
+#include "src/assets/progmem_assets.h"
+#include "src/persistence/highscore.h"
+
+// ── Hardware instance ─────────────────────────────────────────────────────────
+Gamer gamer;
+
+// ── Shared globals ────────────────────────────────────────────────────────────
+bool soundEnabled = false;
+bool lastCapTouchState = false;
+bool tetrisChirpPending = false;
+
+unsigned long ledFlashStartTime = 0;
+bool ledFlashing = false;
+
+// gamer.playTone() note values: frequency ≈ 1,000,000 / (OCR2A + 1) Hz
+#define NOTE_B7  252
+#define NOTE_C8  238
+#define NOTE_D8  212
+#define NOTE_E8  189
+#define NOTE_G8  158
+#define NOTE_A8  140
+#define NOTE_B8  125
+
+#define WIN_NOTE_DURATION  120
+#define LOSS_NOTE_DURATION 150
+
+// Feature flag: set to 1 to enable the right-arrow direction in Simon.
+#define SIMON_RIGHT_ARROW_ENABLED 0
+#define SIMON_MAX_SEQUENCE 30
+
+// Feature flag: set to 1 to enable Serial debug output at startup.
+#define GAMER_DEBUG 0
+
+#if SIMON_RIGHT_ARROW_ENABLED
+  #define SIMON_NUM_DIRECTIONS 4
+#else
+  #define SIMON_NUM_DIRECTIONS 3
+#endif
+
+// Shared variables used by multiple games
+int currentX = 0;
+int currentY = 0;
+int score    = 0;
+
+// ── Helper functions ──────────────────────────────────────────────────────────
+void startLEDFlash() {
+  gamer.setLED(true);
+  ledFlashStartTime = millis();
+  ledFlashing = true;
+}
+
+inline void updateLEDFlash() {
+  if (ledFlashing && millis() - ledFlashStartTime >= 250UL) {
+    gamer.setLED(false);
+    ledFlashing = false;
+  }
+}
+
+// Detects a rising edge on the cap sense pad and toggles sound on/off
+inline void checkSoundToggle() {
+  bool cap = gamer.capTouch();
+  if (cap && !lastCapTouchState) {
+    soundEnabled = !soundEnabled;
+    if (!soundEnabled) gamer.stopTone();
+  }
+  lastCapTouchState = cap;
+}
+
+// Plays a short ascending tune on win/success events
+void playWinTune() {
+  if (!soundEnabled) return;
+  static const byte notes[] PROGMEM = {NOTE_C8, NOTE_E8, NOTE_G8, NOTE_B8};
+  for (byte i = 0; i < 4; i++) { 
+    gamer.playTone(pgm_read_byte(&notes[i])); 
+    delay(WIN_NOTE_DURATION); 
+  }
+  gamer.stopTone();
+}
+
+// Plays a short descending tune on loss/fail events
+void playLossTune() {
+  if (!soundEnabled) return;
+  static const byte notes[] PROGMEM = {NOTE_B8, NOTE_G8, NOTE_E8, NOTE_B7};
+  for (byte i = 0; i < 4; i++) { 
+    gamer.playTone(pgm_read_byte(&notes[i])); 
+    delay(LOSS_NOTE_DURATION); 
+  }
+  gamer.stopTone();
+}
+
+// Score display using PROGMEM number bitmaps (3-pixel wide; tens shifted 5, units as-is)
+void showScore(byte dig1, byte dig2) {
+  byte result[8];
+  for (byte p = 0; p < 8; p++)
+    result[p] = (pgm_read_byte(&numbers_pgm[dig1][p]) << 5) | pgm_read_byte(&numbers_pgm[dig2][p]);
+  gamer.printImage(result);
+}
+
+// ── Game implementations ──────────────────────────────────────────────────────
+#include "src/games/snake.h"
+#include "src/games/breakout.h"
+#include "src/games/simon.h"
+#include "src/games/flappy.h"
+#include "src/games/tetris.h"
+#include "src/games/alien.h"
+#include "src/games/conway.h"
+
+// ── Launcher ──────────────────────────────────────────────────────────────────
+#include "src/launcher/launcher.h"
+
+// ── Startup self-test ─────────────────────────────────────────────────────────
+static void startupCheck() {
+  loadHighScores();
+#if GAMER_DEBUG
+  Serial.begin(9600);
+  byte b = progmemSelfCheck();
+  Serial.print(F("[BOOT] PROGMEM startup_pgm[0][0]=0x"));
+  Serial.print(b, HEX);
+  Serial.println(b == 0xFF ? F(" OK") : F(" WARN: unexpected value"));
+  Serial.print(F("[BOOT] High score: "));
+  Serial.println(getHighScore());
+#endif
+}
+
+// ── Arduino entry points ──────────────────────────────────────────────────────
+void setup() {
+  gamer.begin();
+  startupCheck();
+  launcherSetup();
+}
+
+void loop() {
+  launcherLoop();
+}

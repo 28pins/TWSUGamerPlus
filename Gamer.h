@@ -22,7 +22,6 @@ public:
 	
 	// Setup
 	void begin();
-	void update();
 	
 	// Inputs
 	bool isPressed(uint8_t input);
@@ -44,7 +43,7 @@ public:
 	void toggleLED();
 	void playTone(int note);
 	void stopTone();
-	void printString(String string);
+	void printString(const char* string);
 	void appendColumn(byte* screen, byte col);
 	void showScore(int n);
 	void printImagePGM(const byte* pgm_img);
@@ -67,19 +66,9 @@ public:
 	
 private:
 	
-	// Keywords
-	#define CLK1 6
-	#define DAT 8
-	#define LAT 9
-	#define CLK2 7
-	#define DAT 8
-	#define LAT 9
-	#define OE 10
-	#define LED 13
-	#define BUZZER 2
-	#define RX 5
-	#define TX 4
-	#define DEBOUNCETIME 50
+	// Pin assignments as class-scoped constants (avoids polluting the global macro namespace)
+	static constexpr uint8_t PIN_LED       = 13;  // onboard indicator LED
+	static constexpr uint8_t CAP_TOUCH_PIN = 19;  // capacitive-touch pad (v1.9+, A5)
 	
 	// Variables
 	uint16_t _refreshRate;
@@ -89,17 +78,14 @@ private:
 	uint16_t ldrThreshold;
 	
 	// Functions
-	void setupLetters();
 	void writeToDriver(byte dataOut);
 	void writeToRegister(byte dataOut);
-	void checkSerial();
 	void checkInputs();
 	void updateRow();
 	int currentInputState[6];
-	boolean tog;
+	bool tog;
 
-	// Numbers and letters for printString
-	#define LETEND B10101010
+	// Numbers and letters for printString (LETEND sentinel defined in Gamer.cpp)
 	const static uint8_t allLetters[85][9] PROGMEM;
 	const static uint8_t allNumbers[10][8] PROGMEM;
 };

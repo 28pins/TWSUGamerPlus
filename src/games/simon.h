@@ -2,15 +2,15 @@
 #define SIMON_H
 
 // ── Simon game state ──────────────────────────────────────────────────────────
-byte x=0;
+byte simonStep = 0;
 int delayMils = 300;
-volatile byte sequence[30];
+byte sequence[30];
 
 void resetSimon() {
   gamer.clear();
   delay(100);
-  for(byte b=0;b<x;b++) sequence[b]=0;
-  x=0;
+  for(byte b=0;b<simonStep;b++) sequence[b]=0;
+  simonStep=0;
   delayMils = 300;
 }
 
@@ -18,8 +18,8 @@ void simonLoop() {
   checkSoundToggle();
   updateLEDFlash();
   static const byte simonNotes[] PROGMEM = {NOTE_E8, NOTE_C8, NOTE_G8, NOTE_D8};
-  sequence[x]=random(0, SIMON_NUM_DIRECTIONS);
-  if(x>0) {
+  sequence[simonStep]=random(0, SIMON_NUM_DIRECTIONS);
+  if(simonStep>0) {
     for(byte p=3;p>0;p--) {
       showScore(0,p);
       delay(delayMils);
@@ -27,7 +27,7 @@ void simonLoop() {
     byte gbuf[8]; pgm_readimg(go_pgm, gbuf);
     gamer.printImage(gbuf);
     delay(delayMils);
-    for(byte i=0;i<x;i++) {
+    for(byte i=0;i<simonStep;i++) {
       if(gamer.isHeld(START)) return;
       if (soundEnabled) gamer.playTone(pgm_read_byte(&simonNotes[sequence[i]]));
       byte fbuf[8]; pgm_readimg(framesSimon_pgm[sequence[i]], fbuf);
@@ -39,8 +39,8 @@ void simonLoop() {
       delay(delayMils);
     }
     gamer.clear();
-    boolean success = true;
-    for(byte count=0;count<x;count++) {
+    bool success = true;
+    for(byte count=0;count<simonStep;count++) {
       if(gamer.isHeld(START)) return;
       byte key = 4;
       while(key==4) {
@@ -64,7 +64,7 @@ void simonLoop() {
     delayMils-=(delayMils/40);
     delay(delayMils);
     if(success) {
-      x++;
+      simonStep++;
       playWinTune();
       byte rbuf[8]; pgm_readimg(right_pgm, rbuf);
       gamer.printImage(rbuf);
@@ -74,12 +74,12 @@ void simonLoop() {
       byte wbuf[8]; pgm_readimg(wrong_pgm, wbuf);
       gamer.printImage(wbuf);
       delay(400);
-      showScore((x-1)/10,(x-1)%10);
+      showScore((simonStep-1)/10,(simonStep-1)%10);
       delay(400);
       resetSimon();
     }
   } else {
-    x++;
+    simonStep++;
   }
   delay(400);
 }
