@@ -840,7 +840,7 @@ void simonLoop() {
   checkSoundToggle();
   updateLEDFlash();
   // Four distinct tones — one per direction (up, down, left, right)
-  static const int simonNotes[] = {NOTE_E8, NOTE_C8, NOTE_G8, NOTE_D8};
+  static const int simonNotes[] PROGMEM = {NOTE_E8, NOTE_C8, NOTE_G8, NOTE_D8};
   sequence[x]=random(0, SIMON_NUM_DIRECTIONS);
   if(x>0) {
     for(byte p=3;p>0;p--) {
@@ -851,7 +851,7 @@ void simonLoop() {
     delay(delayMils);
     for(int i=0;i<x;i++) {
       if(gamer.isHeld(START)) return;
-      if (soundEnabled) gamer.playTone(simonNotes[sequence[i]]);
+      if (soundEnabled) gamer.playTone(pgm_read_word(&simonNotes[sequence[i]]));
       gamer.printImage(framesSimon[sequence[i]]);
       startLEDFlash(); // flash when arrow is displayed
       delay(delayMils);
