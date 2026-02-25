@@ -75,16 +75,16 @@ void checkSoundToggle() {
 // Plays a short ascending tune on win/success events (if sound enabled).
 void playWinTune() {
   if (!soundEnabled) return;
-  static const byte notes[] = {NOTE_C8, NOTE_E8, NOTE_G8, NOTE_B8};
-  for (byte i = 0; i < 4; i++) { gamer.playTone(notes[i]); delay(WIN_NOTE_DURATION); }
+  static const PROGMEM byte notes[] = {NOTE_C8, NOTE_E8, NOTE_G8, NOTE_B8};
+  for (byte i = 0; i < 4; i++) { gamer.playTone(pgm_read_byte(&notes[i])); delay(WIN_NOTE_DURATION); }
   gamer.stopTone();
 }
 
 // Plays a short descending tune on loss/fail events (if sound enabled).
 void playLossTune() {
   if (!soundEnabled) return;
-  static const byte notes[] = {NOTE_B8, NOTE_G8, NOTE_E8, NOTE_B7};
-  for (byte i = 0; i < 4; i++) { gamer.playTone(notes[i]); delay(LOSS_NOTE_DURATION); }
+  static const PROGMEM byte notes[] = {NOTE_B8, NOTE_G8, NOTE_E8, NOTE_B7};
+  for (byte i = 0; i < 4; i++) { gamer.playTone(pgm_read_byte(&notes[i])); delay(LOSS_NOTE_DURATION); }
   gamer.stopTone();
 }
 
