@@ -10,6 +10,11 @@ build/
 *.tmp
 *.bak
 
+# Stray build/compile directories created by tools
+sketch_build/
+TWSUGamerPlus_sketch/
+bin/
+
 # OS files
 .DS_Store
 Thumbs.db
