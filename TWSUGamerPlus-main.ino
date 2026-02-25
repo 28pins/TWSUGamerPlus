@@ -15,7 +15,6 @@ volatile byte animationLength[] = { //how long is each animation???
   2,2,2,2,2,2,2};
 volatile byte animationFrame = 0; //what frame is it???
 volatile byte gameNumber = 0; //what game is it???
-bool soundEnabled = true; //sound on/off toggle (UP in menu)
 volatile byte gameMax = 7; //how many games are there???
 
 // Sound toggle — starts OFF; touching the cap sense pad toggles it
@@ -43,6 +42,7 @@ void updateLEDFlash() {
 // Feature flag: set to 1 to enable the right-arrow direction in Simon.
 // Disabled by default because the RIGHT button has a known recognition bug.
 #define SIMON_RIGHT_ARROW_ENABLED 0
+#define SIMON_MAX_SEQUENCE 30
 
 #if SIMON_RIGHT_ARROW_ENABLED
   #define SIMON_NUM_DIRECTIONS 4
@@ -75,16 +75,16 @@ void checkSoundToggle() {
 // Plays a short ascending tune on win/success events (if sound enabled).
 void playWinTune() {
   if (!soundEnabled) return;
-  static const byte notes[] = {NOTE_C8, NOTE_E8, NOTE_G8, NOTE_B8};
-  for (byte i = 0; i < 4; i++) { gamer.playTone(notes[i]); delay(WIN_NOTE_DURATION); }
+  static const PROGMEM byte notes[] = {NOTE_C8, NOTE_E8, NOTE_G8, NOTE_B8};
+  for (byte i = 0; i < 4; i++) { gamer.playTone(pgm_read_byte(&notes[i])); delay(WIN_NOTE_DURATION); }
   gamer.stopTone();
 }
 
 // Plays a short descending tune on loss/fail events (if sound enabled).
 void playLossTune() {
   if (!soundEnabled) return;
-  static const byte notes[] = {NOTE_B8, NOTE_G8, NOTE_E8, NOTE_B7};
-  for (byte i = 0; i < 4; i++) { gamer.playTone(notes[i]); delay(LOSS_NOTE_DURATION); }
+  static const PROGMEM byte notes[] = {NOTE_B8, NOTE_G8, NOTE_E8, NOTE_B7};
+  for (byte i = 0; i < 4; i++) { gamer.playTone(pgm_read_byte(&notes[i])); delay(LOSS_NOTE_DURATION); }
   gamer.stopTone();
 }
 
@@ -602,7 +602,7 @@ void physics() {
         if(gamer.display[currentXBreakout+velocity[0]][currentYBreakout-1]==LOW && !outOfBounds(currentXBreakout+velocity[0],currentYBreakout-1)) {
           velocity[1]=-1;
         } 
-        else if(gamer.display[currentXBreakout+1][currentYBreakout-1]==LOW && !outOfBounds(currentXBreakout-1,currentYBreakout-1)) {
+        else if(gamer.display[currentXBreakout+1][currentYBreakout-1]==LOW && !outOfBounds(currentXBreakout+1,currentYBreakout-1)) {
           velocity[1]=-1;
           velocity[0]=1;
         }
@@ -826,7 +826,7 @@ byte framesSimon[4][8];
 byte go[8];
 byte right[8];
 byte wrong[8];
-volatile byte sequence[30];
+volatile byte sequence[SIMON_MAX_SEQUENCE];
 
 void resetSimon() {
   gamer.clear();
@@ -841,6 +841,7 @@ void simonLoop() {
   updateLEDFlash();
   // Four distinct tones — one per direction (up, down, left, right)
   static const int simonNotes[] PROGMEM = {NOTE_E8, NOTE_C8, NOTE_G8, NOTE_D8};
+  if(x >= SIMON_MAX_SEQUENCE) x = SIMON_MAX_SEQUENCE - 1;
   sequence[x]=random(0, SIMON_NUM_DIRECTIONS);
   if(x>0) {
     for(byte p=3;p>0;p--) {
