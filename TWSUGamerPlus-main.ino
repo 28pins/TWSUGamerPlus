@@ -876,7 +876,7 @@ void simonLoop() {
       }
       startLEDFlash(); // flash when player presses a button
       gamer.printImage(framesSimon[key]);
-      //is it riiggghhhttt???
+      //is it right???
       if(key!=sequence[count]) {
         success = false; // game over...
         break;
