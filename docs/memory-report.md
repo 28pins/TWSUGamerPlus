@@ -84,7 +84,7 @@ significantly reduces the risk of stack–heap collisions during gameplay.
    assets declared `PROGMEM`.  Helper `pgm_readimg()` copies 8 bytes from
    PROGMEM to a stack buffer for `gamer.printImage()`.
 
-3. **`GamerTetris-main.ino`**: Removed duplicate globals and RAM animation
+3. **`TWSUGamerPlus-main.ino`**: Removed duplicate globals and RAM animation
    arrays.  `showScore()` reads from `numbers_pgm`.  Win/loss tune note arrays
    declared `PROGMEM`.
 
