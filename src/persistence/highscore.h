@@ -2,22 +2,21 @@
 #define HIGHSCORE_H
 #include <EEPROM.h>
 
-// Two-slot wear-leveling high-score storage
+// Two-slot wear-leveling high-score storage (per-game)
 // Slot layout (8 bytes each):
 //   [0] = magic byte (0xA5)
 //   [1] = sequence number (wraps 0-255; higher = more recent)
-//   [2..5] = top 4 scores (byte each, max 99)
-//   [6] = reserved
+//   [2..6] = high scores for games 0-4 (byte each, max 99)
 //   [7] = CRC8 of bytes [0..6]
 
 #define HS_MAGIC        0xA5
 #define HS_SLOT_SIZE    8
 #define HS_SLOT0_ADDR   0
 #define HS_SLOT1_ADDR   8
-#define HS_NUM_SCORES   4
+#define HS_NUM_GAMES    6
 #define HS_WRITE_MIN_INTERVAL_MS 1000UL  // rate-limit writes
 
-static byte _hsScores[HS_NUM_SCORES];
+static byte _hsScores[HS_NUM_GAMES];
 static byte _hsSlot = 0;        // which slot is active
 static byte _hsSeq  = 0;        // sequence number of active slot
 static unsigned long _hsLastWrite = 0;
@@ -31,7 +30,7 @@ static byte _hsCRC8(const byte* data, byte len) {
   return crc;
 }
 
-static bool _hsReadSlot(byte slot, byte* seq_out, byte scores[HS_NUM_SCORES]) {
+static bool _hsReadSlot(byte slot, byte* seq_out, byte scores[HS_NUM_GAMES]) {
   int addr = (slot == 0) ? HS_SLOT0_ADDR : HS_SLOT1_ADDR;
   byte buf[HS_SLOT_SIZE];
   for (byte i = 0; i < HS_SLOT_SIZE; i++) buf[i] = EEPROM.read(addr + i);
@@ -41,17 +40,16 @@ static bool _hsReadSlot(byte slot, byte* seq_out, byte scores[HS_NUM_SCORES]) {
   byte crc = _hsCRC8(buf, HS_SLOT_SIZE - 1);
   if (crc != buf[HS_SLOT_SIZE - 1]) return false;
   *seq_out = buf[1];
-  for (byte i = 0; i < HS_NUM_SCORES; i++) scores[i] = buf[2 + i];
+  for (byte i = 0; i < HS_NUM_GAMES; i++) scores[i] = buf[2 + i];
   return true;
 }
 
-static void _hsWriteSlot(byte slot, byte seq, const byte scores[HS_NUM_SCORES]) {
+static void _hsWriteSlot(byte slot, byte seq, const byte scores[HS_NUM_GAMES]) {
   int addr = (slot == 0) ? HS_SLOT0_ADDR : HS_SLOT1_ADDR;
   byte buf[HS_SLOT_SIZE];
   buf[0] = HS_MAGIC;
   buf[1] = seq;
-  for (byte i = 0; i < HS_NUM_SCORES; i++) buf[2 + i] = scores[i];
-  buf[6] = 0;
+  for (byte i = 0; i < HS_NUM_GAMES; i++) buf[2 + i] = scores[i];
   buf[7] = _hsCRC8(buf, HS_SLOT_SIZE - 1);
   for (byte i = 0; i < HS_SLOT_SIZE; i++) {
     if (EEPROM.read(addr + i) != buf[i]) EEPROM.write(addr + i, buf[i]);

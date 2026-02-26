@@ -10,6 +10,7 @@ static GameDescriptor _games[LAUNCHER_MAX_GAMES];
 static byte _numGames = 0;
 static byte _gameNumber = 0;
 static byte _animFrame = 0;
+bool isInLauncher = true;
 
 // Register a game into the launcher list
 inline void registerGame(const char* name, void (*reset)(), void (*loop_fn)(),
@@ -40,6 +41,10 @@ void launcherSetup() {
   delay(100);
 }
 
+void showHighScore(byte gameIndex) {
+  
+}
+
 void launcherLoop() {
   checkSoundToggle();
   if (gamer.isPressed(START)) {
@@ -51,12 +56,15 @@ void launcherLoop() {
     gamer.stopTone();
   } else {
     // Show animation frame from PROGMEM
-    byte buf[8];
-    pgm_readimg(_games[_gameNumber].animFrames + _animFrame * 8, buf);
-    gamer.printImage(buf);
-    _animFrame++;
-    if (_animFrame >= _games[_gameNumber].numFrames) _animFrame = 0;
-
+    if(isInLauncher) {
+      byte buf[8];
+      pgm_readimg(_games[_gameNumber].animFrames + _animFrame * 8, buf);
+      gamer.printImage(buf);
+      _animFrame++;
+      if (_animFrame >= _games[_gameNumber].numFrames) _animFrame = 0;
+    } else {
+      showHighScore(_gameNumber);
+    }
     if (gamer.isPressed(LEFT)) {
       _gameNumber = (_gameNumber == 0) ? _numGames - 1 : _gameNumber - 1;
       _animFrame = 0;
@@ -66,8 +74,9 @@ void launcherLoop() {
       _animFrame = 0;
     }
     if (gamer.isPressed(UP)) {
-      soundEnabled = !soundEnabled;
-      if (soundEnabled) { gamer.playTone(80); delay(150); gamer.stopTone(); }
+      isInLauncher = false;
+    } else if (gamer.isPressed(DOWN)) {
+      isInLauncher = true;
     }
     delay(300);
   }
