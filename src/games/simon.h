@@ -68,11 +68,13 @@ void simonLoop() {
     delay(delayMils);
     if(success) {
       simonStep++;
+      score = simonStep;
       playWinTune();
       byte rbuf[8]; pgm_readimg(right_pgm, rbuf);
       gamer.printImage(rbuf);
     }
     else {
+      score = simonStep;
       playLossTune();
       byte wbuf[8]; pgm_readimg(wrong_pgm, wbuf);
       gamer.printImage(wbuf);

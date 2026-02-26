@@ -10,7 +10,7 @@ int birdPos = 2;
 int pipePos = 8;
 int pipeGap = 3;
 int ticks = 0;
-byte flappyScore = 0;
+byte score = 0;
 byte inGameScreen[] = {
   0,0,0,0,0,0,0,0,
   0,0,0,0,0,0,0,0,
@@ -59,7 +59,7 @@ void drawInGameScreen( byte colour )
 }
 
 void resetFlappy(){
-  flappyScore = 0;
+  score = 0;
   displayflappyScore = false;
   ticks = 0;
   birdPos = 2;
@@ -101,10 +101,9 @@ void flappyLoop()
       resetFlappy();
     }
   }else if(displayflappyScore){
-    saveHighScore(flappyScore);
     gamer.clear();
-    byte dig2 = flappyScore % 10;
-    byte dig1 = flappyScore / 10;
+    byte dig2 = score % 10;
+    byte dig1 = score / 10;
     showScore(dig1,dig2);
     delay(800);
     displayflappyScore = false;
@@ -121,7 +120,7 @@ void flappyLoop()
       pipePos--;
       if( pipePos < -1 )
       {
-        flappyScore++;
+        score++;
         startLEDFlash();
         pipePos = 7;
         pipeGap = 1 + rand()%4;

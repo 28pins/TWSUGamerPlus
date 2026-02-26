@@ -30,7 +30,7 @@ void isCollected() {
     goalX = random(0,7);
     goalY = random(0,7);
     snakeLength++;
-    score++;
+    score = snakeLength - 2;
     if (soundEnabled) gamer.playTone(NOTE_A8);
     startLEDFlash();
     for(byte x=0;x<8;x++) {

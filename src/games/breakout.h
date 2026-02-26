@@ -10,7 +10,7 @@ byte paddleX = 2;
 byte breakoutCounter = 0;
 int origXV = -1;
 int origYV = -1;
-byte scoreBreakout = 0;
+//byte score = 0;
 
 // Forward declaration needed by startBreakoutReset wrapper below
 void startBreakout(bool resetIt);
@@ -77,12 +77,12 @@ void startBreakout(bool resetIt) {
     }
   }
   if(!resetIt) {
-    scoreBreakout++;
+    score++;
     gamer.clear();
     byte buf[8]; pgm_readimg(framesBreakout_pgm[0], buf);
     gamer.printImage(buf);
     delay(500);
-  } else scoreBreakout=0;
+  } else score=0;
   currentXBreakout=random(4,8);
   currentYBreakout=5;
   velocity[0]=-1;
@@ -216,19 +216,19 @@ void breakoutLoop() {
       delay(100);
     }
     playLossTune();
-    saveHighScore(scoreBreakout);
-    if(scoreBreakout==0){
+    saveHighScore(score);
+    if(score==0){
       gamer.clear();
       byte buf[8]; pgm_readimg(framesBreakout_pgm[1], buf);
       gamer.printImage(buf);
     }
-    else if(scoreBreakout<10){
+    else if(score<10){
       gamer.clear();
-      showScore(0,scoreBreakout);
+      showScore(0,score);
     }
     else {
-      byte dig2 = scoreBreakout % 10;
-      byte dig1 = scoreBreakout / 10;
+      byte dig2 = score % 10;
+      byte dig1 = score / 10;
       gamer.clear();
       showScore(dig1,dig2);
     }

@@ -42,7 +42,8 @@ void launcherSetup() {
 }
 
 void showHighScore(byte gameIndex) {
-  
+  byte hs = getHighScore(gameIndex);
+  showScore(hs);
 }
 
 void launcherLoop() {
@@ -53,6 +54,7 @@ void launcherLoop() {
     while (!gamer.isPressed(START)) {
       _games[_gameNumber].loop_fn();
     }
+    setHighScore(_gameNumber, score);
     gamer.stopTone();
   } else {
     // Show animation frame from PROGMEM
@@ -64,16 +66,17 @@ void launcherLoop() {
       if (_animFrame >= _games[_gameNumber].numFrames) _animFrame = 0;
     } else {
       showHighScore(_gameNumber);
+      if(!ledflashing) {
+        startLEDFlash();
+      }
     }
     if (gamer.isPressed(LEFT)) {
       _gameNumber = (_gameNumber == 0) ? _numGames - 1 : _gameNumber - 1;
       _animFrame = 0;
-    }
-    if (gamer.isPressed(RIGHT)) {
+    } else if (gamer.isPressed(RIGHT)) {
       _gameNumber = (_gameNumber + 1) % _numGames;
       _animFrame = 0;
-    }
-    if (gamer.isPressed(UP)) {
+    } else if (gamer.isPressed(UP)) {
       isInLauncher = false;
     } else if (gamer.isPressed(DOWN)) {
       isInLauncher = true;
