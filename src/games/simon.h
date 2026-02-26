@@ -50,8 +50,7 @@ void simonLoop() {
         if(gamer.isHeld(LEFT)) key=2;
 #if SIMON_RIGHT_ARROW_ENABLED
         if(gamer.isHeld(RIGHT)) key=3;
-#endif
-        while(gamer.isHeld(RIGHT) || gamer.isHeld(LEFT) || gamer.isHeld(UP) || gamer.isHeld(DOWN)) {}
+#endif(UP)
       }
       startLEDFlash();
       byte kbuf[8]; pgm_readimg(framesSimon_pgm[key], kbuf);
