@@ -98,7 +98,6 @@ void snakeLoop() {
   if(gamer.isPressed(DOWN) && dir!=1) { dir=3; snakeBtnPressed=true; }
   if(gamer.isPressed(LEFT) && dir!=2) { dir=4; snakeBtnPressed=true; }
   if (soundEnabled && snakeBtnPressed) gamer.playTone(NOTE_E8);
-  if (snakeBtnPressed) startLEDFlash();
 
   if(dir==1) {
     currentY--;
