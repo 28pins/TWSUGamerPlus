@@ -57,7 +57,7 @@ void conwayLoop() {
     for (byte y = 0; y < 8; y++)
       gamer.display[x][y] = (conwayCurr[y] >> x) & 1;
   gamer.updateDisplay();
-  delay(180);
+  delay(120);
 }
 
 #endif // CONWAY_H

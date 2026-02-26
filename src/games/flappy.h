@@ -144,6 +144,10 @@ void flappyLoop()
         }
       }
 
+      if (pipePos == 1 || pipePos == 0) {
+        startLEDFlash();
+      }
+
       if( (pipePos == 1 || pipePos == 0) && (birdPos < pipeGap || birdPos >= pipeGap + 3) )
       {
         gameOver = true;

@@ -52,7 +52,7 @@ void startLEDFlash() {
 }
 
 inline void updateLEDFlash() {
-  if (ledFlashing && millis() - ledFlashStartTime >= 250UL) {
+  if (ledFlashing && millis() - ledFlashStartTime >= 175UL) {
     gamer.setLED(false);
     ledFlashing = false;
   }
