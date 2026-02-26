@@ -188,10 +188,13 @@ void breakoutLoop() {
       if(gamer.display[currentXBreakout-velocity[0]][newY]==LOW) {
         blocks[currentXBreakout+velocity[0]][newY]=0;
         velocity[0]*=-1;
+        // when we hit a side wall, always bounce downward
+        velocity[1]=1;
         if(newY<0 || newY>7) {
           if(gamer.display[currentXBreakout+velocity[0]][currentYBreakout-velocity[1]]==LOW) {
             blocks[currentXBreakout-velocity[0]][currentYBreakout-velocity[1]]=0;
-            velocity[1]*=-1;
+            // keep the bounce downward
+            velocity[1]=1;
           }
         }
       }
@@ -202,7 +205,8 @@ void breakoutLoop() {
           }
         }
         velocity[0]*=-1;
-        velocity[1]*=-1;
+        // when hitting the wall and clearing surrounding blocks, ensure ball goes downward
+        velocity[1]=1;
       }
     }
     currentXBreakout = currentXBreakout+velocity[0];
