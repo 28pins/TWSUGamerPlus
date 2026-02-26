@@ -244,15 +244,10 @@ void tetrisLoop() {
     currentX++;
     tetrisBtnPressed = true;
     renderGridAndPiece();
-  } else if(gamer.isPressed(DOWN) && canMove(currentX, currentY + 1) && !gamer.isHeld(DOWN)) {
+  } else if(gamer.isPressed(DOWN) && canMove(currentX, currentY + 1)) {
     currentY++;
     tetrisBtnPressed = true;
     renderGridAndPiece();
-  } else if(gamer.isHeld(DOWN)) {
-    tetrisBtnPressed = true;
-    while(canMove(currentX, currentY + 1)) currentY++;
-    renderGridAndPiece();
-    while(gamer.isHeld(DOWN)) delay(8);
   } else if(gamer.isPressed(UP)) {
     rotatePiece();
     tetrisBtnPressed = true;
