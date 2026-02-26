@@ -2,7 +2,7 @@
 #define CONWAY_H
 
 // ── Conway's Game of Life state ───────────────────────────────────────────────
-#define CONWAY_STAGNATION_LIMIT 20
+#define CONWAY_STAGNATION_LIMIT 3
 
 byte conwayCurr[8];
 byte conwayNext[8];
