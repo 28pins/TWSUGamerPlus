@@ -9,6 +9,7 @@ int linesCleared = 0;
 bool gameOverT = false;
 const int gridWidth = 8;
 const int gridHeight = 8;
+byte linesSinceLastDrop = 0;
 int grid[gridHeight][gridWidth] = {
   {0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},
   {0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0}
@@ -109,6 +110,7 @@ void checkLines() {
       if (grid[i][j] == 0) { lineComplete = false; break; }
     }
     if (lineComplete) {
+      linesSinceLastDrop++;
       if (soundEnabled) { gamer.playTone(NOTE_A8); tetrisChirpPending = true; }
       startLEDFlash();
       currentX = 3;
@@ -124,7 +126,7 @@ void checkLines() {
         }
       }
       for (byte j = 0; j < gridWidth; j++) grid[0][j] = 0;
-      linesCleared++;
+      linesCleared += linesSinceLastDrop;
       score += level;
       if (linesCleared % 7 == 0) {
         level++;
@@ -206,6 +208,7 @@ void tetrisLoop() {
     lastMoveTime = millis();
     if (canMove(currentX, currentY + 1)) {
       currentY++;
+      linesSinceLastDrop = 0;
       startLEDFlash();
       lastMoveTime = millis();
       renderGridAndPiece();
