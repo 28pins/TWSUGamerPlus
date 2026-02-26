@@ -238,11 +238,9 @@ void tetrisLoop() {
   bool tetrisBtnPressed = false;
   if(gamer.isPressed(LEFT) && canMove(currentX - 1, currentY)) {
     currentX--;
-    tetrisBtnPressed = true;
     renderGridAndPiece();
   } else if(gamer.isPressed(RIGHT) && canMove(currentX + 1, currentY)) {
     currentX++;
-    tetrisBtnPressed = true;
     renderGridAndPiece();
   } else if(gamer.isPressed(DOWN) && canMove(currentX, currentY + 1)) {
     currentY++;
@@ -250,7 +248,6 @@ void tetrisLoop() {
     renderGridAndPiece();
   } else if(gamer.isPressed(UP)) {
     rotatePiece();
-    tetrisBtnPressed = true;
     renderGridAndPiece();
   }
   if (tetrisBtnPressed) startLEDFlash();
