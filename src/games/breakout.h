@@ -97,22 +97,22 @@ void breakoutLoop() {
   updateLEDFlash();
   if(soundEnabled) gamer.stopTone();
   if(breakoutCounter>2) {
-    for(byte x=0;x<8;x++) {
-      for(byte y=0;y<8;y++) {
+    for(int x=0;x<8;x++) {
+      for(int y=0;y<8;y++) {
         gamer.display[x][y] = LOW;
       }
     }
   }
-  for(byte x=0;x<8;x++) {
+  for(int x=0;x<8;x++) {
     gamer.display[x][7]=LOW;
   }
   if(gamer.isHeld(LEFT)&&paddleX>0){
     paddleX--;
-  }
+  } 
   else if(gamer.isHeld(RIGHT)&&paddleX<4) {
     paddleX++;
   }
-  for(byte a=0;a<4;a++) {
+  for(int a=0;a<4;a++) {
     if(paddleX+a<8) {
       gamer.display[paddleX+a][7]=HIGH;
     }
@@ -120,42 +120,54 @@ void breakoutLoop() {
   if(breakoutCounter>2) {
     origXV = velocity[0];
     origYV = velocity[1];
-    for(byte x=0;x<8;x++) {
-      for(byte y=0;y<4;y++) {
+    for(int x=0;x<8;x++) {
+      for(int y=0;y<4;y++) {
         if(blocks[x][y] == 1) {
           gamer.display[x][y] = HIGH;
         }
       }
     }
     physics();
-    if (velocity[0] != origXV || velocity[1] != origYV) {
-      if (soundEnabled) gamer.playTone(currentYBreakout >= 6 ? NOTE_C8 : NOTE_E8);
-      startLEDFlash();
-    }
-    for(byte x=0;x<8;x++) {
-      for(byte y=0;y<8;y++) {
+ for(int x=0;x<8;x++) {
+      for(int y=0;y<8;y++) {
         if(blocks[x][y]==0) {
-          if((x & 1) == 0) {  // x%2==0
-            if((y & 1) == 0) {  // y%2==0
-              if(x<7) { blocks[x+1][y]=0; } else { blocks[0][y]=0; }
-            }
+          if(x%2==0) {
+            if(y%2==0) {
+              if(x<7) {
+                blocks[x+1][y]=0;
+              } else {
+                blocks[0][y]=0;
+              }
+            } 
             else {
-              if(x>0) { blocks[x-1][y]=0; } else { blocks[7][y]=0; }
+              if(x>0) {
+                blocks[x-1][y]=0;
+              } else {
+                blocks[7][y]=0;
+              }
             }
-          }
+          } 
           else {
-            if((y & 1) == 0) {  // y%2==0
-              if(x>0) { blocks[x-1][y]=0; } else { blocks[7][y]=0; }
-            }
+            if(y%2==0) {
+              if(x>0) {
+                blocks[x-1][y]=0;
+              } else {
+                blocks[7][y]=0;
+              }
+            } 
             else {
-              if(x<7) { blocks[x+1][y]=0; } else { blocks[0][y]=0; }
+              if(x<7) {
+                blocks[x+1][y]=0;
+              } else {
+                blocks[0][y]=0;
+              }
             }
           }
-        }
+        }  
       }
     }
-    for(byte x=0;x<8;x++) {
-      for(byte y=0;y<4;y++) {
+    for(int x=0;x<8;x++) {
+      for(int y=0;y<4;y++) {
         if(blocks[x][y] == 0) {
           gamer.display[x][y] = LOW;
         }
@@ -165,33 +177,29 @@ void breakoutLoop() {
     byte newY = currentYBreakout + velocity[1];
     if(newX>-1 && newX<8) {
       if(newY>-1 && newY<8) {
-      }
+      } 
       else {
         if(gamer.display[newX][currentYBreakout-velocity[1]]==LOW) {
           blocks[newX][currentYBreakout+velocity[1]]=0;
           velocity[1]*=-1;
-        }
+        } 
         else {
           blocks[currentXBreakout+velocity[0]][currentYBreakout+velocity[1]]=0;
           velocity[1]*=-1;
           velocity[0]*=-1;
         }
       }
-    }
-    else {
+    } else {
       if(gamer.display[currentXBreakout-velocity[0]][newY]==LOW) {
         blocks[currentXBreakout+velocity[0]][newY]=0;
         velocity[0]*=-1;
-        // when we hit a side wall, always bounce downward
-        velocity[1]=1;
         if(newY<0 || newY>7) {
           if(gamer.display[currentXBreakout+velocity[0]][currentYBreakout-velocity[1]]==LOW) {
             blocks[currentXBreakout-velocity[0]][currentYBreakout-velocity[1]]=0;
-            // keep the bounce downward
-            velocity[1]=1;
-          }
+            velocity[1]*=-1;
+          } 
         }
-      }
+      } 
       else {
         for(int x=-1;x<2;x++) {
           for(int y=-1;y<2;y++) {
@@ -199,8 +207,7 @@ void breakoutLoop() {
           }
         }
         velocity[0]*=-1;
-        // when hitting the wall and clearing surrounding blocks, ensure ball goes downward
-        velocity[1]=1;
+        velocity[1]*=-1;
       }
     }
     currentXBreakout = currentXBreakout+velocity[0];
@@ -227,12 +234,14 @@ void breakoutLoop() {
     else if(score<10){
       gamer.clear();
       showScore(0,score);
+      saveHighScore(score, _gameNum);
     }
     else {
       byte dig2 = score % 10;
       byte dig1 = score / 10;
       gamer.clear();
       showScore(dig1,dig2);
+      saveHighScore(score, _gameNum);
     }
     delay(500);
     startBreakout(true);
@@ -245,6 +254,7 @@ void breakoutLoop() {
   }
   if(finished) {
     playWinTune();
+    saveHighScore(score, _gameNum);
     startBreakout(false);
   }
   delay(40);

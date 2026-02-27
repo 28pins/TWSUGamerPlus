@@ -79,6 +79,7 @@ void simonLoop() {
     else {
       score = simonStep;
       playLossTune();
+      saveHighScore(score, _gameNum);
       byte wbuf[8]; pgm_readimg(wrong_pgm, wbuf);
       gamer.printImage(wbuf);
       delay(400);

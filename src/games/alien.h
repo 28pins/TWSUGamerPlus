@@ -30,7 +30,7 @@ void renderPlayer() {
 
 void generateAlien() {
   for (int i = 0; i < 8; i++) {
-    gamer.display[i][0] = random(0, moveDelay > 530 ? 4 : 3) > 1 ? 1 : 0;
+    gamer.display[i][0] = random(0, moveDelay > 530 ? 3 : 4) > 1 ? 1 : 0;
   }
 }
 
@@ -38,6 +38,7 @@ void moveAlien() {
   for (int i = 0; i < 8; i++) {
     if(gamer.display[i][5] == 1) {
       gameGoing = false;
+      saveHighScore(score, _gameNum);
       return;
     }
   }
@@ -51,7 +52,7 @@ void moveAlien() {
   gamer.updateDisplay();
   lastMove = millis();
   if(moveDelay > 500) {
-    moveDelay -= 20;
+    moveDelay -= 5;
   }
 }
 
@@ -85,6 +86,14 @@ void alienLoop() {
         renderPlayer();
         gamer.updateDisplay();
       }
+    }
+  } else {
+    if(gamer.isPressed(UP)) {
+      resetAlienGame();
+    } else if(gamer.isPressed(LEFT) || gamer.isPressed(RIGHT)) {
+      resetAlienGame();
+    } else {
+      showScore(score/10, score%10);
     }
   }
 }

@@ -5,7 +5,7 @@
 #define CONWAY_H
 
 // ── Conway's Game of Life state ───────────────────────────────────────────────
-#define CONWAY_STAGNATION_LIMIT 20
+#define CONWAY_STAGNATION_LIMIT 5
 
 byte conwayCurr[8];
 byte conwayNext[8];
@@ -64,10 +64,6 @@ bool conwayStepSmall() {
       if (next) conwayNext[y] |= (1 << x);
       if (next != curr) anyChange = true;
     }
-  }
-  for (byte i = 0; i < 8; i++) {
-    if (i < 2 || i >= 6) conwayCurr[i] = 0;
-    else conwayCurr[i] = conwayNext[i];
   }
   return anyChange;
 }

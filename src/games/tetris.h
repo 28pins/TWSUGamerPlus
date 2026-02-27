@@ -6,10 +6,12 @@
 
 // ── Tetris game state ─────────────────────────────────────────────────────────
 // score, currentX, currentY declared in main INO
-unsigned long moveInterval = 1000;
+unsigned long moveInterval = 1200;
 int level = 1;
 int linesCleared = 0;
 bool gameOverT = false;
+long lastDownPressTime = 0;
+bool isInDownPress = false;
 const int gridWidth = 8;
 const int gridHeight = 8;
 byte linesSinceLastDrop = 0;
@@ -199,6 +201,7 @@ void tetrisLoop() {
 
   if (gameOverT) {
     playLossTune();
+    saveHighScore(score, _gameNum);
     showScore(digitFrom(score, 2), digitFrom(score, 1));
     delay(2000);
     resetTetris();
@@ -243,17 +246,31 @@ void tetrisLoop() {
   bool tetrisBtnPressed = false;
   if(gamer.isPressed(LEFT) && canMove(currentX - 1, currentY)) {
     currentX--;
+    isInDownPress = false;
     renderGridAndPiece();
   } else if(gamer.isPressed(RIGHT) && canMove(currentX + 1, currentY)) {
     currentX++;
+    isInDownPress = false;
     renderGridAndPiece();
   } else if(gamer.isPressed(DOWN) && canMove(currentX, currentY + 1)) {
     currentY++;
     tetrisBtnPressed = true;
     renderGridAndPiece();
+    isInDownPress = true;
+    lastDownPressTime = millis();
+  } else if(gamer.isHeld(DOWN) && isInDownPress && millis() - lastDownPressTime >= 300) {
+    if (canMove(currentX, currentY + 1)) {
+      currentY++;
+      tetrisBtnPressed = true;
+      renderGridAndPiece();
+      lastDownPressTime = millis();
+    }
   } else if(gamer.isPressed(UP)) {
+    isInDownPress = false;
     rotatePiece();
     renderGridAndPiece();
+  } else {
+    isInDownPress = false;
   }
   if (tetrisBtnPressed) startLEDFlash();
   if (soundEnabled && tetrisBtnPressed) { gamer.playTone(NOTE_D8); tetrisChirpPending = true; }
