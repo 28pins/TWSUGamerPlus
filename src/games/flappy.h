@@ -1,3 +1,6 @@
+// © 2026 28pins — https://github.com/28pins/TWSUGamerPlus
+// SPDX-License-Identifier: MIT
+
 #ifndef FLAPPY_H
 #define FLAPPY_H
 

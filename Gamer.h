@@ -1,3 +1,8 @@
+// Gamer — hardware-abstraction library for the TWSU DIY Gamer Kit.
+// Derived from the Technology Will Save Us (TWSU) Gamer library.
+// Modifications © 2026 28pins — https://github.com/28pins/TWSUGamerPlus
+// SPDX-License-Identifier: MIT
+
 #ifndef Gamer_h
 #define Gamer_h
 

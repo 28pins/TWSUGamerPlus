@@ -1,3 +1,6 @@
+// © 2026 28pins — https://github.com/28pins/TWSUGamerPlus
+// SPDX-License-Identifier: MIT
+
 #ifndef PROGMEM_ASSETS_H
 #define PROGMEM_ASSETS_H
 #include <avr/pgmspace.h>

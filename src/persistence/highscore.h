@@ -1,3 +1,6 @@
+// © 2026 28pins — https://github.com/28pins/TWSUGamerPlus
+// SPDX-License-Identifier: MIT
+
 #ifndef HIGHSCORE_H
 #define HIGHSCORE_H
 #include <EEPROM.h>
