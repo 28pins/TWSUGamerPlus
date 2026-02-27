@@ -119,8 +119,8 @@ static void startupCheck() {
   Serial.print(b, HEX);
   Serial.println(b == 0xFF ? F(" OK") : F(" WARN: unexpected value"));
   Serial.print(F("[BOOT] High score: "));
-  for (byte i = 0; i < NUM_GAMES; i++) {
-    Serial.print(gameNames[i]);
+  for (byte i = 0; i < LAUNCHER_MAX_GAMES; i++) {
+    Serial.print(_games[i].name);
     Serial.print(": ");
     Serial.print(getHighScore(i));
     Serial.print("  ");
