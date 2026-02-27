@@ -39,21 +39,21 @@ bool conwayStep() {
 
 bool conwayStepSmall() {
   bool anyChange = false;
-  for (byte y = 1; y < 7; y++) {
+  for (byte y = 2; y < 6; y++) {
     conwayNext[y] = 0;
-    for (byte x = 1; x < 7; x++) {
+    for (byte x = 2; x < 6; x++) {
       byte alive = 0;
       for (int8_t dy = -1; dy <= 1; dy++)
         for (int8_t dx = -1; dx <= 1; dx++) {
           if (dx == 0 && dy == 0) continue;
-          int8_t nx = (int8_t)x - 1 + dx;
-          int8_t ny = (int8_t)y - 1 + dy;
-          if (nx < 0) nx += 6;
-          if (nx >= 6) nx -= 6;
-          if (ny < 0) ny += 6;
-          if (ny >= 6) ny -= 6;
-          nx += 1;
-          ny += 1;
+          int8_t nx = (int8_t)x - 2 + dx;
+          int8_t ny = (int8_t)y - 2 + dy;
+          if (nx < 0) nx += 4;
+          if (nx >= 4) nx -= 4;
+          if (ny < 0) ny += 4;
+          if (ny >= 4) ny -= 4;
+          nx += 2;
+          ny += 2;
           if ((conwayCurr[ny] >> nx) & 1) alive++;
         }
       bool curr = (conwayCurr[y] >> x) & 1;
@@ -62,11 +62,10 @@ bool conwayStepSmall() {
       if (next != curr) anyChange = true;
     }
   }
-  conwayCurr[0] = 0;
-  conwayCurr[7] = 0;
-  conwayNext[0] = 0;
-  conwayNext[7] = 0;
-  for (byte i = 1; i < 7; i++) conwayCurr[i] = conwayNext[i];
+  for (byte i = 0; i < 8; i++) {
+    if (i < 2 || i >= 6) conwayCurr[i] = 0;
+    else conwayCurr[i] = conwayNext[i];
+  }
   return anyChange;
 }
 

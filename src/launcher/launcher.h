@@ -73,8 +73,8 @@ void launcherLoop() {
           conwayStuck = 0;
         }
         // Display the current state
-        for (byte x = 1; x < 7; x++) {
-          for (byte y = 1; y < 7; y++) {
+        for (byte x = 2; x < 6; x++) {
+          for (byte y = 2; y < 6; y++) {
             gamer.display[x][y] = (conwayCurr[y] >> x) & 1;
           }
         }
@@ -93,10 +93,12 @@ void launcherLoop() {
       }
     }
     if (gamer.isPressed(LEFT)) {
+      gamer.clear();
       _gameNumber = (_gameNumber == 0) ? _numGames - 1 : _gameNumber - 1;
       _animFrame = 0;
       if (_gameNumber == 6) conwayRandomize(); // Reset Conway when selected
     } else if (gamer.isPressed(RIGHT)) {
+      gamer.clear();
       _gameNumber = (_gameNumber + 1) % _numGames;
       _animFrame = 0;
       if (_gameNumber == 6) conwayRandomize(); // Reset Conway when selected
