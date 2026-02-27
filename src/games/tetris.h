@@ -201,7 +201,7 @@ void tetrisLoop() {
 
   if (gameOverT) {
     playLossTune();
-    saveHighScore(score, _gameNum);
+    saveHighScore(score, 4);
     showScore(digitFrom(score, 2), digitFrom(score, 1));
     delay(2000);
     resetTetris();

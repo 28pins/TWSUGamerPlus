@@ -234,14 +234,14 @@ void breakoutLoop() {
     else if(score<10){
       gamer.clear();
       showScore(0,score);
-      saveHighScore(score, _gameNum);
+      saveHighScore(score, 1);
     }
     else {
       byte dig2 = score % 10;
       byte dig1 = score / 10;
       gamer.clear();
       showScore(dig1,dig2);
-      saveHighScore(score, _gameNum);
+      saveHighScore(score, 1);
     }
     delay(500);
     startBreakout(true);
@@ -254,7 +254,7 @@ void breakoutLoop() {
   }
   if(finished) {
     playWinTune();
-    saveHighScore(score, _gameNum);
+    saveHighScore(score, 1);
     startBreakout(false);
   }
   delay(40);

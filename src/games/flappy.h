@@ -107,7 +107,7 @@ void flappyLoop()
     byte dig2 = score % 10;
     byte dig1 = score / 10;
     showScore(dig1,dig2);
-    saveHighScore(score, _gameNum);
+    saveHighScore(score, 3);
     delay(800);
     displayflappyScore = false;
     for(byte i = 0 ; i < 64; i++) inGameScreen[i] = 0;

@@ -38,7 +38,7 @@ void moveAlien() {
   for (int i = 0; i < 8; i++) {
     if(gamer.display[i][5] == 1) {
       gameGoing = false;
-      saveHighScore(score, _gameNum);
+      saveHighScore(score, 5);
       return;
     }
   }
@@ -74,7 +74,7 @@ void alienLoop() {
           renderPlayer();
           gamer.updateDisplay();
         }
-        lastMove += 240;
+        lastMove += 200;
       }
       if(gamer.isPressed(LEFT) && currentX > 0) {
         currentX--;
