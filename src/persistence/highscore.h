@@ -17,5 +17,6 @@ byte getHighScore(int gameNum) {
 }
 
 byte getAddressForGame(int gameNum) {
-  return gameNum * sizeof(byte);
+  return (gameNum * sizeof(byte)) + 1; // Start from address 1 to avoid overwriting the clear bit
 }
+#endif

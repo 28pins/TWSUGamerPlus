@@ -129,6 +129,11 @@ void setup() {
   gamer.begin();
   startupCheck();
   launcherSetup();
+  if(EEPROM.read(0) == 0) {
+    for (byte i = 0; i < 255; i++) {
+      EEPROM.write(i, 0);
+    }
+  }
 }
 
 void loop() {

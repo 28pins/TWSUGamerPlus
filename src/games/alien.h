@@ -81,3 +81,4 @@ void renderPlayer() {
     gamer.display[currentX + 1][7] = 1;
   }
 }
+#endif
