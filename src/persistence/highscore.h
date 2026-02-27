@@ -6,7 +6,7 @@ void saveHighScore(int score, int gameNum) {
   int highScore;
   EEPROM.get(getAddressForGame(gameNum), highScore);
   if (score > highScore) {
-    EEPROM.put(getAddressForGame, score);
+    EEPROM.put(getAddressForGame(gameNum), score);
   }
 }
 

@@ -10,6 +10,48 @@ void resetAlienGame() {
   gameGoing = true;
 }
 
+void renderPlayer() {
+  for(int i = 0; i < 8; i++) {
+    gamer.display[i][7] = 0;
+    gamer.display[i][6] = 0;
+  }
+  gamer.display[currentX][7] = 1;
+  gamer.display[currentX][6] = 1;
+  if(currentX > 0) {
+    gamer.display[currentX - 1][7] = 1;
+  }
+  if(currentX < 7) {
+    gamer.display[currentX + 1][7] = 1;
+  }
+}
+
+void generateAlien() {
+  for (int i = 0; i < 8; i++) {
+    gamer.display[i][0] = random(0, moveDelay > 530 ? 4 : 3) > 1 ? 1 : 0;
+  }
+}
+
+void moveAlien() {
+  for (int i = 0; i < 8; i++) {
+    if(gamer.display[i][5] == 1) {
+      gameGoing = false;
+      return;
+    }
+  }
+  for (int i = 0; i < 8; i++) {
+    for(int j = 5; j > 0; j--) {
+      gamer.display[i][j] = gamer.display[i][j - 1];
+    }
+  }
+  generateAlien();
+  renderPlayer();
+  gamer.updateDisplay();
+  lastMove = millis();
+  if(moveDelay > 500) {
+    moveDelay -= 20;
+  }
+}
+
 void alienLoop() {
   if(gameGoing) {
     moveAlien();
@@ -41,44 +83,6 @@ void alienLoop() {
         gamer.updateDisplay();
       }
     }
-  }
-}
-
-void generateAlien() {
-  for (int i = 0; i < 8; i++) {
-    gamer.display[i][0] = random(0, 3) > 1 ? 1 : 0;
-  }
-}
-
-void moveAlien() {
-  for (int i = 0; i < 8; i++) {
-    if(gamer.display[i][5] == 1) {
-      gameGoing = false;
-      return;
-    }
-  }
-  for (int i = 0; i < 8; i++) {
-    for(int j = 5; j > 0; j--) {
-      gamer.display[i][j] = gamer.display[i][j - 1];
-    }
-  }
-  generateAlien();
-  renderPlayer();
-  gamer.updateDisplay();
-}
-
-void renderPlayer() {
-  for(int i = 0; i < 8; i++) {
-    gamer.display[i][7] = 0;
-    gamer.display[i][6] = 0;
-  }
-  gamer.display[currentX][7] = 1;
-  gamer.display[currentX][6] = 1;
-  if(currentX > 0) {
-    gamer.display[currentX - 1][7] = 1;
-  }
-  if(currentX < 7) {
-    gamer.display[currentX + 1][7] = 1;
   }
 }
 #endif

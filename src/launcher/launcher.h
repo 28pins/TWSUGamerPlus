@@ -57,7 +57,7 @@ void launcherLoop() {
     while (!gamer.isPressed(START)) {
       _games[_gameNumber].loop_fn();
     }
-    setHighScore(_gameNumber, score);
+    saveHighScore(_gameNumber, score);
     gamer.stopTone();
   } else {
     // Show animation frame from PROGMEM

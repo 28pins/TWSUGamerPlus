@@ -85,6 +85,11 @@ void simonLoop() {
     }
   } else {
     simonStep++;
+    if(simonStep>28) {
+      score = simonStep;
+      simonStep=28;
+      playWinTune();
+    }
   }
   delay(400);
 }
