@@ -23,8 +23,8 @@ bool ledFlashing = false;
 #define NOTE_A8  140
 #define NOTE_B8  125
 
-#define WIN_NOTE_DURATION  120
-#define LOSS_NOTE_DURATION 150
+#define WIN_NOTE_DURATION  100
+#define LOSS_NOTE_DURATION 180
 
 // Feature flag: set to 1 to enable the right-arrow direction in Simon.
 #define SIMON_RIGHT_ARROW_ENABLED 0
