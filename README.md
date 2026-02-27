@@ -198,11 +198,3 @@ for `gamer.printImage()`. String literals use the `F()` macro.
 - **Rate-limiting**: writes are suppressed if fewer than 1 s have elapsed since
   the last write.
 
-API:
-```cpp
-loadHighScores();              // call in setup(); logs via Serial
-saveHighScore(byte newScore);  // inserts into top-4 sorted list if improved
-byte best = getHighScore();    // returns top score
-clearHighScores();             // wipes EEPROM slots
-```
-

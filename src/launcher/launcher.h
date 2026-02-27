@@ -46,7 +46,7 @@ void launcherSetup() {
 
 void showHighScore(byte gameIndex) {
   byte hs = getHighScore(gameIndex);
-  showScore(hs);
+  showScore(hs/10, hs%10); // Display high score as two digits
 }
 
 void launcherLoop() {

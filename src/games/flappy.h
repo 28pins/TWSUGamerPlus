@@ -10,7 +10,6 @@ int birdPos = 2;
 int pipePos = 8;
 int pipeGap = 3;
 int ticks = 0;
-byte score = 0;
 byte inGameScreen[] = {
   0,0,0,0,0,0,0,0,
   0,0,0,0,0,0,0,0,
