@@ -138,7 +138,7 @@ void setup() {
   startupCheck();
   launcherSetup();
   if(EEPROM.read(0) == 0) {
-    for (byte i = 1; i < 1024; i++) {
+    for (int i = 1; i < 1024; i++) {
       EEPROM.write(i, 0);
     }
     EEPROM.write(0, 1); // Mark as initialized

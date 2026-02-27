@@ -207,7 +207,10 @@ void breakoutLoop() {
           }
         }
         velocity[0]*=-1;
-        velocity[1]*=-1;
+        // Only reverse y velocity if we're below y=6
+        if(currentYBreakout>6) {
+          velocity[1]*=-1;
+        }
       }
     }
     currentXBreakout = currentXBreakout+velocity[0];
