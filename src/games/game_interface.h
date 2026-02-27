@@ -1,3 +1,6 @@
+// © 2026 28pins — https://github.com/28pins/TWSUGamerPlus
+// SPDX-License-Identifier: MIT
+
 #ifndef GAME_INTERFACE_H
 #define GAME_INTERFACE_H
 #include "Arduino.h"

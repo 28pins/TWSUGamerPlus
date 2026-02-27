@@ -1,3 +1,6 @@
+// © 2026 28pins — https://github.com/28pins/TWSUGamerPlus
+// SPDX-License-Identifier: MIT
+
 #ifndef TETRIS_H
 #define TETRIS_H
 

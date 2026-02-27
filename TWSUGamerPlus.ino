@@ -1,3 +1,7 @@
+// TWSUGamerPlus — seven-game sketch for the TWSU DIY Gamer Kit.
+// © 2026 28pins — https://github.com/28pins/TWSUGamerPlus
+// SPDX-License-Identifier: MIT
+
 #include "Gamer.h"
 #include <avr/pgmspace.h>
 #include "src/assets/progmem_assets.h"
