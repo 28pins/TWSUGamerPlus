@@ -34,6 +34,9 @@ void launcherSetup() {
   registerGame("ALIEN",  resetAlienGame,      alienLoop,   &alienAnim_pgm[0][0],  ALIEN_ANIM_FRAMES);
   registerGame("CONWAY", resetConway,         conwayLoop,  &conwayAnim_pgm[0][0], CONWAY_ANIM_FRAMES);
 
+  // Initialize Conway simulation for launcher animation
+  conwayRandomize();
+
   // Show startup logo from PROGMEM
   byte buf[8];
   pgm_readimg(startup_pgm[0], buf);
@@ -59,11 +62,30 @@ void launcherLoop() {
   } else {
     // Show animation frame from PROGMEM
     if(isInLauncher) {
-      byte buf[8];
-      pgm_readimg(_games[_gameNumber].animFrames + _animFrame * 8, buf);
-      gamer.printImage(buf);
-      _animFrame++;
-      if (_animFrame >= _games[_gameNumber].numFrames) _animFrame = 0;
+      // Special case: Conway runs live simulation
+      if (_gameNumber == 6) {
+        // Run Conway simulation step
+        bool changed = conwayStepSmall();
+        if (!changed) {
+          conwayStuck++;
+          if (conwayStuck > CONWAY_STAGNATION_LIMIT) conwayRandomize();
+        } else {
+          conwayStuck = 0;
+        }
+        // Display the current state
+        for (byte x = 1; x < 7; x++) {
+          for (byte y = 1; y < 7; y++) {
+            gamer.display[x][y] = (conwayCurr[y] >> x) & 1;
+          }
+        }
+        gamer.updateDisplay();
+      } else {
+        byte buf[8];
+        pgm_readimg(_games[_gameNumber].animFrames + _animFrame * 8, buf);
+        gamer.printImage(buf);
+        _animFrame++;
+        if (_animFrame >= _games[_gameNumber].numFrames) _animFrame = 0;
+      }
     } else {
       showHighScore(_gameNumber);
       if(!ledflashing) {
@@ -73,9 +95,11 @@ void launcherLoop() {
     if (gamer.isPressed(LEFT)) {
       _gameNumber = (_gameNumber == 0) ? _numGames - 1 : _gameNumber - 1;
       _animFrame = 0;
+      if (_gameNumber == 6) conwayRandomize(); // Reset Conway when selected
     } else if (gamer.isPressed(RIGHT)) {
       _gameNumber = (_gameNumber + 1) % _numGames;
       _animFrame = 0;
+      if (_gameNumber == 6) conwayRandomize(); // Reset Conway when selected
     } else if (gamer.isPressed(UP)) {
       isInLauncher = false;
     } else if (gamer.isPressed(DOWN)) {
