@@ -112,7 +112,6 @@ void showScore(byte dig1, byte dig2) {
 
 // ── Startup self-test ─────────────────────────────────────────────────────────
 static void startupCheck() {
-  loadHighScores();
 #if GAMER_DEBUG
   Serial.begin(9600);
   byte b = progmemSelfCheck();
@@ -120,7 +119,12 @@ static void startupCheck() {
   Serial.print(b, HEX);
   Serial.println(b == 0xFF ? F(" OK") : F(" WARN: unexpected value"));
   Serial.print(F("[BOOT] High score: "));
-  Serial.println(getHighScore());
+  for (byte i = 0; i < NUM_GAMES; i++) {
+    Serial.print(gameNames[i]);
+    Serial.print(": ");
+    Serial.print(getHighScore(i));
+    Serial.print("  ");
+  }
 #endif
 }
 

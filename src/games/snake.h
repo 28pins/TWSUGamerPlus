@@ -51,7 +51,6 @@ void collided() {
           gamer.clear();
           delay(20);
           playLossTune();
-          saveHighScore((byte)min(score, 99));
           byte dig2 = score % 10;
           byte dig1 = score / 10;
           showScore(dig1,dig2);

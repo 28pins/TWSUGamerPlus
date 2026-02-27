@@ -2,6 +2,10 @@
 #define HIGHSCORE_H
 #include <EEPROM.h>
 
+byte getAddressForGame(int gameNum) {
+  return (gameNum * sizeof(byte)) + 1; // Start from address 1 to avoid overwriting the clear bit
+}
+
 void saveHighScore(int score, int gameNum) {
   int highScore;
   EEPROM.get(getAddressForGame(gameNum), highScore);
@@ -14,9 +18,5 @@ byte getHighScore(int gameNum) {
   byte highScore;
   EEPROM.get(getAddressForGame(gameNum), highScore);
   return highScore;
-}
-
-byte getAddressForGame(int gameNum) {
-  return (gameNum * sizeof(byte)) + 1; // Start from address 1 to avoid overwriting the clear bit
 }
 #endif

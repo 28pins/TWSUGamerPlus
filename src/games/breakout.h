@@ -216,7 +216,6 @@ void breakoutLoop() {
       delay(100);
     }
     playLossTune();
-    saveHighScore(score);
     if(score==0){
       gamer.clear();
       byte buf[8]; pgm_readimg(framesBreakout_pgm[1], buf);
