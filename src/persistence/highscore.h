@@ -10,10 +10,14 @@ byte getAddressForGame(int gameNum) {
 }
 
 void saveHighScore(int score, int gameNum) {
-  int highScore;
+  byte highScore;
+  int boundedScore = score;
+  if (boundedScore < 0) boundedScore = 0;
+  else if (boundedScore > 255) boundedScore = 255;
+  byte scoreToSave = (byte)boundedScore;
   EEPROM.get(getAddressForGame(gameNum), highScore);
-  if (score > highScore) {
-    EEPROM.put(getAddressForGame(gameNum), score);
+  if (scoreToSave > highScore) {
+    EEPROM.put(getAddressForGame(gameNum), scoreToSave);
   }
 }
 
