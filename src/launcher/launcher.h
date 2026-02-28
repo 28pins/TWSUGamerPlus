@@ -8,7 +8,7 @@
 #include "../assets/progmem_assets.h"
 
 // ── Launcher state ────────────────────────────────────────────────────────────
-#define LAUNCHER_MAX_GAMES 7
+#define LAUNCHER_MAX_GAMES 8
 static GameDescriptor _games[LAUNCHER_MAX_GAMES];
 static byte _numGames = 0;
 static byte _gameNumber = 0;
@@ -36,6 +36,7 @@ void launcherSetup() {
   registerGame("TETRIS", resetTetris,         tetrisLoop,  &tetris_pgm[0][0],     TETRIS_ANIM_FRAMES);
   registerGame("ALIEN",  resetAlienGame,      alienLoop,   &alienAnim_pgm[0][0],  ALIEN_ANIM_FRAMES);
   registerGame("CONWAY", resetConway,         conwayLoop,  &conwayAnim_pgm[0][0], CONWAY_ANIM_FRAMES);
+  registerGame("DINO",   resetDino,           dinoLoop,    &dinoAnim_pgm[0][0],   DINO_ANIM_FRAMES);
 
   // Initialize Conway simulation for launcher animation
   conwayRandomize();
