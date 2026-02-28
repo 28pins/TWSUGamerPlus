@@ -14,6 +14,18 @@ volatile int origXV=-1;
 volatile int origYV=-1;
 volatile byte scoreBreakout = 0;
 
+bool outOfBounds(int xV, int yV) {
+  if(xV >= 8 || xV < 0) {
+    return true;
+  } 
+  else if(yV >= 7 || yV < 0) {
+    return true;
+  } 
+  else {
+    return false;
+  }
+}
+
 void physics() {
   if(gamer.display[currentXBreakout+velocity[0]][currentYBreakout+velocity[1]]==HIGH || outOfBounds(currentXBreakout+velocity[0],currentYBreakout+velocity[1])) {
     //Collided with something!!!
@@ -231,7 +243,6 @@ void breakoutLoop() {
     }
     if(scoreBreakout==0){
       gamer.clear();
-      gamer.printImage(framesBreakout[1]);
     } 
     else if(scoreBreakout<10){
       gamer.clear();
