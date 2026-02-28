@@ -109,6 +109,7 @@ void createPiece() {
 }
 
 void checkLines() {
+  byte cleared = 0;
   for (byte i = 0; i < gridHeight; i++) {
     bool lineComplete = true;
     for (byte j = 0; j < gridWidth; j++) {
@@ -116,6 +117,7 @@ void checkLines() {
     }
     if (lineComplete) {
       linesSinceLastDrop++;
+      cleared++;
       if (soundEnabled) { gamer.playTone(NOTE_A8); tetrisChirpPending = true; }
       startLEDFlash();
       currentX = 3;
@@ -132,12 +134,16 @@ void checkLines() {
       }
       for (byte j = 0; j < gridWidth; j++) grid[0][j] = 0;
       linesCleared += linesSinceLastDrop;
-      score += level;
       if (linesCleared % 7 == 0) {
         level++;
         moveInterval = max(300, moveInterval - 200);
       }
     }
+  }
+  // Multi-line bonus: 1 line = 1×level, 2 lines = 3×level, 3 lines = 5×level
+  if (cleared > 0) {
+    static const byte bonusMultipliers[] PROGMEM = {0, 1, 3, 5};
+    score += level * pgm_read_byte(&bonusMultipliers[min(cleared, (byte)3)]);
   }
 }
 

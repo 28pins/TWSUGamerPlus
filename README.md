@@ -98,7 +98,7 @@ Guide the bird through the gaps between pipes. Colliding with a pipe or the grou
 | `DOWN` | Soft-drop (faster fall) |
 | `UP` | Rotate piece clockwise |
 
-Clear lines to score points. Speed increases every 10 cleared lines. The game ends when a new piece cannot be placed; score is displayed before returning to the menu.
+Clear lines to score points. Clearing multiple lines at once awards a bonus: 1 line = 1×, 2 lines = 3×, 3 lines = 5× (multiplied by the current level). Speed increases every 7 cleared lines. The game ends when a new piece cannot be placed; score is displayed before returning to the menu.
 
 #### Space Invaders
 | Button | Action |
