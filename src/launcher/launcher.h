@@ -60,7 +60,6 @@ void launcherLoop() {
     while (!gamer.isPressed(START)) {
       _games[_gameNumber].loop_fn();
     }
-    saveHighScore(min(score, 99), _gameNumber); // Cap high score at 99 for display purposes
     gamer.stopTone();
   } else {
     // Show animation frame from PROGMEM

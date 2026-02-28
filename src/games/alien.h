@@ -94,6 +94,8 @@ void alienLoop() {
       resetAlienGame();
     } else {
       showScore(score/10, score%10);
+      delay(1000);
+      resetAlienGame();
     }
   }
 }

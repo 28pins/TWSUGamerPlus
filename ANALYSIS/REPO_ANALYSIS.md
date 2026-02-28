@@ -122,33 +122,5 @@ The following findings are intentionally deferred to future PRs (P2–P3 priorit
 
 ---
 
-## Proposed Milestone / Roadmap (updated)
-
-```
-PR #A  — "Bootstrap: CI & analysis" ✅ DONE
-         • .github/workflows/ci.yml
-         • ANALYSIS/REPO_ANALYSIS.md
-         • .github/ISSUE_TEMPLATE/ + PULL_REQUEST_TEMPLATE.md
-
-PR #B  — "Fix all analysis findings" ✅ THIS PR
-         • CQ-01 to CQ-15 code fixes
-         • SEC-01 Serial guard
-         • DEP, DOC, CFG, PKG improvements
-         • CHANGELOG.md, CONTRIBUTING.md, .gitignore, examples/
-
-PR #C  — "SRAM reduction: menuScreen animation refactor" (future)
-         • Restructure flappy.h menu animation to use two PROGMEM frames
-         • Saves 64 bytes of SRAM
-
-PR #D  — "Host-side unit tests for highscore.h" (future)
-         • tests/Makefile + EEPROM mock + CRC/wear-level/wrap tests
-         • CI step: run host tests with g++
-
-PR #E  — "Static analysis in CI" (future)
-         • CI job: cppcheck --enable=all
-```
-
----
-
 *End of analysis.*
 
