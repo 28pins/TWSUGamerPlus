@@ -10,10 +10,11 @@ byte getAddressForGame(int gameNum) {
 }
 
 void saveHighScore(int score, int gameNum) {
-  int highScore;
+  byte highScore;
+  byte scoreByte = (byte)score;
   EEPROM.get(getAddressForGame(gameNum), highScore);
-  if (score > highScore) {
-    EEPROM.put(getAddressForGame(gameNum), score);
+  if (scoreByte > highScore) {
+    EEPROM.put(getAddressForGame(gameNum), scoreByte);
   }
 }
 
