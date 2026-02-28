@@ -5,12 +5,14 @@
 #define ALIEN_H
 bool gameGoing = false;
 long lastMove = 0;
-int moveDelay = 1000;
+int moveDelay = 800;
+int alienLineCount = 0;
 
 void resetAlienGame() {
   gamer.clear();
   score = 0;
-  moveDelay = 1000;
+  moveDelay = 800;
+  alienLineCount = 0;
   currentX = 3;
   lastMove = millis();
   gameGoing = true;
@@ -33,7 +35,7 @@ void renderPlayer() {
 
 void generateAlien() {
   for (int i = 0; i < 8; i++) {
-    gamer.display[i][0] = random(0, moveDelay > 530 ? 3 : 4) > 1 ? 1 : 0;
+    gamer.display[i][0] = random(0, moveDelay > 330 ? 3 : 4) > 1 ? 1 : 0;
   }
 }
 
@@ -54,8 +56,9 @@ void moveAlien() {
   renderPlayer();
   gamer.updateDisplay();
   lastMove = millis();
-  score++;
-  if(moveDelay > 500) {
+  alienLineCount++;
+  if (alienLineCount % 10 == 0) score++;
+  if(moveDelay > 300) {
     moveDelay -= 5;
   }
 }
