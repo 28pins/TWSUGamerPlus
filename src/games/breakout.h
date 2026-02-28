@@ -29,9 +29,13 @@ boolean outOfBounds(int xV, int yV) {
 void panic() {
   // Called when physics() cannot find any valid bounce direction (ball cornered by
   // blocks/walls on all expected deflection paths). Reverses both velocity components
-  // to break the ball out of the stuck rut and send it back the way it came.
+  // and randomly flips one to break repetitive patterns.
   velocity[0] *= -1;
   velocity[1] *= -1;
+  // Add randomization: 50% chance to flip X velocity to prevent predictable bounces
+  if(random(2) == 0) {
+    velocity[0] *= -1;
+  }
 }
 
 void physics() {
@@ -41,9 +45,24 @@ void physics() {
     if(soundEnabled) {
       if(currentYBreakout==6) {
         gamer.playTone(NOTE_C8);
-      } 
+      }
       else {
         gamer.playTone(NOTE_E8);
+      }
+    }
+    // Paddle hit detection: add angle variation based on paddle position
+    if(currentYBreakout==6) {
+      // Ball is hitting paddle area - vary bounce angle based on where it hits
+      // Paddle is 4 pixels wide starting at paddleX
+      if(currentXBreakout >= paddleX && currentXBreakout < paddleX+4) {
+        // Hit left side of paddle - bounce left
+        if(currentXBreakout < paddleX+2) {
+          velocity[0] = -1;
+        }
+        // Hit right side of paddle - bounce right
+        else {
+          velocity[0] = 1;
+        }
       }
     }
     if(velocity[0]==1) {
