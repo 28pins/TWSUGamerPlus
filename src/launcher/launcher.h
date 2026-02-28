@@ -61,6 +61,7 @@ void launcherLoop() {
       _games[_gameNumber].loop_fn();
     }
     gamer.stopTone();
+    gamer.clear();
   } else {
     // Show animation frame from PROGMEM
     if(isInLauncher) {
