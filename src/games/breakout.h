@@ -26,6 +26,14 @@ boolean outOfBounds(int xV, int yV) {
   }
 }
 
+void panic() {
+  // Called when physics() cannot find any valid bounce direction (ball cornered by
+  // blocks/walls on all expected deflection paths). Reverses both velocity components
+  // to break the ball out of the stuck rut and send it back the way it came.
+  velocity[0] *= -1;
+  velocity[1] *= -1;
+}
+
 void physics() {
   if(gamer.display[currentXBreakout+velocity[0]][currentYBreakout+velocity[1]]==HIGH || outOfBounds(currentXBreakout+velocity[0],currentYBreakout+velocity[1])) {
     //Collided with something!!!
@@ -47,6 +55,7 @@ void physics() {
           velocity[1]=-1;
           velocity[0]=-1;
         }
+        else panic();
       }
       else if(velocity[1]==-1) {
         if(gamer.display[currentXBreakout+velocity[0]][currentYBreakout+1]==LOW && !outOfBounds(currentXBreakout+velocity[0],currentYBreakout+1)) {
@@ -55,7 +64,8 @@ void physics() {
         else if(gamer.display[currentXBreakout-1][currentYBreakout+1]==LOW && !outOfBounds(currentXBreakout-1,currentYBreakout+1)) {
           velocity[1]=1;
           velocity[0]=-1;
-        } 
+        }
+        else panic();
       } 
     } 
     else if(velocity[0]==-1) {
@@ -67,6 +77,7 @@ void physics() {
           velocity[1]=-1;
           velocity[0]=1;
         }
+        else panic();
       } 
       else if(velocity[1]==-1) {
         if(gamer.display[currentXBreakout+velocity[0]][currentYBreakout+1]==LOW && !outOfBounds(currentXBreakout+velocity[0],currentYBreakout+1)) {
@@ -76,8 +87,10 @@ void physics() {
           velocity[1]=1;
           velocity[0]=1;
         }
+        else panic();
       } 
     }
+    else panic();
     if(!outOfBounds(currentXBreakout+origXV,currentYBreakout+origYV)) {
       blocks[currentXBreakout+origXV][currentYBreakout+origYV]=0;
     }
@@ -150,15 +163,11 @@ void breakoutLoop() {
             if(y%2==0) {
               if(x<7) {
                 blocks[x+1][y]=0;
-              } else {
-                blocks[0][y]=0;
               }
             } 
             else {
               if(x>0) {
                 blocks[x-1][y]=0;
-              } else {
-                blocks[7][y]=0;
               }
             }
           } 
@@ -166,15 +175,11 @@ void breakoutLoop() {
             if(y%2==0) {
               if(x>0) {
                 blocks[x-1][y]=0;
-              } else {
-                blocks[7][y]=0;
               }
             } 
             else {
               if(x<7) {
                 blocks[x+1][y]=0;
-              } else {
-                blocks[0][y]=0;
               }
             }
           }
@@ -188,8 +193,8 @@ void breakoutLoop() {
         }
       }
     }
-    byte newX = currentXBreakout + velocity[0];
-    byte newY = currentYBreakout + velocity[1];
+    int newX = currentXBreakout + velocity[0];
+    int newY = currentYBreakout + velocity[1];
     if(newX>-1 && newX<8) {
       if(newY>-1 && newY<8) {
       } 
@@ -214,6 +219,7 @@ void breakoutLoop() {
             blocks[currentXBreakout-velocity[0]][currentYBreakout-velocity[1]]=0;
             velocity[1]*=-1;
           } 
+          else panic();
         }
       } 
       else {
