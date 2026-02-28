@@ -65,6 +65,11 @@ void launcherLoop() {
   } else {
     // Show animation frame from PROGMEM
     if(isInLauncher) {
+      // Ensure LED is off when on main launcher
+      if(ledFlashing) {
+        gamer.setLED(false);
+        ledFlashing = false;
+      }
       // Special case: Conway runs live simulation
       if (_gameNumber == 6) {
         // Run Conway simulation step
