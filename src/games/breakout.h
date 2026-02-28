@@ -14,8 +14,63 @@ volatile int origXV=-1;
 volatile int origYV=-1;
 volatile byte scoreBreakout = 0;
 
-// NOTE TO SELF: The physics in this is still iffy.
-// FIX IT!!!
+void physics() {
+  if(gamer.display[currentXBreakout+velocity[0]][currentYBreakout+velocity[1]]==HIGH || outOfBounds(currentXBreakout+velocity[0],currentYBreakout+velocity[1])) {
+    //Collided with something!!!
+    startLEDFlash();
+    if(soundEnabled) {
+      if(currentYBreakout==6) {
+        gamer.playTone(NOTE_C8);
+      } 
+      else {
+        gamer.playTone(NOTE_E8);
+      }
+    }
+    if(velocity[0]==1) {
+      if(velocity[1]==1) {
+        if(gamer.display[currentXBreakout+velocity[0]][currentYBreakout-1]==LOW && !outOfBounds(currentXBreakout+velocity[0],currentYBreakout-1)) {
+          velocity[1]=-1;
+        }
+        else if(gamer.display[currentXBreakout-1][currentYBreakout-1]==LOW && !outOfBounds(currentXBreakout-1,currentYBreakout-1)) {
+          velocity[1]=-1;
+          velocity[0]=-1;
+        }
+      }
+      else if(velocity[1]==-1) {
+        if(gamer.display[currentXBreakout+velocity[0]][currentYBreakout+1]==LOW && !outOfBounds(currentXBreakout+velocity[0],currentYBreakout+1)) {
+          velocity[1]=1;
+        } 
+        else if(gamer.display[currentXBreakout-1][currentYBreakout+1]==LOW && !outOfBounds(currentXBreakout-1,currentYBreakout+1)) {
+          velocity[1]=1;
+          velocity[0]=-1;
+        } 
+      } 
+    } 
+    else if(velocity[0]==-1) {
+      if(velocity[1]==1) {
+        if(gamer.display[currentXBreakout+velocity[0]][currentYBreakout-1]==LOW && !outOfBounds(currentXBreakout+velocity[0],currentYBreakout-1)) {
+          velocity[1]=-1;
+        } 
+        else if(gamer.display[currentXBreakout+1][currentYBreakout-1]==LOW && !outOfBounds(currentXBreakout-1,currentYBreakout-1)) {
+          velocity[1]=-1;
+          velocity[0]=1;
+        }
+      } 
+      else if(velocity[1]==-1) {
+        if(gamer.display[currentXBreakout+velocity[0]][currentYBreakout+1]==LOW && !outOfBounds(currentXBreakout+velocity[0],currentYBreakout+1)) {
+          velocity[1]=1;
+        } 
+        else if(gamer.display[currentXBreakout+1][currentYBreakout+1]==LOW && !outOfBounds(currentXBreakout-1,currentYBreakout+1)) {
+          velocity[1]=1;
+          velocity[0]=1;
+        }
+      } 
+    }
+    if(!outOfBounds(currentXBreakout+origXV,currentYBreakout+origYV)) {
+      blocks[currentXBreakout+origXV][currentYBreakout+origYV]=0;
+    }
+  }
+}
 
 void startBreakout(bool resetIt) {
   for(int x=0;x<8;x++) {
@@ -26,7 +81,7 @@ void startBreakout(bool resetIt) {
   if(!resetIt) {
     scoreBreakout++;
     gamer.clear();
-    gamer.printImage(framesBreakout[0]);
+    saveHighScore(scoreBreakout, 1);
     delay(500);
   } 
   else scoreBreakout=0;
@@ -34,6 +89,10 @@ void startBreakout(bool resetIt) {
   currentYBreakout=5;
   velocity[0]=-1;
   velocity[1]=-1;
+}
+
+void startBreakoutReset() {
+  startBreakout(true);
 }
 
 void breakoutLoop() {
@@ -209,64 +268,6 @@ boolean outOfBounds(int xV, int yV) {
   } 
   else {
     return false;
-  }
-}
- 
-void physics() {
-  if(gamer.display[currentXBreakout+velocity[0]][currentYBreakout+velocity[1]]==HIGH || outOfBounds(currentXBreakout+velocity[0],currentYBreakout+velocity[1])) {
-    //Collided with something!!!
-    setLEDFlash();
-    if(soundEnabled) {
-      if(currentYBreakout==6) {
-        gamer.playTone(NOTE_C5);
-      } 
-      else {
-        gamer.playTone(NOTE_E5);
-      }
-    }
-    if(velocity[0]==1) {
-      if(velocity[1]==1) {
-        if(gamer.display[currentXBreakout+velocity[0]][currentYBreakout-1]==LOW && !outOfBounds(currentXBreakout+velocity[0],currentYBreakout-1)) {
-          velocity[1]=-1;
-        }
-        else if(gamer.display[currentXBreakout-1][currentYBreakout-1]==LOW && !outOfBounds(currentXBreakout-1,currentYBreakout-1)) {
-          velocity[1]=-1;
-          velocity[0]=-1;
-        }
-      }
-      else if(velocity[1]==-1) {
-        if(gamer.display[currentXBreakout+velocity[0]][currentYBreakout+1]==LOW && !outOfBounds(currentXBreakout+velocity[0],currentYBreakout+1)) {
-          velocity[1]=1;
-        } 
-        else if(gamer.display[currentXBreakout-1][currentYBreakout+1]==LOW && !outOfBounds(currentXBreakout-1,currentYBreakout+1)) {
-          velocity[1]=1;
-          velocity[0]=-1;
-        } 
-      } 
-    } 
-    else if(velocity[0]==-1) {
-      if(velocity[1]==1) {
-        if(gamer.display[currentXBreakout+velocity[0]][currentYBreakout-1]==LOW && !outOfBounds(currentXBreakout+velocity[0],currentYBreakout-1)) {
-          velocity[1]=-1;
-        } 
-        else if(gamer.display[currentXBreakout+1][currentYBreakout-1]==LOW && !outOfBounds(currentXBreakout-1,currentYBreakout-1)) {
-          velocity[1]=-1;
-          velocity[0]=1;
-        }
-      } 
-      else if(velocity[1]==-1) {
-        if(gamer.display[currentXBreakout+velocity[0]][currentYBreakout+1]==LOW && !outOfBounds(currentXBreakout+velocity[0],currentYBreakout+1)) {
-          velocity[1]=1;
-        } 
-        else if(gamer.display[currentXBreakout+1][currentYBreakout+1]==LOW && !outOfBounds(currentXBreakout-1,currentYBreakout+1)) {
-          velocity[1]=1;
-          velocity[0]=1;
-        }
-      } 
-    }
-    if(!outOfBounds(currentXBreakout+origXV,currentYBreakout+origYV)) {
-      blocks[currentXBreakout+origXV][currentYBreakout+origYV]=0;
-    }
   }
 }
 
