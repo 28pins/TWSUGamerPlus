@@ -33,6 +33,7 @@ void resetDino() {
 void dinoLoop() {
 	checkSoundToggle();
 	updateLEDFlash();
+	if (soundEnabled) gamer.stopTone();
 
 	// ── Game-over: show score, then auto-restart ──────────────────────────
 	if (dinoOver) {
@@ -78,6 +79,7 @@ void dinoLoop() {
 			dinoScore++;
 			if (dinoScore > 99) dinoScore = 99;
 			startLEDFlash();
+			if (soundEnabled) gamer.playTone(NOTE_E8);
 			if (dinoSpeed > 140) dinoSpeed -= 5;
 		}
 
