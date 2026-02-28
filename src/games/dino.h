@@ -49,10 +49,13 @@ void dinoLoop() {
 		dinoJumping = true;
 		dinoDucking = false;
 		dinoVel     = -2;
+		startLEDFlash();
 		if (soundEnabled) gamer.playTone(NOTE_A8);
 	}
 	if (!dinoJumping) {
+		bool wasDucking = dinoDucking;
 		dinoDucking = gamer.isHeld(DOWN);
+		if (dinoDucking && !wasDucking) startLEDFlash();
 	}
 
 	// ── Tick-gated update ─────────────────────────────────────────────────
