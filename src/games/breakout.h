@@ -13,12 +13,12 @@ volatile byte counter = 0;
 volatile int origXV=-1;
 volatile int origYV=-1;
 volatile byte scoreBreakout = 0;
-
-bool outOfBounds(int xV, int yV) {
-  if(xV >= 8 || xV < 0) {
+ 
+boolean outOfBounds(int xV, int yV) {
+  if(xV > 8 || xV < 0) {
     return true;
   } 
-  else if(yV >= 7 || yV < 0) {
+  else if(yV > 8 || yV < 0) {
     return true;
   } 
   else {
@@ -268,18 +268,6 @@ void breakoutLoop() {
     startBreakout(false);
   }
   delay(50);
-}
- 
-boolean outOfBounds(int xV, int yV) {
-  if(xV > 8 || xV < 0) {
-    return true;
-  } 
-  else if(yV > 8 || yV < 0) {
-    return true;
-  } 
-  else {
-    return false;
-  }
 }
 
 #endif // BREAKOUT_H
