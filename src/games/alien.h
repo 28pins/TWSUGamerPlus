@@ -8,6 +8,9 @@ long lastMove = 0;
 int moveDelay = 1000;
 
 void resetAlienGame() {
+  gamer.clear();
+  score = 0;
+  moveDelay = 1000;
   currentX = 3;
   lastMove = millis();
   gameGoing = true;
@@ -51,6 +54,7 @@ void moveAlien() {
   renderPlayer();
   gamer.updateDisplay();
   lastMove = millis();
+  score++;
   if(moveDelay > 500) {
     moveDelay -= 5;
   }
