@@ -103,6 +103,7 @@ void showScore(byte dig1, byte dig2) {
 #include "src/games/tetris.h"
 #include "src/games/alien.h"
 #include "src/games/conway.h"
+#include "src/games/dino.h"
 
 // ── Launcher ──────────────────────────────────────────────────────────────────
 #include "src/launcher/launcher.h"

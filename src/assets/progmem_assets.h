@@ -14,6 +14,7 @@
 #define TETRIS_ANIM_FRAMES    2
 #define ALIEN_ANIM_FRAMES     2
 #define CONWAY_ANIM_FRAMES    2
+#define DINO_ANIM_FRAMES      2
 
 // ── Launcher animation frames in PROGMEM ────────────────────────────────────
 
@@ -61,6 +62,12 @@ static const byte alienAnim_pgm[2][8] PROGMEM = {
 static const byte conwayAnim_pgm[2][8] PROGMEM = {
   {B01000000, B00100000, B11100000, B00000000, B00000000, B00000000, B00000000, B00000000},
   {B10100000, B01100000, B01000000, B00000000, B00000000, B00000000, B00000000, B00000000}
+};
+
+// Frame 0: dino standing + cactus; Frame 1: dino jumping over cactus
+static const byte dinoAnim_pgm[2][8] PROGMEM = {
+  {B00000000, B00000000, B00000000, B00000000, B00000000, B01000100, B01000100, B11111111},
+  {B00000000, B00000000, B00000000, B01000000, B01000000, B00000100, B00000100, B11111111}
 };
 
 // ── In-game image assets in PROGMEM ─────────────────────────────────────────
