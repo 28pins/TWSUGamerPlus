@@ -72,8 +72,8 @@ void physics() {
       if(velocity[1]==1) {
         if(gamer.display[currentXBreakout+velocity[0]][currentYBreakout-1]==LOW && !outOfBounds(currentXBreakout+velocity[0],currentYBreakout-1)) {
           velocity[1]=-1;
-        } 
-        else if(gamer.display[currentXBreakout+1][currentYBreakout-1]==LOW && !outOfBounds(currentXBreakout-1,currentYBreakout-1)) {
+        }
+        else if(gamer.display[currentXBreakout+1][currentYBreakout-1]==LOW && !outOfBounds(currentXBreakout+1,currentYBreakout-1)) {
           velocity[1]=-1;
           velocity[0]=1;
         }
@@ -82,8 +82,8 @@ void physics() {
       else if(velocity[1]==-1) {
         if(gamer.display[currentXBreakout+velocity[0]][currentYBreakout+1]==LOW && !outOfBounds(currentXBreakout+velocity[0],currentYBreakout+1)) {
           velocity[1]=1;
-        } 
-        else if(gamer.display[currentXBreakout+1][currentYBreakout+1]==LOW && !outOfBounds(currentXBreakout-1,currentYBreakout+1)) {
+        }
+        else if(gamer.display[currentXBreakout+1][currentYBreakout+1]==LOW && !outOfBounds(currentXBreakout+1,currentYBreakout+1)) {
           velocity[1]=1;
           velocity[0]=1;
         }
