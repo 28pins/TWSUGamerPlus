@@ -65,6 +65,7 @@ bool conwayStepSmall() {
       if (next != curr) anyChange = true;
     }
   }
+  for (byte i = 2; i < 6; i++) conwayCurr[i] = conwayNext[i];
   return anyChange;
 }
 
