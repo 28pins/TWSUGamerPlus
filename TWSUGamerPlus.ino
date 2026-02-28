@@ -30,18 +30,11 @@ bool ledFlashing = false;
 #define WIN_NOTE_DURATION  100
 #define LOSS_NOTE_DURATION 180
 
-// Feature flag: set to 1 to enable the right-arrow direction in Simon.
-#define SIMON_RIGHT_ARROW_ENABLED 0
 #define SIMON_MAX_SEQUENCE 30
+#define SIMON_NUM_DIRECTIONS 4
 
 // Feature flag: set to 1 to enable Serial debug output at startup.
 #define GAMER_DEBUG 1
-
-#if SIMON_RIGHT_ARROW_ENABLED
-  #define SIMON_NUM_DIRECTIONS 4
-#else
-  #define SIMON_NUM_DIRECTIONS 3
-#endif
 
 // Shared variables used by multiple games
 int currentX = 0;

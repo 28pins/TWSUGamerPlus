@@ -80,11 +80,9 @@ Keep the ball bouncing to break all the bricks. Miss the ball to lose a life. Sc
 #### Simon Says
 | Button | Action |
 |--------|--------|
-| `UP` / `DOWN` / `LEFT` / `RIGHT`¹ | Repeat the flashed sequence |
+| `UP` / `DOWN` / `LEFT` / `RIGHT` | Repeat the flashed sequence |
 
 Watch the LED pattern carefully and repeat it exactly. The sequence grows by one step each round and the pace increases.
-
-¹ The `RIGHT` direction is disabled by default (set `SIMON_RIGHT_ARROW_ENABLED` to `1` in the sketch to enable it).
 
 #### Flappy Bird
 | Button | Action |
