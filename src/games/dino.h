@@ -96,7 +96,7 @@ void dinoLoop() {
 				if (dinoDucking || dinoY + 1 >= 5)
 					hit = true;
 			} else if (dinoObsType == 2) {
-				if(!dinoDucking || dinoY > 0) 
+				if(!dinoDucking || dinoJumping) 
 					hit = true;
 			} else {
 				// Bird at row 5: duck or jump above row 4 to avoid
