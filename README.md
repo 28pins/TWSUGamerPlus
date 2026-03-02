@@ -12,14 +12,14 @@ Arduino code and a lightweight hardware driver for the Technology Will Save Us D
 TWSUGamerPlus is an Arduino sketch and accompanying hardware-abstraction library built for the [Technology Will Save Us (TWSU) DIY Gamer Kit](https://www.techwillsaveus.com/shop/diy-kits/diy-gamer-kit-2/). Starting from the base TWSU example, this project adds:
 
 - A **fully playable Tetris** implementation with piece rotation, soft-drop, and automatic speed progression.
-- **Seven games** in a single sketch: Snake, Breakout, Simon Says, Flappy Bird, Tetris, Space Invaders, and Conway’s Game of Life.
+- **Eight games** in a single sketch: Snake, Breakout, Simon Says, Flappy Bird, Tetris, Space Invaders, Conway’s Game of Life, and Dino Runner.
 - **Richer audio/visual feedback**: distinct win and loss tunes, non-blocking LED flashes, and per-game sound effects driven by a software tone engine.
 - A **sound toggle** via the capacitive-touch pad (v1.9+ boards) so players can silence the buzzer without re-flashing.
 - **Memory optimisations** that keep the whole program inside the ATmega328P’s 32 KB flash and 2 KB SRAM with room to spare.
 
 ## What’s inside
 - `Gamer.h` / `Gamer.cpp`: the `Gamer` class that owns the 8x8 display buffer, scans buttons, drives the buzzer and IR LED, and exposes helpers like `printImage`, `printString`, `showScore`, and `playTone`.
-- `TWSUGamerPlus-main.ino`: a single sketch with a launcher and seven games: Snake, Breakout, Simon, Flappy Bird, Tetris, Space Invaders, and Conway’s Game of Life.
+- `TWSUGamerPlus.ino`: a single sketch with a launcher and eight games: Snake, Breakout, Simon, Flappy Bird, Tetris, Space Invaders, Conway’s Game of Life, and Dino Runner.
 - `library.properties`: Arduino metadata so the folder can live in `~/Arduino/libraries/Gamer`.
 
 ## Hardware
@@ -42,7 +42,7 @@ The `Gamer` library maps all hardware to named constants so sketches never use r
 
 ## Getting started
 1. Clone or download this repo. Place the folder in `~/Arduino/libraries/Gamer` (so the library files and the sketch sit together), or open the folder directly if you prefer to build from it.
-2. Open `TWSUGamerPlus-main.ino` in the Arduino IDE.
+2. Open `TWSUGamerPlus.ino` in the Arduino IDE.
 3. Select **Board: Arduino Uno** and the correct serial port for your Gamer Kit.
 4. Click **Upload**. No other libraries are required because the `Gamer` driver is included here.
 
@@ -58,6 +58,8 @@ On v1.9+ hardware, tap the **capacitive-touch pad** on the PCB to toggle sound o
 | Button | Action |
 |--------|--------|
 | `LEFT` / `RIGHT` | Cycle through the game icons |
+| `UP` | Show the saved high score for the selected game |
+| `DOWN` | Return to the animated game icon |
 | `START` | Launch the highlighted game |
 | `START` (in-game) | Exit back to the launcher |
 
@@ -111,10 +113,18 @@ Shoot the descending alien before it reaches the bottom. The alien speeds up eac
 #### Conway’s Game of Life
 This is a zero-player simulation. Watch the cellular automaton evolve from a random seed. Press `START` to exit.
 
+#### Dino Runner
+| Button | Action |
+|--------|--------|
+| `UP` | Jump |
+| `DOWN` | Duck |
+
+Dodge the scrolling obstacles — ground cacti and flying birds. The game speeds up as your score increases. Colliding with an obstacle ends the run and displays your score. High scores are saved to EEPROM automatically.
+
 
 ## Gamer library overview
 - **Setup**: call `gamer.begin()` in `setup()` to configure pins, timers, and defaults.
-- **Display**: write pixels into `gamer.display[8][8]` and call `gamer.updateDisplay()` to push them. Helpers: `printImage(byte* img)`, `printImage(img, x, y)`, `allOn()`, `clear()`, `appendColumn()`, `printString(String)`, `showScore(int)`, `setRefreshRate(uint16_t)`.
+- **Display**: write pixels into `gamer.display[8][8]` and call `gamer.updateDisplay()` to push them. Helpers: `printImage(byte* img)`, `printImage(img, x, y)`, `printImagePGM(const byte*)`, `allOn()`, `clear()`, `appendColumn()`, `printString(const char*)`, `showScore(int)`, `setRefreshRate(uint16_t)`.
 - **Inputs**: edge-triggered `isPressed(btn)` for single presses, `isHeld(btn)` for current state, `ldrValue()`/`setldrThreshold()` for light sensing on older boards, `capTouch()` for capacitive input on v1.9 hardware.
 - **Buzzer**: `playTone(int note)` starts a tone, `stopTone()` stops it. The LED on pin 13 can be toggled with `setLED()`/`toggleLED()`.
 - **Infrared**: `irBegin()` / `irEnd()` manage the 38 kHz carrier and share timer interrupts with the display refresh logic.
@@ -134,7 +144,7 @@ MIT (No AI version: see https://github.com/28pins/NoAiLicense?tab=License-1-ov-f
 ### Repository structure
 
 ```
-TWSUGamerPlus-main.ino   — slim main sketch (globals + helpers + includes)
+TWSUGamerPlus.ino        — slim main sketch (globals + helpers + includes)
 Gamer.h / Gamer.cpp    — hardware-abstraction library
 src/
   assets/
@@ -150,6 +160,7 @@ src/
     tetris.h           — Tetris game state + functions
     alien.h            — Space Invaders game state + functions
     conway.h           — Conway's Game of Life state + functions
+    dino.h             — Dino Runner game state + functions
   launcher/
     launcher.h         — game registration, animation loop, START-to-launch
 docs/
@@ -170,7 +181,7 @@ translation unit, so there are no link-time issues and no need for separate
    ```cpp
    static const byte myGame_pgm[2][8] PROGMEM = { { … }, { … } };
    ```
-5. `#include "src/games/mygame.h"` in `TWSUGamerPlus-main.ino` (after the other
+5. `#include "src/games/mygame.h"` in `TWSUGamerPlus.ino` (after the other
    game includes).
 6. In `src/launcher/launcher.h`, add inside `launcherSetup()`:
    ```cpp
