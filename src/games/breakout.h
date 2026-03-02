@@ -8,7 +8,7 @@ volatile int currentYBreakout = 5;
 volatile int velocity[2] = {
   -1,-1};
 volatile byte blocks[8][8];
-volatile byte paddleX = 2;
+volatile int paddleX = 2;
 volatile byte counter = 0;
 volatile int origXV=-1;
 volatile int origYV=-1;
@@ -26,18 +26,6 @@ boolean outOfBounds(int xV, int yV) {
   }
 }
 
-void panic() {
-  // Called when physics() cannot find any valid bounce direction (ball cornered by
-  // blocks/walls on all expected deflection paths). Reverses both velocity components
-  // and randomly flips one to break repetitive patterns.
-  velocity[0] *= -1;
-  velocity[1] *= -1;
-  // Add randomization: 50% chance to flip X velocity to prevent predictable bounces
-  if(random(2) == 0) {
-    velocity[0] *= -1;
-  }
-}
-
 void physics() {
   if(gamer.display[currentXBreakout+velocity[0]][currentYBreakout+velocity[1]]==HIGH || outOfBounds(currentXBreakout+velocity[0],currentYBreakout+velocity[1])) {
     //Collided with something!!!
@@ -45,24 +33,9 @@ void physics() {
     if(soundEnabled) {
       if(currentYBreakout==6) {
         gamer.playTone(NOTE_C8);
-      }
+      } 
       else {
         gamer.playTone(NOTE_E8);
-      }
-    }
-    // Paddle hit detection: add angle variation based on paddle position
-    if(currentYBreakout==6) {
-      // Ball is hitting paddle area - vary bounce angle based on where it hits
-      // Paddle is 4 pixels wide starting at paddleX
-      if(currentXBreakout >= paddleX && currentXBreakout < paddleX+4) {
-        // Hit left side of paddle - bounce left
-        if(currentXBreakout < paddleX+2) {
-          velocity[0] = -1;
-        }
-        // Hit right side of paddle - bounce right
-        else {
-          velocity[0] = 1;
-        }
       }
     }
     if(velocity[0]==1) {
@@ -74,7 +47,6 @@ void physics() {
           velocity[1]=-1;
           velocity[0]=-1;
         }
-        else panic();
       }
       else if(velocity[1]==-1) {
         if(gamer.display[currentXBreakout+velocity[0]][currentYBreakout+1]==LOW && !outOfBounds(currentXBreakout+velocity[0],currentYBreakout+1)) {
@@ -83,33 +55,29 @@ void physics() {
         else if(gamer.display[currentXBreakout-1][currentYBreakout+1]==LOW && !outOfBounds(currentXBreakout-1,currentYBreakout+1)) {
           velocity[1]=1;
           velocity[0]=-1;
-        }
-        else panic();
+        } 
       } 
     } 
     else if(velocity[0]==-1) {
       if(velocity[1]==1) {
         if(gamer.display[currentXBreakout+velocity[0]][currentYBreakout-1]==LOW && !outOfBounds(currentXBreakout+velocity[0],currentYBreakout-1)) {
           velocity[1]=-1;
-        }
-        else if(gamer.display[currentXBreakout+1][currentYBreakout-1]==LOW && !outOfBounds(currentXBreakout+1,currentYBreakout-1)) {
+        } 
+        else if(gamer.display[currentXBreakout+1][currentYBreakout-1]==LOW && !outOfBounds(currentXBreakout-1,currentYBreakout-1)) {
           velocity[1]=-1;
           velocity[0]=1;
         }
-        else panic();
       } 
       else if(velocity[1]==-1) {
         if(gamer.display[currentXBreakout+velocity[0]][currentYBreakout+1]==LOW && !outOfBounds(currentXBreakout+velocity[0],currentYBreakout+1)) {
           velocity[1]=1;
-        }
-        else if(gamer.display[currentXBreakout+1][currentYBreakout+1]==LOW && !outOfBounds(currentXBreakout+1,currentYBreakout+1)) {
+        } 
+        else if(gamer.display[currentXBreakout+1][currentYBreakout+1]==LOW && !outOfBounds(currentXBreakout-1,currentYBreakout+1)) {
           velocity[1]=1;
           velocity[0]=1;
         }
-        else panic();
       } 
     }
-    else panic();
     if(!outOfBounds(currentXBreakout+origXV,currentYBreakout+origYV)) {
       blocks[currentXBreakout+origXV][currentYBreakout+origYV]=0;
     }
@@ -153,15 +121,16 @@ void breakoutLoop() {
   for(int x=0;x<8;x++) {
     gamer.display[x][7]=LOW;
   }
-  if(gamer.isHeld(LEFT)&&paddleX>0){
+  if(gamer.isHeld(LEFT) && paddleX>-3) {
     paddleX--;
   } 
-  else if(gamer.isHeld(RIGHT)&&paddleX<4) {
+  else if(gamer.isHeld(RIGHT) && paddleX<7) {
     paddleX++;
   }
   for(int a=0;a<4;a++) {
-    if(paddleX+a<8) {
-      gamer.display[paddleX+a][7]=HIGH;
+    int px = paddleX + a;
+    if(px >= 0 && px < 8) {
+      gamer.display[px][7] = HIGH;
     }
   }
   if(counter>2) {
@@ -182,11 +151,15 @@ void breakoutLoop() {
             if(y%2==0) {
               if(x<7) {
                 blocks[x+1][y]=0;
+              } else {
+                blocks[0][y]=0;
               }
             } 
             else {
               if(x>0) {
                 blocks[x-1][y]=0;
+              } else {
+                blocks[7][y]=0;
               }
             }
           } 
@@ -194,11 +167,15 @@ void breakoutLoop() {
             if(y%2==0) {
               if(x>0) {
                 blocks[x-1][y]=0;
+              } else {
+                blocks[7][y]=0;
               }
             } 
             else {
               if(x<7) {
                 blocks[x+1][y]=0;
+              } else {
+                blocks[0][y]=0;
               }
             }
           }
@@ -212,8 +189,8 @@ void breakoutLoop() {
         }
       }
     }
-    int newX = currentXBreakout + velocity[0];
-    int newY = currentYBreakout + velocity[1];
+    byte newX = currentXBreakout + velocity[0];
+    byte newY = currentYBreakout + velocity[1];
     if(newX>-1 && newX<8) {
       if(newY>-1 && newY<8) {
       } 
@@ -238,7 +215,6 @@ void breakoutLoop() {
             blocks[currentXBreakout-velocity[0]][currentYBreakout-velocity[1]]=0;
             velocity[1]*=-1;
           } 
-          else panic();
         }
       } 
       else {
