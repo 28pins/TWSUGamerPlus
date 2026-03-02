@@ -10,11 +10,11 @@ static int8_t dinoVel      = 0;     // jump velocity (negative = upward)
 static bool   dinoJumping  = false;
 static bool   dinoDucking  = false;
 static int8_t dinoObsX     = 9;     // obstacle column (scrolls right → left)
-static byte   dinoObsType  = 0;     // 0 = cactus (ground), 1 = bird (air)
+static byte   dinoObsType  = 0;     // 0 = cactus (ground), 1 = bird (air), 2 = giant bird
 static int    dinoScore    = 0;
 static bool   dinoOver     = false;
 static unsigned long dinoLastTick = 0;
-static unsigned int  dinoSpeed    = 280; // ms per game tick
+static unsigned int  dinoSpeed    = 150; // ms per game tick
 
 void resetDino() {
 	gamer.clear();
@@ -79,11 +79,13 @@ void dinoLoop() {
 		if (dinoObsX < 0) {
 			dinoObsX    = 8;
 			dinoObsType = (random(3) == 0) ? 1 : 0; // 1/3 bird, 2/3 cactus
+			if (dinoObsType == 1 && random(3) == 0)
+				dinoObsType = 2;
 			dinoScore++;
 			if (dinoScore > 99) dinoScore = 99;
 			startLEDFlash();
 			if (soundEnabled) gamer.playTone(NOTE_E8);
-			if (dinoSpeed > 140) dinoSpeed -= 5;
+			if (dinoSpeed > 60) dinoSpeed -= 5;
 		}
 
 		// Collision (obstacle passes through dino column 1)
@@ -92,6 +94,9 @@ void dinoLoop() {
 			if (dinoObsType == 0) {
 				// Cactus at rows 5-6: must jump above row 4
 				if (dinoDucking || dinoY + 1 >= 5)
+					hit = true;
+			} else if (dinoObsType == 2) {
+				if(!dinoDucking || dinoY > 0) 
 					hit = true;
 			} else {
 				// Bird at row 5: duck or jump above row 4 to avoid
@@ -127,8 +132,12 @@ void dinoLoop() {
 		if (dinoObsType == 0) {
 			gamer.display[dinoObsX][5] = 1;  // cactus top
 			gamer.display[dinoObsX][6] = 1;  // cactus bottom
-		} else {
+		} else if (dinoObsType == 1) {
 			gamer.display[dinoObsX][5] = 1;  // bird
+		} else {
+			gamer.display[dinoObsX][5] = 1;
+			gamer.display[dinoObsX][4] = 1;
+			gamer.display[dinoObsX][3] = 1;
 		}
 	}
 
