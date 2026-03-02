@@ -24,10 +24,17 @@ void resetDino() {
 	dinoDucking  = false;
 	dinoObsX     = 9;
 	dinoObsType  = 0;
-	dinoScore    = 0;
+	if (startFromHighScore && startingHighScore > 0) {
+		// Start with half the high score
+		dinoScore = startingHighScore / 2;
+		// Speed increases by 5ms per obstacle passed, minimum 60ms
+		dinoSpeed = max(60, 280 - dinoScore * 5);
+	} else {
+		dinoScore = 0;
+		dinoSpeed = 280;
+	}
 	dinoOver     = false;
 	dinoLastTick = millis();
-	dinoSpeed    = 280;
 }
 
 void dinoLoop() {

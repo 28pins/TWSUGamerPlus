@@ -13,8 +13,14 @@ byte snakeMap[8][8];
 byte snakeLength = 2;
 
 void setupSnakeGame() {
-  snakeLength = 2;
-  score = 0;
+  if (startFromHighScore && startingHighScore > 0) {
+    // Start with half the high score
+    score = startingHighScore / 2;
+    snakeLength = 2 + score;
+  } else {
+    snakeLength = 2;
+    score = 0;
+  }
   dir = 1;
   goalX = random(0,7);
   goalY = random(0,7);

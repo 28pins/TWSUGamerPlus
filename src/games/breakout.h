@@ -95,8 +95,14 @@ void startBreakout(bool resetIt) {
     gamer.clear();
     saveHighScore(scoreBreakout, 1);
     delay(500);
-  } 
-  else scoreBreakout=0;
+  } else {
+    if (startFromHighScore && startingHighScore > 0) {
+      // Start with half the high score
+      scoreBreakout = startingHighScore / 2;
+    } else {
+      scoreBreakout = 0;
+    }
+  }
   currentXBreakout=random(4,8);
   currentYBreakout=5;
   velocity[0]=-1;

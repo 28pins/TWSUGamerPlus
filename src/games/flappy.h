@@ -61,7 +61,12 @@ void drawInGameScreen( byte colour )
 }
 
 void resetFlappy(){
-  score = 0;
+  if (startFromHighScore && startingHighScore > 0) {
+    // Start with half the high score
+    score = startingHighScore / 2;
+  } else {
+    score = 0;
+  }
   displayflappyScore = false;
   ticks = 0;
   birdPos = 2;

@@ -12,9 +12,20 @@ byte sequence[30];
 void resetSimon() {
   gamer.clear();
   delay(100);
-  for(byte b=0;b<simonStep;b++) sequence[b]=0;
-  simonStep=0;
-  delayMils = 300;
+  if (startFromHighScore && startingHighScore > 0) {
+    // Start with half the high score (capped at max sequence length)
+    simonStep = min(28, startingHighScore / 2);
+    // Pre-populate the sequence with random values
+    for(byte b=0;b<simonStep;b++) sequence[b] = random(0, SIMON_NUM_DIRECTIONS);
+    // Calculate delay based on progression (decreases by ~2.5% each round)
+    // Starting at 300ms, after n steps: 300 * (0.975^n)
+    // Approximate with: 300 - simonStep * 4, minimum 20ms
+    delayMils = max(20, 300 - simonStep * 4);
+  } else {
+    for(byte b=0;b<simonStep;b++) sequence[b]=0;
+    simonStep=0;
+    delayMils = 300;
+  }
 }
 
 void simonLoop() {
