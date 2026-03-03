@@ -167,7 +167,7 @@ void resetTetris() {
     level = 1 + (score / 7);
     linesCleared = (level - 1) * 3;
     // Speed increases with level: 200ms faster per level, minimum 300ms
-    moveInterval = max(300UL, 1200UL - (unsigned long)(level - 1) * 200UL);
+    moveInterval = (unsigned long)max(300, 1200 - (level - 1) * 200);
   } else {
     score = 0;
     level = 1;
