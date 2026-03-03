@@ -5,7 +5,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
-## [3.1.0] — 2026-03-03
+## [3.1.1] — 2026-03-03
 
 ### Bug Fixes
 - **`flappy.h`**: fixed compile error — `rand(28, 40)` (stdlib `rand` takes no arguments) replaced with `random(28, 40)`; bare `rand()%4` replaced with `random(0, 4)`.
@@ -13,6 +13,10 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **`tetris.h`**: fixed line-clearing score bug — `linesCleared += linesSinceLastDrop` inside loop was accumulating 1+2+3… instead of 1 per line; replaced with `linesCleared++` and removed `linesSinceLastDrop` variable.
 - **`breakout.h`**: `saveHighScore()` now called unconditionally on game loss (was incorrectly skipped for scores < 10).
 - **`TWSUGamerPlus.ino`**: EEPROM initialization guard changed from `== 0` to `!= 1` — fresh ATmega328P has all bytes at `0xFF`, so high scores incorrectly showed 255 on first boot. Initialization moved before `launcherSetup()`.
+
+---
+
+## [3.1.0] — 2026-03-03
 
 ### Improvements
 - **`Gamer.cpp`**: removed unused variables `count` and `prevChar` (`-Wunused-variable` warnings); cast `ldrThreshold` to `(int)` in `checkInputs()` to fix `-Wsign-compare` warning; changed loop variables from `int x<=7` to `byte x<8` for consistency.

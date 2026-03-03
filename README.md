@@ -3,7 +3,7 @@
 ![CI](https://github.com/28pins/TWSUGamerPlus/actions/workflows/ci.yml/badge.svg)
 ![Platform: AVR](https://img.shields.io/badge/platform-AVR%20(Uno)-green.svg)
 ![License: MIT (No AI)](https://img.shields.io/badge/license-MIT%20(No%20AI)-blue.svg)
-![Version](https://img.shields.io/badge/version-3.1.0-informational.svg)
+![Version](https://img.shields.io/badge/version-3.1.1-informational.svg)
 
 Arduino code and a lightweight hardware driver for the Technology Will Save Us DIY Gamer Kit. The repository bundles the `Gamer` library (LED matrix driver, button/IR/buzzer helpers) and a menu-driven sketch that runs fully featured games (not just demos), including added Tetris, richer light/sound effects, and memory optimizations on top of the base example.
 
@@ -62,6 +62,11 @@ On v1.9+ hardware, tap the **capacitive-touch pad** on the PCB to toggle sound o
 | `DOWN` | Return to the animated game icon |
 | `START` | Launch the highlighted game |
 | `START` (in-game) | Exit back to the launcher |
+
+#### High score menu
+Pressing `UP` in the launcher displays the current high score for the selected game. High scores are automatically saved to EEPROM when you finish a game. The high score display shows the stored two-digit score with a flashing LED indicator. Press `DOWN` to return to the animated game icon, or press `START` to launch the game from the high score menu.
+
+High scores persist across power cycles and are protected by CRC-8 checksums to ensure data integrity. The system uses two-slot wear-levelling to extend EEPROM lifespan.
 
 ### Game controls
 
