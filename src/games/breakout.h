@@ -241,9 +241,9 @@ void breakoutLoop() {
       delay(150);
     }
     gamer.clear();
+    saveHighScore(scoreBreakout, 1);
     if(scoreBreakout > 0) {
       showScore(scoreBreakout / 10, scoreBreakout % 10);
-      saveHighScore(scoreBreakout, 1);
     }
     delay(500);
     startBreakout(true);

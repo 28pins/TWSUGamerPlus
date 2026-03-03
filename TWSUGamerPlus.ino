@@ -133,8 +133,9 @@ static void startupCheck() {
 // ── Arduino entry points ──────────────────────────────────────────────────────
 void setup() {
   gamer.begin();
+  const int eepromLen = (int)EEPROM.length();
   if(EEPROM.read(0) != 1) {
-    for (int i = 1; i < (int)EEPROM.length(); i++) {
+    for (int i = 1; i < eepromLen; i++) {
       EEPROM.write(i, 0);
     }
     EEPROM.write(0, 1); // Mark as initialized

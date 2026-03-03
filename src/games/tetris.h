@@ -208,8 +208,7 @@ void tetrisLoop() {
   if (gameOverT) {
     playLossTune();
     saveHighScore(score, 4);
-    int s = min(score, 99);
-    showScore(s / 10, s % 10);
+    showScore(min(score, 99) / 10, min(score, 99) % 10);
     delay(2000);
     resetTetris();
     return;
