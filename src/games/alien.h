@@ -4,8 +4,8 @@
 #ifndef ALIEN_H
 #define ALIEN_H
 bool gameGoing = false;
-long lastMove = 0;
-int moveDelay = 800;
+unsigned long lastMove = 0;
+unsigned int moveDelay = 800;
 int alienLineCount = 0;
 
 void resetAlienGame() {

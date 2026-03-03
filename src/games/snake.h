@@ -7,8 +7,8 @@
 // ── Snake game state ──────────────────────────────────────────────────────────
 // currentX, currentY, score declared in main INO
 int dir = 1;
-byte goalX = random(0,7);
-byte goalY = random(0,7);
+byte goalX = 0;
+byte goalY = 0;
 byte snakeMap[8][8];
 byte snakeLength = 2;
 
@@ -22,8 +22,8 @@ void setupSnakeGame() {
     score = 0;
   }
   dir = 1;
-  goalX = random(0,7);
-  goalY = random(0,7);
+  goalX = random(0,8);
+  goalY = random(0,8);
   currentX = 0;
   currentY = 0;
   for(byte x=0;x<8;x++) {
@@ -36,8 +36,8 @@ void setupSnakeGame() {
 
 void isCollected() {
   if(currentX==goalX && currentY==goalY) {
-    goalX = random(0,7);
-    goalY = random(0,7);
+    goalX = random(0,8);
+    goalY = random(0,8);
     snakeLength++;
     score = snakeLength - 2;
     if (soundEnabled) gamer.playTone(NOTE_A8);

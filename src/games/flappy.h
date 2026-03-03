@@ -95,7 +95,7 @@ void flappyLoop()
     ++ticks;
     if( (ticks % 12) == 0 )
     {
-      if( rand(28, 40)%30 == 0 )
+      if( random(28, 40)%30 == 0 )
       {
         menuScreen[ 19 ] = 1;
         menuScreen[ 20 ] = 0;
@@ -135,7 +135,7 @@ void flappyLoop()
         if(score % 7 == 0) tickCount = max(6, tickCount - 1); // increase difficulty every 7 points by reducing ticks between pipe moves
         startLEDFlash();
         pipePos = 7;
-        pipeGap = 1 + rand()%4;
+        pipeGap = 1 + random(0, 4);
       }
 
       byte lastBirdPos = birdPos;

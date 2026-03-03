@@ -34,7 +34,7 @@ bool ledFlashing = false;
 #define SIMON_NUM_DIRECTIONS 4
 
 // Feature flag: set to 1 to enable Serial debug output at startup.
-#define GAMER_DEBUG 1
+#define GAMER_DEBUG 0
 
 // Shared variables used by multiple games
 int currentX = 0;
@@ -133,14 +133,14 @@ static void startupCheck() {
 // ── Arduino entry points ──────────────────────────────────────────────────────
 void setup() {
   gamer.begin();
-  startupCheck();
-  launcherSetup();
-  if(EEPROM.read(0) == 0) {
-    for (int i = 1; i < 1024; i++) {
+  if(EEPROM.read(0) != 1) {
+    for (int i = 1; i < (int)EEPROM.length(); i++) {
       EEPROM.write(i, 0);
     }
     EEPROM.write(0, 1); // Mark as initialized
   }
+  startupCheck();
+  launcherSetup();
 }
 
 void loop() {

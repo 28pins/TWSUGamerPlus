@@ -9,7 +9,6 @@
 // Font-table sentinel — end of character bitmap column list
 #define LETEND B10101010
 
-static int count = 0;
 static bool toggleVal = false;
 static int split = 0;
 static bool ir = false;
@@ -17,7 +16,6 @@ static bool irTog = false;
 static bool toneIsPlaying = false;
 static bool playTog = false;
 static bool toneStopped = false;
-static char prevChar = 0;
 
 static Gamer *thisGamer = NULL;
 
@@ -426,7 +424,7 @@ void Gamer::writeToDriver(byte dataOut)
   PORTB |= _BV(PORTB2);
 
   // Send byte to driver
-  for(int x=0; x<=7; x++) {
+  for(byte x=0; x<8; x++) {
     PORTD &= ~_BV(PORTD6);
     if(((dataOut & (1<<x)) >> x)) PORTB |= _BV(PORTB0);
     else PORTB &= ~_BV(PORTB0);
@@ -445,7 +443,7 @@ void Gamer::writeToDriver(byte dataOut)
  */
 void Gamer::writeToRegister(byte dataOut)
 {
-  for(int y=0; y<=7; y++) {
+  for(byte y=0; y<8; y++) {
     if((dataOut & (1<<y)) >> y) PORTB |= _BV(PORTB0);
     else PORTB &= ~_BV(PORTB0);
     PORTD |= _BV(PORTD7);
@@ -473,7 +471,7 @@ void Gamer::checkInputs()
     }
     else {
       currentInputState[i] = analogRead(LDR);
-      if(currentInputState[i] - lastInputState[i] >= ldrThreshold) buttonFlags[i] = 1;
+      if(currentInputState[i] - lastInputState[i] >= (int)ldrThreshold) buttonFlags[i] = 1;
       lastInputState[i] = currentInputState[i];
     }
   }

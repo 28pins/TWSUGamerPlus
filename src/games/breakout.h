@@ -3,27 +3,19 @@
 
 #ifndef BREAKOUT_H
 #define BREAKOUT_H
-volatile int currentXBreakout = 5;
-volatile int currentYBreakout = 5;
-volatile int velocity[2] = {
+int currentXBreakout = 5;
+int currentYBreakout = 5;
+int velocity[2] = {
   -1,-1};
-volatile byte blocks[8][8];
-volatile int paddleX = 2;
-volatile byte counter = 0;
-volatile int origXV=-1;
-volatile int origYV=-1;
-volatile byte scoreBreakout = 0;
+byte blocks[8][8];
+int paddleX = 2;
+byte breakoutCounter = 0;
+int origXV=-1;
+int origYV=-1;
+byte scoreBreakout = 0;
  
-boolean outOfBounds(int xV, int yV) {
-  if(xV > 8 || xV < 0) {
-    return true;
-  } 
-  else if(yV > 8 || yV < 0) {
-    return true;
-  } 
-  else {
-    return false;
-  }
+bool outOfBounds(int xV, int yV) {
+  return (xV > 8 || xV < 0 || yV > 8 || yV < 0);
 }
 
 void physics() {
@@ -117,7 +109,7 @@ void breakoutLoop() {
   checkSoundToggle();
   updateLEDFlash();
   if(soundEnabled) gamer.stopTone();
-  if(counter>2) {
+  if(breakoutCounter>2) {
     for(int x=0;x<8;x++) {
       for(int y=0;y<8;y++) {
         gamer.display[x][y] = LOW;
@@ -139,7 +131,7 @@ void breakoutLoop() {
       gamer.display[px][7] = HIGH;
     }
   }
-  if(counter>2) {
+  if(breakoutCounter>2) {
     origXV = velocity[0];
     origYV = velocity[1];
     for(int x=0;x<8;x++) {
@@ -236,9 +228,9 @@ void breakoutLoop() {
     currentXBreakout = currentXBreakout+velocity[0];
     currentYBreakout = currentYBreakout+velocity[1];
     gamer.display[currentXBreakout][currentYBreakout] = HIGH;
-    counter=0;
+    breakoutCounter=0;
   } 
-  else counter++;
+  else breakoutCounter++;
   gamer.updateDisplay();
   if(currentYBreakout==7) { //if out of play, lose
     for(int b=0;b<4;b++) {
@@ -248,24 +240,15 @@ void breakoutLoop() {
       gamer.updateDisplay();
       delay(150);
     }
-    if(scoreBreakout==0){
-      gamer.clear();
-    } 
-    else if(scoreBreakout<10){
-      gamer.clear();
-      showScore(0,scoreBreakout);
-    } 
-    else {
-      int dig2 = scoreBreakout % 10;  //split scoreBreakout into two digits (eg 10 -> 1 and 0)
-      int dig1 = (scoreBreakout-(scoreBreakout%10))/10;
-      gamer.clear();
-      showScore(dig1,dig2);
+    gamer.clear();
+    if(scoreBreakout > 0) {
+      showScore(scoreBreakout / 10, scoreBreakout % 10);
       saveHighScore(scoreBreakout, 1);
     }
     delay(500);
     startBreakout(true);
   }
-  boolean finished = true;
+  bool finished = true;
   for(int x=0;x<8;x++) {
     for(int y=0;y<4;y++) {
       if(blocks[x][y]==HIGH) finished=false;

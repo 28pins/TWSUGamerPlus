@@ -6,8 +6,8 @@
 
 // ── Simon game state ──────────────────────────────────────────────────────────
 byte simonStep = 0;
-int delayMils = 300;
-byte sequence[30];
+uint16_t delayMils = 300;
+byte sequence[SIMON_MAX_SEQUENCE];
 
 void resetSimon() {
   gamer.clear();
