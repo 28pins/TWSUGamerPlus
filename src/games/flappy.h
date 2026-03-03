@@ -9,10 +9,10 @@ bool menu = true;
 bool gameOver = false;
 bool displayflappyScore = false;
 
-int birdPos = 2;
-int pipePos = 8;
-int pipeGap = 3;
-int ticks = 0;
+int8_t birdPos = 2;
+int8_t pipePos = 8;
+int8_t pipeGap = 3;
+unsigned int ticks = 0;
 byte tickCount = 14;
 byte inGameScreen[] = {
   0,0,0,0,0,0,0,0,

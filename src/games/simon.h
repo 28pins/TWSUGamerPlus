@@ -22,7 +22,6 @@ void resetSimon() {
     // Approximate with: 300 - simonStep * 4, minimum 20ms
     delayMils = max(20, 300 - simonStep * 4);
   } else {
-    for(byte b=0;b<simonStep;b++) sequence[b]=0;
     simonStep=0;
     delayMils = 300;
   }

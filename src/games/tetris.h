@@ -220,7 +220,6 @@ void tetrisLoop() {
     if (canMove(currentX, currentY + 1)) {
       currentY++;
       startLEDFlash();
-      lastMoveTime = millis();
       renderGridAndPiece();
     } else {
       for (byte i = 0; i < 3; i++) {

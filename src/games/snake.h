@@ -22,8 +22,6 @@ void setupSnakeGame() {
     score = 0;
   }
   dir = 1;
-  goalX = random(0,8);
-  goalY = random(0,8);
   currentX = 0;
   currentY = 0;
   for(byte x=0;x<8;x++) {
@@ -31,13 +29,21 @@ void setupSnakeGame() {
       snakeMap[x][y] = 0;
     }
   }
+  // Place food on an empty cell (snake starts at 0,0 so avoid that)
+  do {
+    goalX = random(0,8);
+    goalY = random(0,8);
+  } while (goalX == 0 && goalY == 0);
   gamer.updateDisplay();
 }
 
 void isCollected() {
   if(currentX==goalX && currentY==goalY) {
-    goalX = random(0,8);
-    goalY = random(0,8);
+    // Regenerate food; retry until it lands on an empty cell
+    do {
+      goalX = random(0,8);
+      goalY = random(0,8);
+    } while (snakeMap[goalX][goalY] > 0);
     snakeLength++;
     score = snakeLength - 2;
     if (soundEnabled) gamer.playTone(NOTE_A8);
@@ -53,22 +59,14 @@ void isCollected() {
 }
 
 void collided() {
-  for(byte x=0;x<8;x++) {
-    for(byte y=0;y<8;y++) {
-      if(snakeMap[x][y] > 0) {
-        if(currentX == x && currentY == y) {
-          gamer.clear();
-          delay(20);
-          playLossTune();
-          saveHighScore(score, 0);
-          byte dig2 = score % 10;
-          byte dig1 = score / 10;
-          showScore(dig1,dig2);
-          delay(300);
-          setupSnakeGame();
-        }
-      }
-    }
+  if (snakeMap[currentX][currentY] > 0) {
+    gamer.clear();
+    delay(20);
+    playLossTune();
+    saveHighScore(score, 0);
+    showScore(score / 10, score % 10);
+    delay(800);
+    setupSnakeGame();
   }
 }
 

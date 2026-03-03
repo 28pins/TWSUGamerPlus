@@ -29,7 +29,7 @@ void resetAlienGame() {
 }
 
 void renderPlayer() {
-  for(int i = 0; i < 8; i++) {
+  for(byte i = 0; i < 8; i++) {
     gamer.display[i][7] = 0;
     gamer.display[i][6] = 0;
   }
@@ -44,21 +44,21 @@ void renderPlayer() {
 }
 
 void generateAlien() {
-  for (int i = 0; i < 8; i++) {
+  for (byte i = 0; i < 8; i++) {
     gamer.display[i][0] = random(0, moveDelay > 330 ? 3 : 4) > 1 ? 1 : 0;
   }
 }
 
 void moveAlien() {
-  for (int i = 0; i < 8; i++) {
+  for (byte i = 0; i < 8; i++) {
     if(gamer.display[i][5] == 1) {
       gameGoing = false;
       saveHighScore(score, 5);
       return;
     }
   }
-  for (int i = 0; i < 8; i++) {
-    for(int j = 5; j > 0; j--) {
+  for (byte i = 0; i < 8; i++) {
+    for(byte j = 5; j > 0; j--) {
       gamer.display[i][j] = gamer.display[i][j - 1];
     }
   }
@@ -78,14 +78,16 @@ void alienLoop() {
     moveAlien();
     while (millis() - lastMove < moveDelay) {
       delay(10);
+      checkSoundToggle();
+      updateLEDFlash();
       if(gamer.isPressed(UP)){
-        for(int i = 7; i >= 0; i--) {
+        for(int8_t i = 7; i >= 0; i--) {
           gamer.display[currentX][i] = 1;
           delay(20);
           renderPlayer();
           gamer.updateDisplay();
         }
-        for(int i = 7; i >= 0; i--) {
+        for(int8_t i = 7; i >= 0; i--) {
           gamer.display[currentX][i] = 0;
           delay(20);
           renderPlayer();

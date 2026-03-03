@@ -77,8 +77,8 @@ void physics() {
 }
 
 void startBreakout(bool resetIt) {
-  for(int x=0;x<8;x++) {
-    for(int y=0;y<4;y++) {
+  for(byte x=0;x<8;x++) {
+    for(byte y=0;y<4;y++) {
       blocks[x][y] = 1;
     }
   }
@@ -110,13 +110,13 @@ void breakoutLoop() {
   updateLEDFlash();
   if(soundEnabled) gamer.stopTone();
   if(breakoutCounter>2) {
-    for(int x=0;x<8;x++) {
-      for(int y=0;y<8;y++) {
+    for(byte x=0;x<8;x++) {
+      for(byte y=0;y<8;y++) {
         gamer.display[x][y] = LOW;
       }
     }
   }
-  for(int x=0;x<8;x++) {
+  for(byte x=0;x<8;x++) {
     gamer.display[x][7]=LOW;
   }
   if(gamer.isHeld(LEFT) && paddleX>-3) {
@@ -125,7 +125,7 @@ void breakoutLoop() {
   else if(gamer.isHeld(RIGHT) && paddleX<7) {
     paddleX++;
   }
-  for(int a=0;a<4;a++) {
+  for(byte a=0;a<4;a++) {
     int px = paddleX + a;
     if(px >= 0 && px < 8) {
       gamer.display[px][7] = HIGH;
@@ -134,16 +134,16 @@ void breakoutLoop() {
   if(breakoutCounter>2) {
     origXV = velocity[0];
     origYV = velocity[1];
-    for(int x=0;x<8;x++) {
-      for(int y=0;y<4;y++) {
+    for(byte x=0;x<8;x++) {
+      for(byte y=0;y<4;y++) {
         if(blocks[x][y] == 1) {
           gamer.display[x][y] = HIGH;
         }
       }
     }
     physics();
-    for(int x=0;x<8;x++) {
-      for(int y=0;y<8;y++) {
+    for(byte x=0;x<8;x++) {
+      for(byte y=0;y<8;y++) {
         if(blocks[x][y]==0) {
           if(x%2==0) {
             if(y%2==0) {
@@ -180,8 +180,8 @@ void breakoutLoop() {
         }  
       }
     }
-    for(int x=0;x<8;x++) {
-      for(int y=0;y<4;y++) {
+    for(byte x=0;x<8;x++) {
+      for(byte y=0;y<4;y++) {
         if(blocks[x][y] == 0) {
           gamer.display[x][y] = LOW;
         }
@@ -233,7 +233,7 @@ void breakoutLoop() {
   else breakoutCounter++;
   gamer.updateDisplay();
   if(currentYBreakout==7) { //if out of play, lose
-    for(int b=0;b<4;b++) {
+    for(byte b=0;b<4;b++) {
       gamer.clear();
       delay(150);
       gamer.display[currentXBreakout][currentYBreakout]=HIGH;
@@ -249,8 +249,8 @@ void breakoutLoop() {
     startBreakout(true);
   }
   bool finished = true;
-  for(int x=0;x<8;x++) {
-    for(int y=0;y<4;y++) {
+  for(byte x=0;x<8;x++) {
+    for(byte y=0;y<4;y++) {
       if(blocks[x][y]==HIGH) finished=false;
     }
   }
