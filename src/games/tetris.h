@@ -10,16 +10,15 @@ unsigned long moveInterval = 1200;
 int level = 1;
 int linesCleared = 0;
 bool gameOverT = false;
-long lastDownPressTime = 0;
+unsigned long lastDownPressTime = 0;
 bool isInDownPress = false;
 const int gridWidth = 8;
 const int gridHeight = 8;
-byte linesSinceLastDrop = 0;
-int grid[gridHeight][gridWidth] = {
+int8_t grid[gridHeight][gridWidth] = {
   {0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},
   {0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0}
 };
-int currentPiece[3][3] = {
+int8_t currentPiece[3][3] = {
   {0,0,0},
   {0,0,0},
   {0,0,0}
@@ -28,9 +27,9 @@ int currentPiece[3][3] = {
 enum PieceType { I, O, T, S, Z, J, L };
 PieceType currentPieceType;
 
-bool canMove(int x, int y, int piece[3][3]);
+bool canMove(int x, int y, int8_t piece[3][3]);
 inline bool canMove(int x, int y) { return canMove(x, y, currentPiece); }
-bool canMove(int x, int y, int piece[3][3]) {
+bool canMove(int x, int y, int8_t piece[3][3]) {
   for (byte i = 0; i < 3; i++) {
     for (byte j = 0; j < 3; j++) {
       if (piece[i][j] == 1) {
@@ -116,7 +115,6 @@ void checkLines() {
       if (grid[i][j] == 0) { lineComplete = false; break; }
     }
     if (lineComplete) {
-      linesSinceLastDrop++;
       cleared++;
       if (soundEnabled) { gamer.playTone(NOTE_A8); tetrisChirpPending = true; }
       startLEDFlash();
@@ -133,10 +131,10 @@ void checkLines() {
         }
       }
       for (byte j = 0; j < gridWidth; j++) grid[0][j] = 0;
-      linesCleared += linesSinceLastDrop;
+      linesCleared++;
       if (linesCleared % 7 == 0) {
         level++;
-        moveInterval = max(300, moveInterval - 200);
+        moveInterval = max(300UL, moveInterval - 200UL);
       }
     }
   }
@@ -149,7 +147,7 @@ void checkLines() {
 
 void rotatePiece() {
   if (currentPieceType == O) return;
-  int temp[3][3] = {0};
+  int8_t temp[3][3] = {0};
   for (byte i = 0; i < 3; i++)
     for (byte j = 0; j < 3; j++)
       temp[j][2 - i] = currentPiece[i][j];
@@ -158,15 +156,6 @@ void rotatePiece() {
       for (byte j = 0; j < 3; j++)
         currentPiece[i][j] = temp[i][j];
   }
-}
-
-int digitFrom(int number, int position) {
-  if (position < 1 || number == 0) return 0;
-  if (number > 99) number = 99;
-  // Replace pow() with simple division
-  int divisor = (position == 1) ? 1 : 10;
-  int digit = (number / divisor) % 10;
-  return digit;
 }
 
 void resetTetris() {
@@ -178,7 +167,7 @@ void resetTetris() {
     level = 1 + (score / 7);
     linesCleared = (level - 1) * 3;
     // Speed increases with level: 200ms faster per level, minimum 300ms
-    moveInterval = max(300, 1200 - (level - 1) * 200);
+    moveInterval = (unsigned long)max(300, 1200 - (level - 1) * 200);
   } else {
     score = 0;
     level = 1;
@@ -219,7 +208,7 @@ void tetrisLoop() {
   if (gameOverT) {
     playLossTune();
     saveHighScore(score, 4);
-    showScore(digitFrom(score, 2), digitFrom(score, 1));
+    showScore(min(score, 99) / 10, min(score, 99) % 10);
     delay(2000);
     resetTetris();
     return;
@@ -230,9 +219,7 @@ void tetrisLoop() {
     lastMoveTime = millis();
     if (canMove(currentX, currentY + 1)) {
       currentY++;
-      linesSinceLastDrop = 0;
       startLEDFlash();
-      lastMoveTime = millis();
       renderGridAndPiece();
     } else {
       for (byte i = 0; i < 3; i++) {

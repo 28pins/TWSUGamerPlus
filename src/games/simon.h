@@ -6,8 +6,8 @@
 
 // ── Simon game state ──────────────────────────────────────────────────────────
 byte simonStep = 0;
-int delayMils = 300;
-byte sequence[30];
+uint16_t delayMils = 300;
+byte sequence[SIMON_MAX_SEQUENCE];
 
 void resetSimon() {
   gamer.clear();
@@ -22,7 +22,6 @@ void resetSimon() {
     // Approximate with: 300 - simonStep * 4, minimum 20ms
     delayMils = max(20, 300 - simonStep * 4);
   } else {
-    for(byte b=0;b<simonStep;b++) sequence[b]=0;
     simonStep=0;
     delayMils = 300;
   }
