@@ -14,7 +14,7 @@ void resetSimon() {
   delay(100);
   if (startFromHighScore && startingHighScore > 0) {
     // Start with half the high score (capped at max sequence length)
-    simonStep = min(28, startingHighScore / 2);
+    simonStep = min(7, startingHighScore / 3);
     // Pre-populate the sequence with random values
     for(byte b=0;b<simonStep;b++) sequence[b] = random(0, SIMON_NUM_DIRECTIONS);
     // Calculate delay based on progression (decreases by ~2.5% each round)

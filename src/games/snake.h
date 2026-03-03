@@ -15,8 +15,8 @@ byte snakeLength = 2;
 void setupSnakeGame() {
   if (startFromHighScore && startingHighScore > 0) {
     // Start with half the high score
-    score = startingHighScore / 2;
-    snakeLength = 2 + score;
+    score = startingHighScore / 4;
+    snakeLength = min(6, 2 + score);
   } else {
     snakeLength = 2;
     score = 0;

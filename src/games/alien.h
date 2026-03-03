@@ -15,8 +15,9 @@ void resetAlienGame() {
     score = startingHighScore / 2;
     // alienLineCount increases by 10 per score point
     alienLineCount = score * 10;
+    alienLineCount--; // Adjust for initial state
     // Speed increases by 5ms per score point (or ~50 per 10 lines), minimum 300ms
-    moveDelay = max(300, 800 - score * 5);
+    moveDelay = max(330, 800 - score * 5);
   } else {
     score = 0;
     alienLineCount = 0;

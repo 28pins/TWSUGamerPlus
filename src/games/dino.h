@@ -14,7 +14,7 @@ static byte   dinoObsType  = 0;     // 0 = cactus (ground), 1 = bird (air), 2 = 
 static int    dinoScore    = 0;
 static bool   dinoOver     = false;
 static unsigned long dinoLastTick = 0;
-static unsigned int  dinoSpeed    = 150; // ms per game tick
+static unsigned int  dinoSpeed    = 160; // ms per game tick
 
 void resetDino() {
 	gamer.clear();
@@ -28,10 +28,10 @@ void resetDino() {
 		// Start with half the high score
 		dinoScore = startingHighScore / 2;
 		// Speed increases by 5ms per obstacle passed, minimum 60ms
-		dinoSpeed = max(60, 280 - dinoScore * 5);
+		dinoSpeed = max(60, 160 - dinoScore * 5);
 	} else {
 		dinoScore = 0;
-		dinoSpeed = 280;
+		dinoSpeed = 160;
 	}
 	dinoOver     = false;
 	dinoLastTick = millis();

@@ -98,7 +98,7 @@ void startBreakout(bool resetIt) {
   } else {
     if (startFromHighScore && startingHighScore > 0) {
       // Start with half the high score
-      scoreBreakout = startingHighScore / 2;
+      scoreBreakout = startingHighScore / 4;
     } else {
       scoreBreakout = 0;
     }
