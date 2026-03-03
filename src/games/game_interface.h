@@ -5,6 +5,10 @@
 #define GAME_INTERFACE_H
 #include "Arduino.h"
 
+// Global flag: true if game started from high score menu
+extern bool startFromHighScore;
+extern byte startingHighScore;
+
 // Each game must provide a GameDescriptor at registration
 struct GameDescriptor {
   const char* name;       // short game name

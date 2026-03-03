@@ -57,6 +57,11 @@ void launcherLoop() {
   checkSoundToggle();
   if (gamer.isPressed(START)) {
     // Launch selected game; run until START pressed again
+    // Set flags for high score start if launching from high score menu
+    startFromHighScore = !isInLauncher;
+    if (startFromHighScore) {
+      startingHighScore = getHighScore(_gameNumber);
+    }
     _games[_gameNumber].reset();
     while (!gamer.isPressed(START)) {
       _games[_gameNumber].loop_fn();

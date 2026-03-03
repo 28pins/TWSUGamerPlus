@@ -170,10 +170,21 @@ int digitFrom(int number, int position) {
 }
 
 void resetTetris() {
-  score = 0;
-  level = 1;
-  linesCleared = 0;
-  moveInterval = 1000;
+  if (startFromHighScore && startingHighScore > 0) {
+    // Start with half the high score
+    score = startingHighScore / 2;
+    // Approximate level based on score (score increases by level per line)
+    // Level increases every 7 lines, so estimate level from score
+    level = 1 + (score / 7);
+    linesCleared = (level - 1) * 3;
+    // Speed increases with level: 200ms faster per level, minimum 300ms
+    moveInterval = max(300, 1200 - (level - 1) * 200);
+  } else {
+    score = 0;
+    level = 1;
+    linesCleared = 0;
+    moveInterval = 1200;
+  }
   gameOverT = false;
   currentX = 3;
   currentY = -1;

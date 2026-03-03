@@ -13,6 +13,7 @@ int birdPos = 2;
 int pipePos = 8;
 int pipeGap = 3;
 int ticks = 0;
+byte tickCount = 14;
 byte inGameScreen[] = {
   0,0,0,0,0,0,0,0,
   0,0,0,0,0,0,0,0,
@@ -61,7 +62,14 @@ void drawInGameScreen( byte colour )
 }
 
 void resetFlappy(){
-  score = 0;
+  if (startFromHighScore && startingHighScore > 0) {
+    // Start with half the high score
+    score = startingHighScore / 4;
+    tickCount = max(6, 14 - (score / 7)); // increase difficulty by reducing ticks between pipe moves, minimum 6
+  } else {
+    score = 0;
+    tickCount = 14;
+  }
   displayflappyScore = false;
   ticks = 0;
   birdPos = 2;
@@ -87,7 +95,7 @@ void flappyLoop()
     ++ticks;
     if( (ticks % 12) == 0 )
     {
-      if( rand()%30 == 0 )
+      if( rand(28, 40)%30 == 0 )
       {
         menuScreen[ 19 ] = 1;
         menuScreen[ 20 ] = 0;
@@ -117,13 +125,14 @@ void flappyLoop()
     drawInGameScreen( 0 );
 
     ++ticks;
-    if( !gameOver && ((ticks % 12) == 0) )
+    if( !gameOver && ((ticks % tickCount) == 0) )
     {
       byte lastPipePos = pipePos;
       pipePos--;
       if( pipePos < -1 )
       {
         score++;
+        if(score % 7 == 0) tickCount = max(6, tickCount - 1); // increase difficulty every 7 points by reducing ticks between pipe moves
         startLEDFlash();
         pipePos = 7;
         pipeGap = 1 + rand()%4;

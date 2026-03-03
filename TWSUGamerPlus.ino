@@ -41,6 +41,10 @@ int currentX = 0;
 int currentY = 0;
 int score    = 0;
 
+// High score start feature
+bool startFromHighScore = false;
+byte startingHighScore = 0;
+
 // ── Helper functions ──────────────────────────────────────────────────────────
 void startLEDFlash() {
   gamer.setLED(true);

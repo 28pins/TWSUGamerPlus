@@ -39,7 +39,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
-## [2.1.0] — 2024 (estimated)
+## [2.1.0] — 2025
 
 *Upstream TWSU Gamer library version used as the starting point for this fork.*
 
