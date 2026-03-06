@@ -90,16 +90,16 @@ void dinoLoop() {
 
 		// Advance obstacle
 		dinoObsX--;
-		if (dinoObsX < 0) {
-			dinoObsX    = 13 + random(0, 6); // 13-18 ticks off-screen (5-10 column gap)
-			dinoObsType = (random(3) == 0) ? 1 : 0; // 1/3 bird, 2/3 cactus
+		if (dinoObsX < 3) {
+			dinoObsX    = random(8, 14); // 13-18 ticks off-screen (5-10 column gap)
+			dinoObsType = (random(2) == 0) ? 1 : 0; // 1/3 bird, 2/3 cactus
 			if (dinoObsType == 1 && random(3) == 0)
 				dinoObsType = 2;
 			dinoScore++;
 			if (dinoScore > 99) dinoScore = 99;
 			startLEDFlash();
 			if (soundEnabled) gamer.playTone(NOTE_E8);
-			if (dinoSpeed > 60) dinoSpeed -= 5;
+			if (dinoSpeed > 60) dinoSpeed -= 4;
 		}
 
 		// Collision (obstacle passes through dino column 1)
