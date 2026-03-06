@@ -17,6 +17,10 @@ static bool toneIsPlaying = false;
 static bool playTog = false;
 static bool toneStopped = false;
 
+// Number of brightness levels added to the display when the onboard LED is on,
+// compensating for the voltage-drop dim caused by the LED's current draw.
+static constexpr uint8_t LED_BRIGHTNESS_BOOST = 3;
+
 static Gamer *thisGamer = NULL;
 
 // Interrupt service routine.
@@ -174,6 +178,8 @@ void Gamer::begin()
   ::thisGamer = this;
 	
   _refreshRate = 50;
+  _brightness = 8;
+  _baseBrightness = 8;
   ldrThreshold = 300;
 
   // Setup outputs
@@ -302,6 +308,33 @@ void Gamer::setRefreshRate(uint16_t refreshRate)
 }
 
 /**
+  Sets the display brightness.
+  @param level brightness from 1 (dimmest) to 8 (full). Values outside this range are clamped.
+  When the onboard LED is on, the effective brightness is boosted by LED_BRIGHTNESS_BOOST levels
+  to compensate for the current-draw voltage drop on the shared power rail.
+ */
+void Gamer::setBrightness(uint8_t level)
+{
+  if (level < 1) level = 1;
+  if (level > 8) level = 8;
+  _baseBrightness = level;
+  if (digitalRead(PIN_LED)) {
+    uint8_t boosted = level + LED_BRIGHTNESS_BOOST;
+    _brightness = (boosted > 8) ? 8 : boosted;
+  } else {
+    _brightness = level;
+  }
+}
+
+/**
+  Returns the user-set brightness level (1–8), excluding any active LED compensation boost.
+ */
+uint8_t Gamer::getBrightness() const
+{
+  return _baseBrightness;
+}
+
+/**
   Burns the display[][] array onto the display. Call this when you're done changing pixels in your game.
  */
 void Gamer::updateDisplay()
@@ -383,19 +416,27 @@ void Gamer::printImage(byte* img, int x, int y)
 
 /**
   Sets the value of the red LED.
+  When the LED turns on, display brightness is boosted by LED_BRIGHTNESS_BOOST levels
+  to compensate for the voltage-drop dim caused by the LED's current draw.
   @param value the LED's boolean value
  */
 void Gamer::setLED(bool value)
 {
   digitalWrite(PIN_LED, value);
+  if (value) {
+    uint8_t boosted = _baseBrightness + LED_BRIGHTNESS_BOOST;
+    _brightness = (boosted > 8) ? 8 : boosted;
+  } else {
+    _brightness = _baseBrightness;
+  }
 }
 
 /**
-  Toggles the value of the red LED.
+  Toggles the value of the red LED (also applies/removes brightness compensation).
  */
 void Gamer::toggleLED()
 {
-  digitalWrite(PIN_LED, !digitalRead(PIN_LED));
+  setLED(!digitalRead(PIN_LED));
 }
 
 /**
@@ -488,6 +529,10 @@ void Gamer::isrRoutine()
     if(pulseCount >= _refreshRate) {
       updateRow();
       pulseCount = 0;
+    } else if (_brightness < 8 && pulseCount == (byte)(((uint16_t)_brightness * _refreshRate) / 8)) {
+      // Blank after (_brightness/8) of the row period for software-PWM dimming (8 levels total).
+      // The next updateRow() call will re-enable outputs for the following row.
+      PORTB |= _BV(PORTB2);
     }
     if(pulseCount == _refreshRate/2) {
       checkInputs();

@@ -39,6 +39,8 @@ public:
 
 	// Outputs
 	void setRefreshRate(uint16_t refreshRate);
+	void setBrightness(uint8_t level);  // 1 (dim) – 8 (full); default 8
+	uint8_t getBrightness() const;
 	void updateDisplay();
 	void allOn();
 	void clear();
@@ -77,6 +79,8 @@ private:
 	
 	// Variables
 	uint16_t _refreshRate;
+	volatile uint8_t _brightness;  // effective level used by ISR (base + LED boost)
+	uint8_t _baseBrightness;       // user-set level (1–8)
 	bool buttonFlags[6];
 	unsigned long buttonLastPressed[6];
 	int lastInputState[6];

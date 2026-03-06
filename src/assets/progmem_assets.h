@@ -15,6 +15,7 @@
 #define ALIEN_ANIM_FRAMES     2
 #define CONWAY_ANIM_FRAMES    2
 #define DINO_ANIM_FRAMES      2
+#define BRIGHT_ANIM_FRAMES    2
 
 // ── Launcher animation frames in PROGMEM ────────────────────────────────────
 
@@ -68,6 +69,12 @@ static const byte conwayAnim_pgm[2][8] PROGMEM = {
 static const byte dinoAnim_pgm[2][8] PROGMEM = {
   {B00000000, B00000000, B00000000, B00000000, B00000000, B01000100, B01000100, B11111111},
   {B00000000, B00000000, B00000000, B01000000, B01000000, B00000100, B00000100, B11111111}
+};
+
+// Frame 0: sun outline (dim); Frame 1: sun filled (bright)
+static const byte brightAnim_pgm[2][8] PROGMEM = {
+  {B00000000, B01000010, B00100100, B00011000, B00011000, B00100100, B01000010, B00000000},
+  {B00000000, B01100110, B00111100, B01111110, B01111110, B00111100, B01100110, B00000000}
 };
 
 // ── In-game image assets in PROGMEM ─────────────────────────────────────────
