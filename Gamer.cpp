@@ -180,6 +180,7 @@ void Gamer::begin()
   _refreshRate = 50;
   _brightness = 8;
   _baseBrightness = 8;
+  _ledCompensation = true;
   ldrThreshold = 300;
 
   // Setup outputs
@@ -308,22 +309,29 @@ void Gamer::setRefreshRate(uint16_t refreshRate)
 }
 
 /**
+  Recalculates the effective ISR brightness from the base level and the current LED state.
+  Call after any change to _baseBrightness, _ledCompensation, or the LED pin.
+ */
+void Gamer::updateEffectiveBrightness()
+{
+  if (digitalRead(PIN_LED) && _ledCompensation) {
+    uint8_t boosted = _baseBrightness + LED_BRIGHTNESS_BOOST;
+    _brightness = (boosted > 8) ? 8 : boosted;
+  } else {
+    _brightness = _baseBrightness;
+  }
+}
+
+/**
   Sets the display brightness.
   @param level brightness from 1 (dimmest) to 8 (full). Values outside this range are clamped.
-  When the onboard LED is on, the effective brightness is boosted by LED_BRIGHTNESS_BOOST levels
-  to compensate for the current-draw voltage drop on the shared power rail.
  */
 void Gamer::setBrightness(uint8_t level)
 {
   if (level < 1) level = 1;
   if (level > 8) level = 8;
   _baseBrightness = level;
-  if (digitalRead(PIN_LED)) {
-    uint8_t boosted = level + LED_BRIGHTNESS_BOOST;
-    _brightness = (boosted > 8) ? 8 : boosted;
-  } else {
-    _brightness = level;
-  }
+  updateEffectiveBrightness();
 }
 
 /**
@@ -332,6 +340,26 @@ void Gamer::setBrightness(uint8_t level)
 uint8_t Gamer::getBrightness() const
 {
   return _baseBrightness;
+}
+
+/**
+  Enables or disables the automatic brightness boost applied when the onboard LED is on.
+  When enabled (default), setLED(true) raises the effective brightness by LED_BRIGHTNESS_BOOST
+  to compensate for the voltage-drop dim caused by the LED's current draw.
+  @param enabled true to enable compensation, false to disable
+ */
+void Gamer::setLEDCompensation(bool enabled)
+{
+  _ledCompensation = enabled;
+  updateEffectiveBrightness();
+}
+
+/**
+  Returns whether LED brightness compensation is currently enabled.
+ */
+bool Gamer::getLEDCompensation() const
+{
+  return _ledCompensation;
 }
 
 /**
@@ -416,19 +444,15 @@ void Gamer::printImage(byte* img, int x, int y)
 
 /**
   Sets the value of the red LED.
-  When the LED turns on, display brightness is boosted by LED_BRIGHTNESS_BOOST levels
-  to compensate for the voltage-drop dim caused by the LED's current draw.
+  When LED compensation is enabled (default), turning the LED on boosts the effective
+  display brightness by LED_BRIGHTNESS_BOOST to offset the voltage-drop dim caused by
+  the LED's current draw. Compensation can be toggled with setLEDCompensation().
   @param value the LED's boolean value
  */
 void Gamer::setLED(bool value)
 {
   digitalWrite(PIN_LED, value);
-  if (value) {
-    uint8_t boosted = _baseBrightness + LED_BRIGHTNESS_BOOST;
-    _brightness = (boosted > 8) ? 8 : boosted;
-  } else {
-    _brightness = _baseBrightness;
-  }
+  updateEffectiveBrightness();
 }
 
 /**

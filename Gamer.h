@@ -39,8 +39,10 @@ public:
 
 	// Outputs
 	void setRefreshRate(uint16_t refreshRate);
-	void setBrightness(uint8_t level);  // 1 (dim) – 8 (full); default 8
+	void setBrightness(uint8_t level);      // 1 (dim) – 8 (full); default 8
 	uint8_t getBrightness() const;
+	void setLEDCompensation(bool enabled);  // enable/disable the +3 boost when LED is on
+	bool getLEDCompensation() const;
 	void updateDisplay();
 	void allOn();
 	void clear();
@@ -81,6 +83,7 @@ private:
 	uint16_t _refreshRate;
 	volatile uint8_t _brightness;  // effective level used by ISR (base + LED boost)
 	uint8_t _baseBrightness;       // user-set level (1–8)
+	bool _ledCompensation;         // whether to boost brightness when LED is on
 	bool buttonFlags[6];
 	unsigned long buttonLastPressed[6];
 	int lastInputState[6];
@@ -91,6 +94,7 @@ private:
 	void writeToRegister(byte dataOut);
 	void checkInputs();
 	void updateRow();
+	void updateEffectiveBrightness();  // recalc _brightness from _baseBrightness + LED state
 	int currentInputState[6];
 	bool tog;
 
