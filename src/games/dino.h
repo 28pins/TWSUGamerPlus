@@ -59,10 +59,17 @@ void dinoLoop() {
 		startLEDFlash();
 		if (soundEnabled) gamer.playTone(NOTE_A8);
 	}
-	if (!dinoJumping) {
-		bool wasDucking = dinoDucking;
-		dinoDucking = gamer.isHeld(DOWN);
-		if (dinoDucking && !wasDucking) startLEDFlash();
+	// DOWN pressed/held: cancel any active jump and duck
+	if (gamer.isHeld(DOWN)) {
+		if (dinoJumping) {
+			dinoY       = 5;
+			dinoVel     = 0;
+			dinoJumping = false;
+		}
+		if (!dinoDucking) startLEDFlash();
+		dinoDucking = true;
+	} else if (!dinoJumping) {
+		dinoDucking = false;
 	}
 
 	// ── Tick-gated update ─────────────────────────────────────────────────
@@ -84,7 +91,7 @@ void dinoLoop() {
 		// Advance obstacle
 		dinoObsX--;
 		if (dinoObsX < 0) {
-			dinoObsX    = 8;
+			dinoObsX    = 13 + random(0, 6); // 13-18 ticks off-screen (5-10 column gap)
 			dinoObsType = (random(3) == 0) ? 1 : 0; // 1/3 bird, 2/3 cactus
 			if (dinoObsType == 1 && random(3) == 0)
 				dinoObsType = 2;
