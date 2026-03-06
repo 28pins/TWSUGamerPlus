@@ -12,14 +12,15 @@ Arduino code and a lightweight hardware driver for the Technology Will Save Us D
 TWSUGamerPlus is an Arduino sketch and accompanying hardware-abstraction library built for the [Technology Will Save Us (TWSU) DIY Gamer Kit](https://www.techwillsaveus.com/shop/diy-kits/diy-gamer-kit-2/). Starting from the base TWSU example, this project adds:
 
 - A **fully playable Tetris** implementation with piece rotation, soft-drop, and automatic speed progression.
-- **Eight games** in a single sketch: Snake, Breakout, Simon Says, Flappy Bird, Tetris, Space Invaders, Conway’s Game of Life, and Dino Runner.
+- **Nine entries** in a single sketch: Snake, Breakout, Simon Says, Flappy Bird, Tetris, Space Invaders, Conway’s Game of Life, Dino Runner, and Brightness Settings.
 - **Richer audio/visual feedback**: distinct win and loss tunes, non-blocking LED flashes, and per-game sound effects driven by a software tone engine.
 - A **sound toggle** via the capacitive-touch pad (v1.9+ boards) so players can silence the buzzer without re-flashing.
+- **Brightness control** via a dedicated “BRIGHT” settings screen in the launcher — adjustable from 1 (dim) to 8 (full). When the onboard LED turns on (e.g. during high-score view), the display driver automatically boosts brightness by 3 levels to compensate for the LED’s current-draw voltage drop.
 - **Memory optimisations** that keep the whole program inside the ATmega328P’s 32 KB flash and 2 KB SRAM with room to spare.
 
 ## What’s inside
-- `Gamer.h` / `Gamer.cpp`: the `Gamer` class that owns the 8x8 display buffer, scans buttons, drives the buzzer and IR LED, and exposes helpers like `printImage`, `printString`, `showScore`, and `playTone`.
-- `TWSUGamerPlus.ino`: a single sketch with a launcher and eight games: Snake, Breakout, Simon, Flappy Bird, Tetris, Space Invaders, Conway’s Game of Life, and Dino Runner.
+- `Gamer.h` / `Gamer.cpp`: the `Gamer` class that owns the 8x8 display buffer, scans buttons, drives the buzzer and IR LED, and exposes helpers like `printImage`, `printString`, `showScore`, `playTone`, `setBrightness`, and `getBrightness`.
+- `TWSUGamerPlus.ino`: a single sketch with a launcher and nine entries: Snake, Breakout, Simon, Flappy Bird, Tetris, Space Invaders, Conway’s Game of Life, Dino Runner, and Brightness Settings.
 - `library.properties`: Arduino metadata so the folder can live in `~/Arduino/libraries/Gamer`.
 
 ## Hardware
@@ -121,10 +122,18 @@ This is a zero-player simulation. Watch the cellular automaton evolve from a ran
 
 Dodge the scrolling obstacles — ground cacti and flying birds. The game speeds up as your score increases. Colliding with an obstacle ends the run and displays your score. High scores are saved to EEPROM automatically.
 
+#### Brightness Settings
+| Button | Action |
+|--------|--------|
+| `UP` / `RIGHT` | Increase brightness |
+| `DOWN` / `LEFT` | Decrease brightness |
+
+Navigate to the **BRIGHT** entry in the launcher and press `START` to open the settings screen. A bar of lit columns shows the current level (1 column = dimmest, 8 columns = full). The setting takes effect immediately. When the onboard indicator LED turns on (e.g. in the high-score view), the display automatically boosts brightness by 3 levels to compensate for the LED’s current draw; it restores your chosen level when the LED turns off.
+
 
 ## Gamer library overview
 - **Setup**: call `gamer.begin()` in `setup()` to configure pins, timers, and defaults.
-- **Display**: write pixels into `gamer.display[8][8]` and call `gamer.updateDisplay()` to push them. Helpers: `printImage(byte* img)`, `printImage(img, x, y)`, `printImagePGM(const byte*)`, `allOn()`, `clear()`, `appendColumn()`, `printString(const char*)`, `showScore(int)`, `setRefreshRate(uint16_t)`.
+- **Display**: write pixels into `gamer.display[8][8]` and call `gamer.updateDisplay()` to push them. Helpers: `printImage(byte* img)`, `printImage(img, x, y)`, `printImagePGM(const byte*)`, `allOn()`, `clear()`, `appendColumn()`, `printString(const char*)`, `showScore(int)`, `setRefreshRate(uint16_t)`, `setBrightness(uint8_t)` (1–dim to 8–full), `getBrightness()`.
 - **Inputs**: edge-triggered `isPressed(btn)` for single presses, `isHeld(btn)` for current state, `ldrValue()`/`setldrThreshold()` for light sensing on older boards, `capTouch()` for capacitive input on v1.9 hardware.
 - **Buzzer**: `playTone(int note)` starts a tone, `stopTone()` stops it. The LED on pin 13 can be toggled with `setLED()`/`toggleLED()`.
 - **Infrared**: `irBegin()` / `irEnd()` manage the 38 kHz carrier and share timer interrupts with the display refresh logic.

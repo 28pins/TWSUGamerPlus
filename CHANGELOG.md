@@ -5,6 +5,24 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [3.1.0] — 2026-03-06
+
+### Added
+- **Brightness control** (`Gamer::setBrightness(uint8_t)` / `getBrightness()`): software-PWM dimming via
+  the TLC5916 OE pin. Level 1 is dimmest (~12 % duty cycle); level 8 is full brightness (no blanking).
+  Implemented in `isrRoutine()` by asserting OE HIGH after `brightness × refreshRate / 8` timer ticks.
+- **LED brightness compensation** (`Gamer::setLED()` / `toggleLED()`): when the onboard LED (pin 13)
+  turns on, the effective display brightness is automatically boosted by 3 levels to offset the
+  voltage-drop dim caused by the LED's current draw on the shared power rail.  The boost is reversed
+  when the LED turns off, restoring the user's chosen level.
+- **Brightness settings game** (`src/games/brightness.h`): a launcher-registered settings screen
+  (icon: pulsing sun) that displays the current brightness as a left-to-right bar of lit columns.
+  `UP`/`RIGHT` increase, `DOWN`/`LEFT` decrease (1–8), `START` exits.  Changes take effect immediately.
+- `brightAnim_pgm` (2-frame sun icon) in `src/assets/progmem_assets.h`.
+- `setBrightness` and `getBrightness` entries in `keywords.txt`.
+
+---
+
 ## [3.0.0] — 2026-02-25
 
 ### Bug Fixes

@@ -17,6 +17,10 @@ static bool toneIsPlaying = false;
 static bool playTog = false;
 static bool toneStopped = false;
 
+// Number of brightness levels added to the display when the onboard LED is on,
+// compensating for the voltage-drop dim caused by the LED's current draw.
+static constexpr uint8_t LED_BRIGHTNESS_BOOST = 3;
+
 static Gamer *thisGamer = NULL;
 
 // Interrupt service routine.
@@ -174,6 +178,9 @@ void Gamer::begin()
   ::thisGamer = this;
 	
   _refreshRate = 50;
+  _brightness = 8;
+  _baseBrightness = 8;
+  _ledCompensation = true;
   ldrThreshold = 300;
 
   // Setup outputs
@@ -302,6 +309,60 @@ void Gamer::setRefreshRate(uint16_t refreshRate)
 }
 
 /**
+  Recalculates the effective ISR brightness from the base level and the current LED state.
+  Call after any change to _baseBrightness, _ledCompensation, or the LED pin.
+ */
+void Gamer::updateEffectiveBrightness()
+{
+  if (digitalRead(PIN_LED) && _ledCompensation) {
+    uint8_t boosted = _baseBrightness + LED_BRIGHTNESS_BOOST;
+    _brightness = (boosted > 8) ? 8 : boosted;
+  } else {
+    _brightness = _baseBrightness;
+  }
+}
+
+/**
+  Sets the display brightness.
+  @param level brightness from 1 (dimmest) to 8 (full). Values outside this range are clamped.
+ */
+void Gamer::setBrightness(uint8_t level)
+{
+  if (level < 1) level = 1;
+  if (level > 8) level = 8;
+  _baseBrightness = level;
+  updateEffectiveBrightness();
+}
+
+/**
+  Returns the user-set brightness level (1–8), excluding any active LED compensation boost.
+ */
+uint8_t Gamer::getBrightness() const
+{
+  return _baseBrightness;
+}
+
+/**
+  Enables or disables the automatic brightness boost applied when the onboard LED is on.
+  When enabled (default), setLED(true) raises the effective brightness by LED_BRIGHTNESS_BOOST
+  to compensate for the voltage-drop dim caused by the LED's current draw.
+  @param enabled true to enable compensation, false to disable
+ */
+void Gamer::setLEDCompensation(bool enabled)
+{
+  _ledCompensation = enabled;
+  updateEffectiveBrightness();
+}
+
+/**
+  Returns whether LED brightness compensation is currently enabled.
+ */
+bool Gamer::getLEDCompensation() const
+{
+  return _ledCompensation;
+}
+
+/**
   Burns the display[][] array onto the display. Call this when you're done changing pixels in your game.
  */
 void Gamer::updateDisplay()
@@ -383,19 +444,23 @@ void Gamer::printImage(byte* img, int x, int y)
 
 /**
   Sets the value of the red LED.
+  When LED compensation is enabled (default), turning the LED on boosts the effective
+  display brightness by LED_BRIGHTNESS_BOOST to offset the voltage-drop dim caused by
+  the LED's current draw. Compensation can be toggled with setLEDCompensation().
   @param value the LED's boolean value
  */
 void Gamer::setLED(bool value)
 {
   digitalWrite(PIN_LED, value);
+  updateEffectiveBrightness();
 }
 
 /**
-  Toggles the value of the red LED.
+  Toggles the value of the red LED (also applies/removes brightness compensation).
  */
 void Gamer::toggleLED()
 {
-  digitalWrite(PIN_LED, !digitalRead(PIN_LED));
+  setLED(!digitalRead(PIN_LED));
 }
 
 /**
@@ -488,6 +553,10 @@ void Gamer::isrRoutine()
     if(pulseCount >= _refreshRate) {
       updateRow();
       pulseCount = 0;
+    } else if (_brightness < 8 && pulseCount == (byte)(((uint16_t)_brightness * _refreshRate) / 8)) {
+      // Blank after (_brightness/8) of the row period for software-PWM dimming (8 levels total).
+      // The next updateRow() call will re-enable outputs for the following row.
+      PORTB |= _BV(PORTB2);
     }
     if(pulseCount == _refreshRate/2) {
       checkInputs();
