@@ -90,8 +90,8 @@ void dinoLoop() {
 
 		// Advance obstacle
 		dinoObsX--;
-		if (dinoObsX < 3) {
-			dinoObsX    = random(8, 14); // 13-18 ticks off-screen (5-10 column gap)
+		if (dinoObsX < 0) {
+			dinoObsX    = random(8, 11); // 13-18 ticks off-screen (5-10 column gap)
 			dinoObsType = (random(2) == 0) ? 1 : 0; // 1/3 bird, 2/3 cactus
 			if (dinoObsType == 1 && random(3) == 0)
 				dinoObsType = 2;
