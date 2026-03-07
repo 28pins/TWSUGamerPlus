@@ -10,7 +10,7 @@ static int8_t dinoVel      = 0;     // jump velocity (negative = upward)
 static bool   dinoJumping  = false;
 static bool   dinoDucking  = false;
 static int8_t dinoObsX     = 9;     // obstacle column (scrolls right → left)
-static byte   dinoObsType  = 0;     // 0 = cactus (ground), 1 = bird (air), 2 = giant bird, 3 = wide cactus (2x2), 4 = flying bar (1x3)
+static byte   dinoObsType  = 0;     // 0 = cactus (ground), 1 = bird (air), 2 = giant bird, 3 = wide cactus (2x2), 4 = flying bar (3x1)
 static int    dinoScore    = 0;
 static bool   dinoOver     = false;
 static unsigned long dinoLastTick = 0;
@@ -133,8 +133,8 @@ void dinoLoop() {
 				if (dinoDucking || dinoY + 1 >= 5)
 					hit = true;
 			} else if (dinoObsType == 4) {
-				// Flying bar (1x3) at rows 3-5: must duck (can't jump over)
-				if(!dinoDucking || dinoJumping)
+				// Flying bar (3x1 horizontal) at row 5: duck or jump above row 4 to avoid
+				if (!dinoDucking && dinoY <= 5 && dinoY + 1 >= 5)
 					hit = true;
 			}
 			if (hit) {
@@ -148,6 +148,18 @@ void dinoLoop() {
 		if (dinoObsX == 0 && dinoObsType == 3) {
 			bool hit = false;
 			if (dinoDucking || dinoY + 1 >= 5)
+				hit = true;
+			if (hit) {
+				dinoOver = true;
+				playLossTune();
+				return;
+			}
+		}
+
+		// Additional collision checks for horizontal flying bar (type 4) at columns 0 and 2
+		if ((dinoObsX == 0 || dinoObsX == 2) && dinoObsType == 4) {
+			bool hit = false;
+			if (!dinoDucking && dinoY <= 5 && dinoY + 1 >= 5)
 				hit = true;
 			if (hit) {
 				dinoOver = true;
@@ -197,16 +209,28 @@ void dinoLoop() {
 				gamer.display[dinoObsX + 1][6] = 1;
 			}
 		} else if (dinoObsType == 4) {
-			// Flying bar (1x3 vertical) - flying obstacle
+			// Flying bar (3x1 horizontal) - flying obstacle spanning 3 columns
 			gamer.display[dinoObsX][5] = 1;
-			gamer.display[dinoObsX][4] = 1;
-			gamer.display[dinoObsX][3] = 1;
+			if (dinoObsX + 1 < 8) {
+				gamer.display[dinoObsX + 1][5] = 1;
+			}
+			if (dinoObsX + 2 < 8) {
+				gamer.display[dinoObsX + 2][5] = 1;
+			}
 		}
 	}
 	// Handle second column of wide cactus when it's at X = -1
 	if (dinoObsX == -1 && dinoObsType == 3) {
 		gamer.display[0][5] = 1;
 		gamer.display[0][6] = 1;
+	}
+	// Handle remaining columns of horizontal flying bar when partially off-screen
+	if (dinoObsX == -1 && dinoObsType == 4) {
+		gamer.display[0][5] = 1;
+		gamer.display[1][5] = 1;
+	}
+	if (dinoObsX == -2 && dinoObsType == 4) {
+		gamer.display[0][5] = 1;
 	}
 
 	gamer.updateDisplay();
