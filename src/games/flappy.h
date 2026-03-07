@@ -88,7 +88,6 @@ inline void resetFlappyLauncher() {
 void flappyLoop()
 {
   updateGameInput();
-  if (soundEnabled) gamer.stopTone();
   if( menu )
   {
     ++ticks;
