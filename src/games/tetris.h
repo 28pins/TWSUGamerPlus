@@ -187,8 +187,7 @@ void resetTetris() {
 }
 
 void tetrisLoop() {
-  checkSoundToggle();
-  updateLEDFlash();
+  updateGameInput();
 
   if (soundEnabled && tetrisChirpPending) {
     gamer.stopTone();

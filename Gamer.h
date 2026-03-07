@@ -54,7 +54,6 @@ public:
 	void stopTone();
 	void printString(const char* string);
 	void appendColumn(byte* screen, byte col);
-	void showScore(int n);
 	void printImagePGM(const byte* pgm_img);
 
 	// Infrared

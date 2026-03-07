@@ -106,9 +106,7 @@ void startBreakoutReset() {
 }
 
 void breakoutLoop() {
-  checkSoundToggle();
-  updateLEDFlash();
-  if(soundEnabled) gamer.stopTone();
+  updateGameInput();
   if(breakoutCounter>2) {
     for(byte x=0;x<8;x++) {
       for(byte y=0;y<8;y++) {

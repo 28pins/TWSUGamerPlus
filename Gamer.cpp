@@ -40,23 +40,17 @@ ISR(TIMER2_COMPA_vect)
       if (toggleVal) {
         PORTD |= _BV(PORTD2);
         toggleVal = 0;
-        if(split % 10 == 0 ){
-          thisGamer->isrRoutine();
-        }
       }
       else {
         PORTD &= ~_BV(PORTD2);
         toggleVal = 1;
-        if(split % 10== 0 ) {
-          thisGamer->isrRoutine();
-        }
       }
     }
     else {
       PORTD &= ~_BV(PORTD2);
-      if(split % 10 == 0 ) {
-        thisGamer->isrRoutine();
-      }
+    }
+    if(split % 10 == 0) {
+      thisGamer->isrRoutine();
     }
     split++;
   }
@@ -260,27 +254,14 @@ bool Gamer::capTouch()
 	  // Make the pin an input with the internal pull-up on
 	  pinMode(CAP_TOUCH_PIN, INPUT_PULLUP);
 
-	  // Now see how long the pin to get pulled up. This manual unrolling of the loop
-	  // decreases the number of hardware cycles between each read of the pin,
-	  // thus increasing sensitivity.
+	  // Now see how long the pin to get pulled up.
 	  uint8_t cycles = 17;
-	       if (digitalRead(CAP_TOUCH_PIN)) { cycles =  0;}
-	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles =  1;}
-	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles =  2;}
-	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles =  3;}
-	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles =  4;}
-	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles =  5;}
-	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles =  6;}
-	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles =  7;}
-	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles =  8;}
-	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles =  9;}
-	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles = 10;}
-	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles = 11;}
-	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles = 12;}
-	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles = 13;}
-	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles = 14;}
-	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles = 15;}
-	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles = 16;}
+	  for (uint8_t i = 0; i < 17; i++) {
+	    if (digitalRead(CAP_TOUCH_PIN)) {
+	      cycles = i;
+	      break;
+	    }
+	  }
 
 	  // End of timing-critical section
 	  interrupts();
@@ -379,12 +360,9 @@ void Gamer::updateDisplay()
   bool changed = false;
   for(byte i=0; i<8; i++) {
     if (newImage[i] != image[i]) {
+      image[i] = newImage[i];
       changed = true;
-      break;
     }
-  }
-  if(changed) {
-    for(byte i=0; i<8; i++) image[i] = newImage[i];
   }
 }
 
@@ -611,22 +589,7 @@ void Gamer::appendColumn(byte* screen, byte col)
   delay(60);
 }
 
-/**
-  Shows the score. Maximum 2 digits :(
-  @param n the score to be displayed
- */
-void Gamer::showScore(int n)
-{
-  byte result[8];
-  int dig1=n/10;
-  int dig2=n%10;
-  for(byte p=0;p<8;p++) {
-    result[p]=pgm_read_byte(&allNumbers[dig2][p]);
-    if( dig1>0 )
-    result[p]|=(pgm_read_byte(&allNumbers[dig1][p])<<4);
-  }
-  printImage(result);
-}
+// Removed showScore() — games use the version in the main .ino file instead.
 
 /**
   Prints an 8-byte PROGMEM image onto the display.

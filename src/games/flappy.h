@@ -87,8 +87,7 @@ inline void resetFlappyLauncher() {
 
 void flappyLoop()
 {
-  checkSoundToggle();
-  updateLEDFlash();
+  updateGameInput();
   if (soundEnabled) gamer.stopTone();
   if( menu )
   {

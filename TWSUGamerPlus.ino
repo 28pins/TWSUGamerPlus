@@ -46,6 +46,13 @@ bool startFromHighScore = false;
 byte startingHighScore = 0;
 
 // ── Helper functions ──────────────────────────────────────────────────────────
+// Common game loop preamble: check sound toggle, update LED flash, stop any tone
+inline void updateGameInput() {
+  checkSoundToggle();
+  updateLEDFlash();
+  if (soundEnabled) gamer.stopTone();
+}
+
 void startLEDFlash() {
   gamer.setLED(true);
   ledFlashStartTime = millis();
