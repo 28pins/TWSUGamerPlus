@@ -121,42 +121,14 @@ void breakoutLoop() {
       }
     }
     physics();
+    // Propagate block destruction to adjacent blocks in a checkerboard pattern
     for(byte x=0;x<8;x++) {
       for(byte y=0;y<8;y++) {
         if(blocks[x][y]==0) {
-          if(x%2==0) {
-            if(y%2==0) {
-              if(x<7) {
-                blocks[x+1][y]=0;
-              } else {
-                blocks[0][y]=0;
-              }
-            } 
-            else {
-              if(x>0) {
-                blocks[x-1][y]=0;
-              } else {
-                blocks[7][y]=0;
-              }
-            }
-          } 
-          else {
-            if(y%2==0) {
-              if(x>0) {
-                blocks[x-1][y]=0;
-              } else {
-                blocks[7][y]=0;
-              }
-            } 
-            else {
-              if(x<7) {
-                blocks[x+1][y]=0;
-              } else {
-                blocks[0][y]=0;
-              }
-            }
-          }
-        }  
+          // Determine adjacent block based on checkerboard pattern
+          byte adjX = ((x % 2) == (y % 2)) ? ((x < 7) ? x + 1 : 0) : ((x > 0) ? x - 1 : 7);
+          blocks[adjX][y] = 0;
+        }
       }
     }
     for(byte x=0;x<8;x++) {

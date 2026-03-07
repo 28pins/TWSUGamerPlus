@@ -91,6 +91,7 @@ void snakeRec() {
 
 void snakeLoop() {
   updateGameInput();
+  // Clear display manually (faster than gamer.clear() which also calls updateDisplay)
   for(byte x=0;x<8;x++) {
     for(byte y=0;y<8;y++) {
       gamer.display[x][y] = LOW;
