@@ -53,8 +53,8 @@ public:
 	void playTone(int note);
 	void stopTone();
 	void printString(const char* string);
+	void showScore(int score);
 	void appendColumn(byte* screen, byte col);
-	void showScore(int n);
 	void printImagePGM(const byte* pgm_img);
 
 	// Infrared

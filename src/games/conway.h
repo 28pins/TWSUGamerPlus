@@ -72,8 +72,7 @@ bool conwayStepSmall() {
 void resetConway() { conwayRandomize(); }
 
 void conwayLoop() {
-  checkSoundToggle();
-  updateLEDFlash();
+  updateGameInput();
 
   bool changed = conwayStep();
   if (!changed) {

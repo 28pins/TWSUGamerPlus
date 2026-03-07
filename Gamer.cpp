@@ -611,22 +611,7 @@ void Gamer::appendColumn(byte* screen, byte col)
   delay(60);
 }
 
-/**
-  Shows the score. Maximum 2 digits :(
-  @param n the score to be displayed
- */
-void Gamer::showScore(int n)
-{
-  byte result[8];
-  int dig1=n/10;
-  int dig2=n%10;
-  for(byte p=0;p<8;p++) {
-    result[p]=pgm_read_byte(&allNumbers[dig2][p]);
-    if( dig1>0 )
-    result[p]|=(pgm_read_byte(&allNumbers[dig1][p])<<4);
-  }
-  printImage(result);
-}
+// Removed showScore() — games use the version in the main .ino file instead.
 
 /**
   Prints an 8-byte PROGMEM image onto the display.

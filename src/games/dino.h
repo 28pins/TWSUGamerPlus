@@ -38,9 +38,7 @@ void resetDino() {
 }
 
 void dinoLoop() {
-	checkSoundToggle();
-	updateLEDFlash();
-	if (soundEnabled) gamer.stopTone();
+	updateGameInput();
 
 	// ── Game-over: show score, then auto-restart ──────────────────────────
 	if (dinoOver) {

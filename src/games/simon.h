@@ -28,8 +28,7 @@ void resetSimon() {
 }
 
 void simonLoop() {
-  checkSoundToggle();
-  updateLEDFlash();
+  updateGameInput();
   static const byte simonNotes[] PROGMEM = {NOTE_E8, NOTE_C8, NOTE_G8, NOTE_D8};
   sequence[simonStep]=random(0, SIMON_NUM_DIRECTIONS);
   if(simonStep>0) {

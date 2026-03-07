@@ -78,8 +78,7 @@ void alienLoop() {
     moveAlien();
     while (millis() - lastMove < moveDelay) {
       delay(10);
-      checkSoundToggle();
-      updateLEDFlash();
+      updateGameInput();
       if(gamer.isPressed(UP)){
         for(int8_t i = 7; i >= 0; i--) {
           gamer.display[currentX][i] = 1;
