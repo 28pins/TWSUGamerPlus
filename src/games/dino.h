@@ -101,7 +101,7 @@ void dinoLoop() {
 			} else if (typeRoll == 2) {
 				dinoObsType = 3; // wide cactus (2x2)
 			} else if (typeRoll == 3) {
-				dinoObsType = 4; // flying bar (1x3)
+				dinoObsType = 4; // flying bar (3x1)
 			} else {
 				dinoObsType = 0; // cactus (ground)
 			}
