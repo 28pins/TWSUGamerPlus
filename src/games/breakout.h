@@ -18,60 +18,41 @@ bool outOfBounds(int xV, int yV) {
   return (xV > 8 || xV < 0 || yV > 8 || yV < 0);
 }
 
+// Helper: checks if a position is free (LOW) and in bounds
+inline bool isFree(int x, int y) {
+  return !outOfBounds(x, y) && gamer.display[x][y] == LOW;
+}
+
 void physics() {
-  if(gamer.display[currentXBreakout+velocity[0]][currentYBreakout+velocity[1]]==HIGH || outOfBounds(currentXBreakout+velocity[0],currentYBreakout+velocity[1])) {
-    //Collided with something!!!
+  int nextX = currentXBreakout + velocity[0];
+  int nextY = currentYBreakout + velocity[1];
+
+  // Check if we hit something at the next position
+  if(gamer.display[nextX][nextY] == HIGH || outOfBounds(nextX, nextY)) {
+    // Collision detected!
     startLEDFlash();
     if(soundEnabled) {
-      if(currentYBreakout==6) {
-        gamer.playTone(NOTE_C8);
-      } 
-      else {
-        gamer.playTone(NOTE_E8);
-      }
+      gamer.playTone((currentYBreakout == 6) ? NOTE_C8 : NOTE_E8);
     }
-    if(velocity[0]==1) {
-      if(velocity[1]==1) {
-        if(gamer.display[currentXBreakout+velocity[0]][currentYBreakout-1]==LOW && !outOfBounds(currentXBreakout+velocity[0],currentYBreakout-1)) {
-          velocity[1]=-1;
-        }
-        else if(gamer.display[currentXBreakout-1][currentYBreakout-1]==LOW && !outOfBounds(currentXBreakout-1,currentYBreakout-1)) {
-          velocity[1]=-1;
-          velocity[0]=-1;
-        }
-      }
-      else if(velocity[1]==-1) {
-        if(gamer.display[currentXBreakout+velocity[0]][currentYBreakout+1]==LOW && !outOfBounds(currentXBreakout+velocity[0],currentYBreakout+1)) {
-          velocity[1]=1;
-        } 
-        else if(gamer.display[currentXBreakout-1][currentYBreakout+1]==LOW && !outOfBounds(currentXBreakout-1,currentYBreakout+1)) {
-          velocity[1]=1;
-          velocity[0]=-1;
-        } 
-      } 
-    } 
-    else if(velocity[0]==-1) {
-      if(velocity[1]==1) {
-        if(gamer.display[currentXBreakout+velocity[0]][currentYBreakout-1]==LOW && !outOfBounds(currentXBreakout+velocity[0],currentYBreakout-1)) {
-          velocity[1]=-1;
-        } 
-        else if(gamer.display[currentXBreakout+1][currentYBreakout-1]==LOW && !outOfBounds(currentXBreakout-1,currentYBreakout-1)) {
-          velocity[1]=-1;
-          velocity[0]=1;
-        }
-      } 
-      else if(velocity[1]==-1) {
-        if(gamer.display[currentXBreakout+velocity[0]][currentYBreakout+1]==LOW && !outOfBounds(currentXBreakout+velocity[0],currentYBreakout+1)) {
-          velocity[1]=1;
-        } 
-        else if(gamer.display[currentXBreakout+1][currentYBreakout+1]==LOW && !outOfBounds(currentXBreakout-1,currentYBreakout+1)) {
-          velocity[1]=1;
-          velocity[0]=1;
-        }
-      } 
+
+    // Try to bounce off edges intelligently
+    // Check if we can bounce just horizontally or just vertically
+    bool canBounceY = isFree(nextX, currentYBreakout - velocity[1]);
+    bool canBounceX = isFree(currentXBreakout - velocity[0], nextY);
+
+    if(canBounceY) {
+      velocity[1] *= -1;  // Bounce vertically
+    } else if(canBounceX) {
+      velocity[0] *= -1;  // Bounce horizontally
+    } else {
+      // Corner hit - bounce both directions
+      velocity[0] *= -1;
+      velocity[1] *= -1;
     }
-    if(!outOfBounds(currentXBreakout+origXV,currentYBreakout+origYV)) {
-      blocks[currentXBreakout+origXV][currentYBreakout+origYV]=0;
+
+    // Clear the block we hit (if in bounds)
+    if(!outOfBounds(currentXBreakout + origXV, currentYBreakout + origYV)) {
+      blocks[currentXBreakout + origXV][currentYBreakout + origYV] = 0;
     }
   }
 }
