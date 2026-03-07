@@ -156,8 +156,8 @@ void dinoLoop() {
 			}
 		}
 
-		// Additional collision checks for horizontal flying bar (type 4) at columns 0 and 2
-		if ((dinoObsX == 0 || dinoObsX == 2) && dinoObsType == 4) {
+		// Additional collision checks for horizontal flying bar (type 4) as it spans columns 1, 0, and -1
+		if ((dinoObsX == 1 || dinoObsX == 0 || dinoObsX == -1) && dinoObsType == 4) {
 			bool hit = false;
 			if (!dinoDucking && dinoY <= 5 && dinoY + 1 >= 5)
 				hit = true;
