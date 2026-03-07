@@ -40,17 +40,23 @@ ISR(TIMER2_COMPA_vect)
       if (toggleVal) {
         PORTD |= _BV(PORTD2);
         toggleVal = 0;
+        if(split % 10 == 0 ){
+          thisGamer->isrRoutine();
+        }
       }
       else {
         PORTD &= ~_BV(PORTD2);
         toggleVal = 1;
+        if(split % 10== 0 ) {
+          thisGamer->isrRoutine();
+        }
       }
     }
     else {
       PORTD &= ~_BV(PORTD2);
-    }
-    if(split % 10 == 0) {
-      thisGamer->isrRoutine();
+      if(split % 10 == 0 ) {
+        thisGamer->isrRoutine();
+      }
     }
     split++;
   }
@@ -254,14 +260,27 @@ bool Gamer::capTouch()
 	  // Make the pin an input with the internal pull-up on
 	  pinMode(CAP_TOUCH_PIN, INPUT_PULLUP);
 
-	  // Now see how long the pin to get pulled up.
+	  // Now see how long the pin to get pulled up. This manual unrolling of the loop
+	  // decreases the number of hardware cycles between each read of the pin,
+	  // thus increasing sensitivity.
 	  uint8_t cycles = 17;
-	  for (uint8_t i = 0; i < 17; i++) {
-	    if (digitalRead(CAP_TOUCH_PIN)) {
-	      cycles = i;
-	      break;
-	    }
-	  }
+	       if (digitalRead(CAP_TOUCH_PIN)) { cycles =  0;}
+	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles =  1;}
+	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles =  2;}
+	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles =  3;}
+	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles =  4;}
+	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles =  5;}
+	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles =  6;}
+	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles =  7;}
+	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles =  8;}
+	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles =  9;}
+	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles = 10;}
+	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles = 11;}
+	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles = 12;}
+	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles = 13;}
+	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles = 14;}
+	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles = 15;}
+	  else if (digitalRead(CAP_TOUCH_PIN)) { cycles = 16;}
 
 	  // End of timing-critical section
 	  interrupts();
@@ -360,9 +379,12 @@ void Gamer::updateDisplay()
   bool changed = false;
   for(byte i=0; i<8; i++) {
     if (newImage[i] != image[i]) {
-      image[i] = newImage[i];
       changed = true;
+      break;
     }
+  }
+  if(changed) {
+    for(byte i=0; i<8; i++) image[i] = newImage[i];
   }
 }
 
