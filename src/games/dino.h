@@ -10,7 +10,7 @@ static int8_t dinoVel      = 0;     // jump velocity (negative = upward)
 static bool   dinoJumping  = false;
 static bool   dinoDucking  = false;
 static int8_t dinoObsX     = 9;     // obstacle column (scrolls right → left)
-static byte   dinoObsType  = 0;     // 0 = cactus (ground), 1 = bird (air), 2 = giant bird
+static byte   dinoObsType  = 0;     // 0 = cactus (ground), 1 = bird (air), 2 = giant bird, 3 = wide cactus (2x2), 4 = flying bar (3x1)
 static int    dinoScore    = 0;
 static bool   dinoOver     = false;
 static unsigned long dinoLastTick = 0;
@@ -90,9 +90,19 @@ void dinoLoop() {
 		dinoObsX--;
 		if (dinoObsX < 0) {
 			dinoObsX    = random(8, 11); // 13-18 ticks off-screen (5-10 column gap)
-			dinoObsType = (random(2) == 0) ? 1 : 0; // 1/3 bird, 2/3 cactus
-			if (dinoObsType == 1 && random(3) == 0)
-				dinoObsType = 2;
+			// Random obstacle type selection
+			byte typeRoll = random(5);
+			if (typeRoll == 0) {
+				dinoObsType = 1; // bird (air)
+			} else if (typeRoll == 1) {
+				dinoObsType = 2; // giant bird
+			} else if (typeRoll == 2) {
+				dinoObsType = 3; // wide cactus (2x2)
+			} else if (typeRoll == 3) {
+				dinoObsType = 4; // flying bar (3x1)
+			} else {
+				dinoObsType = 0; // cactus (ground)
+			}
 			dinoScore++;
 			if (dinoScore > 99) dinoScore = 99;
 			startLEDFlash();
@@ -108,13 +118,47 @@ void dinoLoop() {
 				if (dinoDucking || dinoY + 1 >= 5)
 					hit = true;
 			} else if (dinoObsType == 2) {
-				if(!dinoDucking || dinoJumping) 
+				// Giant bird at rows 3-5: must duck (can't jump over)
+				if(!dinoDucking || dinoJumping)
 					hit = true;
-			} else {
+			} else if (dinoObsType == 1) {
 				// Bird at row 5: duck or jump above row 4 to avoid
 				if (!dinoDucking && dinoY <= 5 && dinoY + 1 >= 5)
 					hit = true;
+			} else if (dinoObsType == 3) {
+				// Wide cactus (2x2) at rows 5-6, columns X and X+1: must jump above row 4
+				// Check collision at columns 1 and 2
+				if (dinoDucking || dinoY + 1 >= 5)
+					hit = true;
+			} else if (dinoObsType == 4) {
+				// Flying bar (3x1 horizontal) at row 5: duck or jump above row 4 to avoid
+				if (!dinoDucking && dinoY <= 5 && dinoY + 1 >= 5)
+					hit = true;
 			}
+			if (hit) {
+				dinoOver = true;
+				playLossTune();
+				return;
+			}
+		}
+
+		// Additional collision check for wide cactus (type 3) when its second column overlaps dino column 1
+		if (dinoObsX == 0 && dinoObsType == 3) {
+			bool hit = false;
+			if (dinoDucking || dinoY + 1 >= 5)
+				hit = true;
+			if (hit) {
+				dinoOver = true;
+				playLossTune();
+				return;
+			}
+		}
+
+		// Additional collision checks for horizontal flying bar (type 4) as it spans columns 1, 0, and -1
+		if ((dinoObsX == 1 || dinoObsX == 0 || dinoObsX == -1) && dinoObsType == 4) {
+			bool hit = false;
+			if (!dinoDucking && dinoY <= 5 && dinoY + 1 >= 5)
+				hit = true;
 			if (hit) {
 				dinoOver = true;
 				playLossTune();
@@ -149,11 +193,42 @@ void dinoLoop() {
 			gamer.display[dinoObsX][6] = 1;  // cactus bottom
 		} else if (dinoObsType == 1) {
 			gamer.display[dinoObsX][5] = 1;  // bird
-		} else {
+		} else if (dinoObsType == 2) {
+			// Giant bird (1x3 vertical)
 			gamer.display[dinoObsX][5] = 1;
 			gamer.display[dinoObsX][4] = 1;
 			gamer.display[dinoObsX][3] = 1;
+		} else if (dinoObsType == 3) {
+			// Wide cactus (2x2) - ground obstacle
+			gamer.display[dinoObsX][5] = 1;
+			gamer.display[dinoObsX][6] = 1;
+			if (dinoObsX + 1 < 8) {
+				gamer.display[dinoObsX + 1][5] = 1;
+				gamer.display[dinoObsX + 1][6] = 1;
+			}
+		} else if (dinoObsType == 4) {
+			// Flying bar (3x1 horizontal) - flying obstacle spanning 3 columns
+			gamer.display[dinoObsX][5] = 1;
+			if (dinoObsX + 1 < 8) {
+				gamer.display[dinoObsX + 1][5] = 1;
+			}
+			if (dinoObsX + 2 < 8) {
+				gamer.display[dinoObsX + 2][5] = 1;
+			}
 		}
+	}
+	// Handle second column of wide cactus when it's at X = -1
+	if (dinoObsX == -1 && dinoObsType == 3) {
+		gamer.display[0][5] = 1;
+		gamer.display[0][6] = 1;
+	}
+	// Handle remaining columns of horizontal flying bar when partially off-screen
+	if (dinoObsX == -1 && dinoObsType == 4) {
+		gamer.display[0][5] = 1;
+		gamer.display[1][5] = 1;
+	}
+	if (dinoObsX == -2 && dinoObsType == 4) {
+		gamer.display[0][5] = 1;
 	}
 
 	gamer.updateDisplay();
