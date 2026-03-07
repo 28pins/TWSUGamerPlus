@@ -15,7 +15,7 @@ int origYV=-1;
 byte scoreBreakout = 0;
  
 bool outOfBounds(int xV, int yV) {
-  return (xV > 8 || xV < 0 || yV > 8 || yV < 0);
+  return (xV >= 8 || xV < 0 || yV >= 8 || yV < 0);
 }
 
 // Helper: checks if a position is free (LOW) and in bounds
@@ -28,7 +28,7 @@ void physics() {
   int nextY = currentYBreakout + velocity[1];
 
   // Check if we hit something at the next position
-  if(gamer.display[nextX][nextY] == HIGH || outOfBounds(nextX, nextY)) {
+  if(outOfBounds(nextX, nextY) || gamer.display[nextX][nextY] == HIGH) {
     // Collision detected!
     startLEDFlash();
     if(soundEnabled) {
