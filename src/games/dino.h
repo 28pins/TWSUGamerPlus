@@ -144,7 +144,7 @@ void dinoLoop() {
 			}
 		}
 
-		// Additional collision check for wide cactus (type 3) at column 2
+		// Additional collision check for wide cactus (type 3) when its second column overlaps dino column 1
 		if (dinoObsX == 0 && dinoObsType == 3) {
 			bool hit = false;
 			if (dinoDucking || dinoY + 1 >= 5)
