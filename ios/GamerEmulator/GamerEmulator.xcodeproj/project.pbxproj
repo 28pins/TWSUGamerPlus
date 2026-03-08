@@ -1,0 +1,450 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		AA000011 /* GamerEmulatorApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000010 /* GamerEmulatorApp.swift */; };
+		AA000013 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000012 /* ContentView.swift */; };
+		AA000016 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA000015 /* Assets.xcassets */; };
+		AA000022 /* GamerHardware.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000021 /* GamerHardware.swift */; };
+		AA000024 /* SoundEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000023 /* SoundEngine.swift */; };
+		AA000032 /* GameAssets.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000031 /* GameAssets.swift */; };
+		AA000042 /* HighScoreStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000041 /* HighScoreStore.swift */; };
+		AA000052 /* GameProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000051 /* GameProtocol.swift */; };
+		AA000054 /* SnakeGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000053 /* SnakeGame.swift */; };
+		AA000056 /* TetrisGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000055 /* TetrisGame.swift */; };
+		AA000058 /* BreakoutGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000057 /* BreakoutGame.swift */; };
+		AA00005A /* SimonGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000059 /* SimonGame.swift */; };
+		AA00005C /* FlappyGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00005B /* FlappyGame.swift */; };
+		AA00005E /* DinoGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00005D /* DinoGame.swift */; };
+		AA000060 /* AlienGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00005F /* AlienGame.swift */; };
+		AA000062 /* ConwayGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000061 /* ConwayGame.swift */; };
+		AA000064 /* BrightnessGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000063 /* BrightnessGame.swift */; };
+		AA000072 /* Launcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000071 /* Launcher.swift */; };
+		AA000082 /* MatrixDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000081 /* MatrixDisplayView.swift */; };
+		AA000084 /* ButtonsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000083 /* ButtonsView.swift */; };
+		AA000086 /* GamerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000085 /* GamerView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		AA00000F /* GamerEmulator.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GamerEmulator.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA000010 /* GamerEmulatorApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamerEmulatorApp.swift; sourceTree = "<group>"; };
+		AA000012 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		AA000014 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AA000015 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		AA000021 /* GamerHardware.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamerHardware.swift; sourceTree = "<group>"; };
+		AA000023 /* SoundEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundEngine.swift; sourceTree = "<group>"; };
+		AA000031 /* GameAssets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameAssets.swift; sourceTree = "<group>"; };
+		AA000041 /* HighScoreStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighScoreStore.swift; sourceTree = "<group>"; };
+		AA000051 /* GameProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameProtocol.swift; sourceTree = "<group>"; };
+		AA000053 /* SnakeGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnakeGame.swift; sourceTree = "<group>"; };
+		AA000055 /* TetrisGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TetrisGame.swift; sourceTree = "<group>"; };
+		AA000057 /* BreakoutGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreakoutGame.swift; sourceTree = "<group>"; };
+		AA000059 /* SimonGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimonGame.swift; sourceTree = "<group>"; };
+		AA00005B /* FlappyGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlappyGame.swift; sourceTree = "<group>"; };
+		AA00005D /* DinoGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DinoGame.swift; sourceTree = "<group>"; };
+		AA00005F /* AlienGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlienGame.swift; sourceTree = "<group>"; };
+		AA000061 /* ConwayGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConwayGame.swift; sourceTree = "<group>"; };
+		AA000063 /* BrightnessGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrightnessGame.swift; sourceTree = "<group>"; };
+		AA000071 /* Launcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Launcher.swift; sourceTree = "<group>"; };
+		AA000081 /* MatrixDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatrixDisplayView.swift; sourceTree = "<group>"; };
+		AA000083 /* ButtonsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonsView.swift; sourceTree = "<group>"; };
+		AA000085 /* GamerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamerView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		AA000008 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		AA000003 /* root */ = {
+			isa = PBXGroup;
+			children = (
+				AA000004 /* GamerEmulator */,
+				AA000005 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		AA000004 /* GamerEmulator */ = {
+			isa = PBXGroup;
+			children = (
+				AA000010 /* GamerEmulatorApp.swift */,
+				AA000012 /* ContentView.swift */,
+				AA000014 /* Info.plist */,
+				AA000015 /* Assets.xcassets */,
+				AA000020 /* Hardware */,
+				AA000030 /* GameAssets */,
+				AA000040 /* Persistence */,
+				AA000050 /* Games */,
+				AA000070 /* Launcher */,
+				AA000080 /* Views */,
+			);
+			path = GamerEmulator;
+			sourceTree = "<group>";
+		};
+		AA000005 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AA00000F /* GamerEmulator.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		AA000020 /* Hardware */ = {
+			isa = PBXGroup;
+			children = (
+				AA000021 /* GamerHardware.swift */,
+				AA000023 /* SoundEngine.swift */,
+			);
+			path = Hardware;
+			sourceTree = "<group>";
+		};
+		AA000030 /* GameAssets */ = {
+			isa = PBXGroup;
+			children = (
+				AA000031 /* GameAssets.swift */,
+			);
+			path = GameAssets;
+			sourceTree = "<group>";
+		};
+		AA000040 /* Persistence */ = {
+			isa = PBXGroup;
+			children = (
+				AA000041 /* HighScoreStore.swift */,
+			);
+			path = Persistence;
+			sourceTree = "<group>";
+		};
+		AA000050 /* Games */ = {
+			isa = PBXGroup;
+			children = (
+				AA000051 /* GameProtocol.swift */,
+				AA000053 /* SnakeGame.swift */,
+				AA000055 /* TetrisGame.swift */,
+				AA000057 /* BreakoutGame.swift */,
+				AA000059 /* SimonGame.swift */,
+				AA00005B /* FlappyGame.swift */,
+				AA00005D /* DinoGame.swift */,
+				AA00005F /* AlienGame.swift */,
+				AA000061 /* ConwayGame.swift */,
+				AA000063 /* BrightnessGame.swift */,
+			);
+			path = Games;
+			sourceTree = "<group>";
+		};
+		AA000070 /* Launcher */ = {
+			isa = PBXGroup;
+			children = (
+				AA000071 /* Launcher.swift */,
+			);
+			path = Launcher;
+			sourceTree = "<group>";
+		};
+		AA000080 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				AA000081 /* MatrixDisplayView.swift */,
+				AA000083 /* ButtonsView.swift */,
+				AA000085 /* GamerView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		AA000002 /* GamerEmulator */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AA00000C /* Build configuration list for PBXNativeTarget "GamerEmulator" */;
+			buildPhases = (
+				AA000006 /* Sources */,
+				AA000007 /* Resources */,
+				AA000008 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = GamerEmulator;
+			productName = GamerEmulator;
+			productReference = AA00000F /* GamerEmulator.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		AA000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					AA000002 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = AA00000B /* Build configuration list for PBXProject "GamerEmulator" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = AA000003 /* root */;
+			productRefGroup = AA000005 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				AA000002 /* GamerEmulator */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		AA000007 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA000016 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		AA000006 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA000011 /* GamerEmulatorApp.swift in Sources */,
+				AA000013 /* ContentView.swift in Sources */,
+				AA000022 /* GamerHardware.swift in Sources */,
+				AA000024 /* SoundEngine.swift in Sources */,
+				AA000032 /* GameAssets.swift in Sources */,
+				AA000042 /* HighScoreStore.swift in Sources */,
+				AA000052 /* GameProtocol.swift in Sources */,
+				AA000054 /* SnakeGame.swift in Sources */,
+				AA000056 /* TetrisGame.swift in Sources */,
+				AA000058 /* BreakoutGame.swift in Sources */,
+				AA00005A /* SimonGame.swift in Sources */,
+				AA00005C /* FlappyGame.swift in Sources */,
+				AA00005E /* DinoGame.swift in Sources */,
+				AA000060 /* AlienGame.swift in Sources */,
+				AA000062 /* ConwayGame.swift in Sources */,
+				AA000064 /* BrightnessGame.swift in Sources */,
+				AA000072 /* Launcher.swift in Sources */,
+				AA000082 /* MatrixDisplayView.swift in Sources */,
+				AA000084 /* ButtonsView.swift in Sources */,
+				AA000086 /* GamerView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		AA000009 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_IVAR_ACCESS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		AA00000A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_IVAR_ACCESS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		AA00000D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = GamerEmulator/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = NO;
+				INFOPLIST_KEY_UILaunchScreen_Generation = NO;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.28pins.GamerEmulator;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		AA00000E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = GamerEmulator/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = NO;
+				INFOPLIST_KEY_UILaunchScreen_Generation = NO;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.28pins.GamerEmulator;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		AA00000B /* Build configuration list for PBXProject "GamerEmulator" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA000009 /* Debug */,
+				AA00000A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AA00000C /* Build configuration list for PBXNativeTarget "GamerEmulator" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA00000D /* Debug */,
+				AA00000E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+	};
+	rootObject = AA000001 /* Project object */;
+}
