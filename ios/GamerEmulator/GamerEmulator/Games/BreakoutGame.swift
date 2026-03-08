@@ -85,30 +85,49 @@ final class BreakoutGame: Game {
             let newY = ballY + velY
             if newX > -1 && newX < 8 {
                 if !(newY > -1 && newY < 8) {
-                    if gamer.display[newX][ballY - velY] == 0 {
-                        blocks[newX][ballY + velY] = 0
-                        velY *= -1
-                    } else {
-                        blocks[ballX + velX][ballY + velY] = 0
-                        velY *= -1; velX *= -1
+                    let checkY = ballY - velY
+                    if checkY > -1 && checkY < 8 {
+                        if gamer.display[newX][checkY] == 0 {
+                            if newX > -1 && newX < 8 && (ballY + velY) > -1 && (ballY + velY) < 8 {
+                                blocks[newX][ballY + velY] = 0
+                            }
+                            velY *= -1
+                        } else {
+                            if (ballX + velX) > -1 && (ballX + velX) < 8 && (ballY + velY) > -1 && (ballY + velY) < 8 {
+                                blocks[ballX + velX][ballY + velY] = 0
+                            }
+                            velY *= -1; velX *= -1
+                        }
                     }
                 }
             } else {
-                if gamer.display[ballX - velX][newY] == 0 {
-                    blocks[ballX + velX][newY] = 0
-                    velX *= -1
-                    if !(newY > -1 && newY < 8) {
-                        if gamer.display[ballX + velX][ballY - velY] == 0 {
-                            blocks[ballX - velX][ballY - velY] = 0
+                // Handle side-wall collision safely: only use newY when it is within bounds.
+                if newY > -1 && newY < 8 &&
+                   (ballX - velX) > -1 && (ballX - velX) < 8 {
+                    if gamer.display[ballX - velX][newY] == 0 {
+                        if (ballX + velX) > -1 && (ballX + velX) < 8 {
+                            blocks[ballX + velX][newY] = 0
+                        }
+                        velX *= -1
+                    } else {
+                        // Explosion / multi-block destruction, guarded by bounds on bx/by.
+                        for dx in -1...1 { for dy in -1...1 {
+                            let bx = ballX + dx, by = ballY + dy
+                            if bx >= 0 && bx < 8 && by >= 0 && by < 8 { blocks[bx][by] = 0 }
+                        }}
+                        velX *= -1; velY *= -1
+                    }
+                } else {
+                    // Corner/top-bottom collision when newY is out of vertical bounds.
+                    let bounceY = ballY - velY
+                    if bounceY > -1 && bounceY < 8 &&
+                       (ballX + velX) > -1 && (ballX + velX) < 8 &&
+                       (ballX - velX) > -1 && (ballX - velX) < 8 {
+                        if gamer.display[ballX + velX][bounceY] == 0 {
+                            blocks[ballX - velX][bounceY] = 0
                             velY *= -1
                         }
                     }
-                } else {
-                    for dx in -1...1 { for dy in -1...1 {
-                        let bx = ballX + dx, by = ballY + dy
-                        if bx >= 0 && bx < 8 && by >= 0 && by < 8 { blocks[bx][by] = 0 }
-                    }}
-                    velX *= -1; velY *= -1
                 }
             }
 
