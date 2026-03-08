@@ -144,9 +144,9 @@ final class DinoGame: Game {
         return !dinoDucking && dinoY <= 5 && dinoY + 1 >= 5
     }
 
-    private func triggerGameOver(gamer: GamerHardware) {
+    private func triggerGameOver(gamer: GamerHardware) async {
         dinoOver = true
-        Task { await gamer.playLossTune() }
+        await gamer.playLossTune()
     }
 
     private func drawObstacle(gamer: GamerHardware) {
