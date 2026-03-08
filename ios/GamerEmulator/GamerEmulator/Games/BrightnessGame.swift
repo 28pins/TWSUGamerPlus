@@ -13,16 +13,26 @@ final class BrightnessGame: Game {
 
     private var brightSetting:   Int  = 8
     private var ledCompSetting:  Bool = true
+    private var needsInitialDraw: Bool = true
 
     // ── Game protocol ──────────────────────────────────────────────────────────
 
     func reset(fromHighScore: Bool, startingScore: UInt8) {
-        // Sync from gamer on entry – done in loop's first call
+        // Mark that we need to render the initial brightness screen on next loop
+        needsInitialDraw = true
     }
 
     func loop(gamer: GamerHardware) async {
-        brightSetting  = gamer.getBrightness()
-        ledCompSetting = gamer.getLEDCompensation()
+        // On first loop after reset, sync from gamer and draw once
+        if needsInitialDraw {
+            brightSetting  = gamer.getBrightness()
+            ledCompSetting = gamer.getLEDCompensation()
+            drawScreen(gamer: gamer)
+            needsInitialDraw = false
+        } else {
+            brightSetting  = gamer.getBrightness()
+            ledCompSetting = gamer.getLEDCompensation()
+        }
 
         var changed = false
 
