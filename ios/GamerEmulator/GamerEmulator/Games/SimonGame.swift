@@ -45,7 +45,19 @@ final class SimonGame: Game {
 
         if gamer_clear_pending { gamer.clear(); await gamer.delay(100); gamer_clear_pending = false }
 
-        // Add a new item to the sequence
+        // Guard: if the player has reached the maximum sequence length, celebrate the win.
+        // simonStep == maxSeq means all 30 steps were completed successfully.
+        if simonStep >= Self.maxSeq {
+            score = simonStep
+            HighScoreStore.saveHighScore(score, gameIndex)
+            await gamer.playWinTune()
+            gamer.printImage(GameAssets.simonRight)
+            await gamer.delay(600)
+            reset(fromHighScore: false, startingScore: 0)
+            return
+        }
+
+        // Add a new item to the sequence (safe: simonStep is now guaranteed < maxSeq)
         sequence[simonStep] = Int.random(in: 0..<Self.numDirs)
 
         if simonStep > 0 {
